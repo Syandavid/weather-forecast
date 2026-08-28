@@ -43,3 +43,5 @@ Android：Chrome 打开后，菜单里选添加到主屏幕或安装应用。
 页面与逻辑都在 index.html，无打包。另有 PWA 清单、Service Worker、图标、台风快照、抓取脚本，以及 .nojekyll。
 
 无需安装依赖，无需构建。
+
+若要自动刷新台风快照：把 scripts/update-typhoons.action.yml 复制为 .github/workflows/update-typhoons.yml 后即可每 30 分钟抓取。当前推送所用令牌没有 workflow 权限，所以工作流文件先放在 scripts 目录。
