@@ -154,11 +154,11 @@ button { color: inherit; }
   font-size: 14px; line-height: 1.7; color: var(--text);
 }
 .metrics {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 16px 0 8px;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 16px 0 8px;
 }
-@media (min-width: 520px) {
-  .metrics { grid-template-columns: repeat(3, 1fr); }
-}
+.wx-note { display: none; margin: 6px 2px 2px; font-size: 12px; color: var(--muted); }
+.wx-note.show { display: block; }
+.leaflet-osm-dark .leaflet-tile-pane { filter: brightness(0.42) contrast(1.15) saturate(0.35); }
 .metric {
   background: var(--card); border: 1px solid var(--line);
   border-radius: 14px; padding: 12px 14px;
@@ -405,6 +405,7 @@ button { color: inherit; }
   .sheet { align-items: center; }
   .sheet-card { max-width: 480px; border-radius: 18px; }
   .metrics { grid-template-columns: repeat(6, 1fr); }
+  .life { grid-template-columns: repeat(4, 1fr); }
   .wx-split { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 24px; align-items: start; }
 }
 </style>
@@ -455,6 +456,7 @@ button { color: inherit; }
                 <div class="phrase sk" id="phrase">正在获取天气</div>
               </div>
             </div>
+            <div class="wx-note" id="wxNote"></div>
             <div class="summary sk" id="summary">正在整理今日摘要</div>
             <div class="metrics" id="metrics"></div>
           </div>
@@ -477,7 +479,6 @@ button { color: inherit; }
           <button class="chip active" data-layer="truecolor" type="button">真实色</button>
           <button class="chip" data-layer="infrared" type="button">红外</button>
           <button class="chip" data-layer="radar" type="button">雷达</button>
-          <button class="chip" data-layer="visible" type="button">可见光</button>
           <button class="chip" id="satLocate" type="button">定位</button>
           <button class="chip" id="satStorms" type="button">台风眼</button>
           <span class="stamp" id="satStamp">图层时间</span>
@@ -532,7 +533,7 @@ button { color: inherit; }
     <h2>说明</h2>
     <p>天气预报是静态网页，也可加到主屏幕当独立应用使用。核心功能无需账号。</p>
     <p>天气、预报、空气质量和城市搜索来自 Open-Meteo。真实色卫星来自 NASA GIBS 的 VIIRS / MODIS，东亚可见光与红外来自葵花 Himawari AHI。雷达来自 RainViewer。</p>
-    <p>西北太平洋台风以中央气象台 CMA 为准，大西洋与东北太平洋来自美国飓风中心 NHC。无密钥。</p>
+    <p>西北太平洋台风以中央气象台 CMA 为准，大西洋与东北太平洋来自美国飓风中心 NHC。底图使用 Esri 深色画布，无密钥。</p>
     <p>预警根据台风实况和气温、暴雨、大风、低温、大雾阈值生成。没有生效项目时显示「目前没有生效预警」。</p>
     <p id="aboutSnap"></p>
     <button class="chip" id="closeAbout" type="button">关闭</button>
@@ -542,6 +543,9 @@ button { color: inherit; }
 (function () {
   const CITY_KEY = "weather-forecast-city";
   const REC_KEY = "weather-forecast-recents";
+  const WX_CACHE_KEY = "weather-forecast-wx-cache";
+  const ESRI_DARK = "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}";
+  const OSM_URL = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
   const DEFAULT_CITY = { name: "上海", lat: 31.23, lon: 121.47, admin: "上海市" };
   const GRADE_ZH = { TD: "热带低压", TS: "热带风暴", STS: "强热带风暴", TY: "台风", STY: "强台风", SuperTY: "超强台风", SUPERTY: "超强台风", PTC: "潜在热带气旋", HU: "飓风", MH: "重大飓风" };
   const CMA_DIR = { N: "北", NNE: "东北偏北", NE: "东北", ENE: "东北偏东", E: "东", ESE: "东南偏东", SE: "东南", SSE: "东南偏南", S: "南", SSW: "西南偏南", SW: "西南", WSW: "西南偏西", W: "西", WNW: "西北偏西", NW: "西北", NNW: "西北偏北" };
@@ -570,7 +574,67 @@ button { color: inherit; }
     satOp: 0.68
   };
   const $ = (id) => document.getElementById(id);
+  let darkBaseMode = null;
   function showErr() {}
+  function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+  function wxCacheId(c) {
+    return (Math.round(c.lat * 100) / 100) + "," + (Math.round(c.lon * 100) / 100);
+  }
+  function readWxCache(c) {
+    try {
+      const all = JSON.parse(localStorage.getItem(WX_CACHE_KEY) || "{}");
+      const rec = all[wxCacheId(c)];
+      if (rec && rec.weather && rec.weather.current) return rec;
+    } catch (e) {}
+    return null;
+  }
+  function writeWxCache(c, weather, aqi) {
+    try {
+      const all = JSON.parse(localStorage.getItem(WX_CACHE_KEY) || "{}");
+      all[wxCacheId(c)] = { weather: weather, aqi: aqi || null, ts: Date.now(), name: c.name };
+      const keys = Object.keys(all);
+      if (keys.length > 10) {
+        keys.sort(function (a, b) { return (all[a].ts || 0) - (all[b].ts || 0); });
+        keys.slice(0, keys.length - 8).forEach(function (k) { delete all[k]; });
+      }
+      localStorage.setItem(WX_CACHE_KEY, JSON.stringify(all));
+    } catch (e) {}
+  }
+  function showWxNote(msg) {
+    const el = $("wxNote");
+    if (!el) return;
+    el.textContent = msg;
+    el.classList.add("show");
+  }
+  function hideWxNote() {
+    const el = $("wxNote");
+    if (!el) return;
+    el.textContent = "";
+    el.classList.remove("show");
+  }
+  function probeImg(url) {
+    return new Promise(function (resolve) {
+      const img = new Image();
+      let done = false;
+      const finish = function (v) { if (done) return; done = true; resolve(v); };
+      const t = setTimeout(function () { finish(false); }, 4500);
+      img.onload = function () { clearTimeout(t); finish(true); };
+      img.onerror = function () { clearTimeout(t); finish(false); };
+      img.src = url;
+    });
+  }
+  async function pickDarkBase() {
+    if (darkBaseMode) return darkBaseMode;
+    const ok = await probeImg(ESRI_DARK.replace("{z}", "3").replace("{y}", "3").replace("{x}", "6"));
+    darkBaseMode = ok ? "esri" : "osm";
+    return darkBaseMode;
+  }
+  function darkTileLayer(maxZoom) {
+    if (darkBaseMode === "osm") {
+      return L.tileLayer(OSM_URL, { maxZoom: maxZoom || 9, attribution: "© OpenStreetMap" });
+    }
+    return L.tileLayer(ESRI_DARK, { maxZoom: maxZoom || 9, attribution: "Tiles © Esri" });
+  }
   function unwrapJson(text) {
     const m = String(text).match(/\{[\s\S]*\}/);
     if (!m) throw new Error("bad json");
@@ -779,9 +843,9 @@ button { color: inherit; }
     else uvI = { k: "紫外线", a: "较弱，正常出行即可。", lv: "适宜", cls: "ok" };
     let sport;
     const raining = pop >= 60 || psum >= 5 || code >= 61;
-    if (code >= 95 || wind >= 17.2) sport = { k: "出行/运动", a: "雷雨或大风，减少户外活动。", lv: "不宜", cls: "bad" };
-    else if (raining || (hi != null && hi >= 35)) sport = { k: "出行/运动", a: raining ? "可能下雨，出行带伞、运动改室内。" : "高温，避开正午再出门。", lv: "注意", cls: "warn" };
-    else sport = { k: "出行/运动", a: "天气合适，适合外出和运动。", lv: "适宜", cls: "ok" };
+    if (code >= 95 || wind >= 17.2) sport = { k: "出行", a: "雷雨或大风，减少外出。", lv: "不宜", cls: "bad" };
+    else if (raining || (hi != null && hi >= 35)) sport = { k: "出行", a: raining ? "可能下雨，出行带伞。" : "高温，避开正午再出门。", lv: "注意", cls: "warn" };
+    else sport = { k: "出行", a: "天气对出行影响不大。", lv: "适宜", cls: "ok" };
     const pop2 = (daily.precipitation_probability_max || [])[1] || 0;
     const psum2 = (daily.precipitation_sum || [])[1] || 0;
     let wash;
@@ -850,29 +914,55 @@ button { color: inherit; }
   }
   async function loadWeather() {
     const c = state.city;
-    $("temp").classList.add("sk");
-    $("phrase").classList.add("sk");
-    if ($("summary")) $("summary").classList.add("sk");
+    hideWxNote();
+    const cached = readWxCache(c);
+    if (cached && cached.weather) {
+      state.weather = cached.weather;
+      if (cached.aqi) state.aqi = cached.aqi;
+      renderWeather();
+      renderMetrics();
+      renderAlerts();
+    } else {
+      $("temp").classList.add("sk");
+      $("phrase").classList.add("sk");
+      if ($("summary")) $("summary").classList.add("sk");
+    }
     const q = "latitude=" + c.lat + "&longitude=" + c.lon + "&timezone=auto&wind_speed_unit=ms";
     const wurl = "https://api.open-meteo.com/v1/forecast?" + q +
       "&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,wind_gusts_10m,relative_humidity_2m,precipitation,is_day,wind_direction_10m,surface_pressure,dew_point_2m,visibility,cloud_cover" +
       "&hourly=temperature_2m,precipitation,precipitation_probability,weather_code,wind_speed_10m,uv_index,cloud_cover,apparent_temperature" +
-      "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max,uv_index_max,wind_speed_10m_max,sunrise,sunset,sunshine_duration" +
+      "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max,uv_index_max,wind_speed_10m_max,sunrise,sunset" +
       "&forecast_days=7";
     const aurl = "https://air-quality-api.open-meteo.com/v1/air-quality?" + q + "&current=us_aqi,pm2_5,pm10";
+    let gotWx = false;
     try {
-      const w = await getJson(wurl);
+      let w;
+      try {
+        w = await getJson(wurl);
+      } catch (e1) {
+        await sleep(800);
+        w = await getJson(wurl);
+      }
       state.weather = w;
+      gotWx = true;
+      hideWxNote();
       renderWeather();
     } catch (e) {
-      $("temp").classList.remove("sk");
-      $("phrase").classList.remove("sk");
-      if ($("summary")) $("summary").classList.remove("sk");
-      $("phrase").textContent = "天气暂时无法获取，请稍后重试";
+      if (cached && cached.weather) {
+        showWxNote("刚才没连上，先显示上次");
+      } else {
+        $("temp").classList.remove("sk");
+        $("phrase").classList.remove("sk");
+        if ($("summary")) $("summary").classList.remove("sk");
+        $("phrase").textContent = "天气暂时无法获取，请稍后重试";
+      }
     }
     try {
       state.aqi = await getJson(aurl);
-    } catch (e) { state.aqi = null; }
+    } catch (e) {
+      if (!(cached && cached.aqi)) state.aqi = state.aqi || null;
+    }
+    if (gotWx) writeWxCache(c, state.weather, state.aqi);
     renderMetrics();
     renderAlerts();
   }
@@ -888,7 +978,9 @@ button { color: inherit; }
     $("temp").innerHTML = Math.round(cur.temperature_2m) + "<span>°</span>";
     const hi = (daily.temperature_2m_max || [])[0];
     const lo = (daily.temperature_2m_min || [])[0];
-    $("hl").innerHTML = (hi != null && lo != null) ? ("今 <b>" + Math.round(hi) + "°</b> / " + Math.round(lo) + "°") : "";
+    $("hl").innerHTML = (hi != null && lo != null)
+      ? ("高 <b>" + Math.round(hi) + "°</b><br>低 " + Math.round(lo) + "°")
+      : "";
     $("hero").className = "hero " + heroWash(cur.weather_code, isDay);
     $("heroGlyph").innerHTML = wxIcon(cur.weather_code, isDay, 52);
     $("phrase").textContent = wxPhrase(cur.weather_code, isDay);
@@ -1094,15 +1186,15 @@ button { color: inherit; }
       const maxKm = Math.max(r.ne || 0, r.se || 0, r.sw || 0, r.nw || 0);
       if (maxKm && dist <= maxKm) inRadius = true;
     }
-    if (inRadius || (dist != null && dist < 400)) return { t: "靠近需关注", cls: "danger" };
-    if (dist != null && dist < 800) return { t: "外围可能有风雨", cls: "warn" };
+    if (inRadius || (dist != null && dist < 800)) return { t: "关注", cls: "danger" };
+    if (dist != null && dist < 1800) return { t: "留意", cls: "warn" };
     return { t: "远离", cls: "ok" };
   }
   function stormDetailHtml(s) {
     const c = state.city;
     const dist = stormDist(s);
     const bear = (c && s.lat != null) ? bearingWord(c.lat, c.lon, s.lat, s.lon) : "";
-    const distLine = dist != null ? ("距" + ((c && c.name) || "所选城市") + bear + "约 " + dist + " 公里") : "位置待定";
+    const distLine = dist != null ? ("距" + ((c && c.name) || "上海") + "约 " + dist + " 公里") : "位置待定";
     const imp = stormImpact(s, dist);
     let html = '<div class="ty-detail"><div class="ty-dist">' + distLine + '</div><div class="ty-impact ' + imp.cls + '">' + imp.t +
       '</div><div class="ty-stats"><div><div class="k">风力</div><div class="v">' +
@@ -1129,6 +1221,12 @@ button { color: inherit; }
       box.innerHTML = '<div class="empty"><strong>目前没有在编台风</strong>快照时间 ' + (state.snapUpdated || "未知") + "<br>" + state.source + "</div>";
       return;
     }
+    if (state.selected) {
+      const fresh = storms.find(function (x) { return x.id === state.selected.id; });
+      state.selected = fresh || storms[0];
+    } else {
+      state.selected = storms[0];
+    }
     box.innerHTML = storms.map(function (s) {
       const active = state.selected && state.selected.id === s.id;
       const dist = stormDist(s);
@@ -1137,7 +1235,7 @@ button { color: inherit; }
         (s.nameZh || s.nameEn || "未命名") + '<span class="grade ' + (s.grade || "") + '">' + (s.gradeZh || "") +
         '</span></h3><div class="meta">' + (s.basinZh || "") + (s.provider ? " · " + s.provider : "") +
         '</div></div><div class="storm-right"><div class="w">' + wind + (s.windMs != null ? " · " + s.windMs + " 米/秒" : "") +
-        '</div><div class="d">' + (dist != null ? dist + " 公里" : "") + "</div></div></div>" +
+        '</div><div class="d">' + (dist != null ? ("距" + ((state.city && state.city.name) || "上海") + " " + dist + " 公里") : "") + "</div></div></div>" +
         (active ? stormDetailHtml(s) : "") + "</div>";
     }).join("") + '<div class="empty" style="margin:8px">数据：' + state.source + (state.snapUpdated ? " · " + state.snapUpdated.replace("T", " ").slice(0, 16) : "") + "</div>";
     box.querySelectorAll(".storm-card").forEach(function (el) {
@@ -1176,7 +1274,7 @@ button { color: inherit; }
         level: warn ? "警告" : "关注",
         lvCls: warn ? "bad" : "warn",
         when: "实时",
-        advice: imp.t === "远离" ? "暂无直接风雨，留意路径变化" : (imp.t === "靠近需关注" ? "关注风雨影响，减少沿海活动" : "外围可能有风雨，出行留意"),
+        advice: imp.t === "远离" ? "暂无直接风雨，留意路径变化" : (imp.t === "关注" ? "关注风雨影响，减少沿海活动" : "外围可能有风雨，出行留意"),
         go: function () { showTab("typhoon"); selectStorm(s); }
       });
     });
@@ -1293,14 +1391,14 @@ button { color: inherit; }
       b.classList.toggle("active", on);
     });
   }
-  function ensureSatBase() {
+  async function ensureSatBase() {
     if (!state.satMap || !window.L) return;
-    if (!state.satBase) {
-      state.satBase = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}", {
-        maxZoom: 9, attribution: "Tiles © Esri"
-      });
-      state.satBase.addTo(state.satMap);
-    }
+    await pickDarkBase();
+    if (state.satBase) return;
+    const layer = darkTileLayer(9);
+    if (darkBaseMode === "osm") state.satMap.getContainer().classList.add("leaflet-osm-dark");
+    layer.addTo(state.satMap);
+    state.satBase = layer;
   }
   function showRadarFrame(i) {
     if (!state.radarFrames.length || !state.satMap) return;
@@ -1326,11 +1424,14 @@ button { color: inherit; }
     });
     if ($("satLegText")) $("satLegText").textContent = satLegendText(name);
     if (!state.satMap) return;
-    ensureSatBase();
+    await ensureSatBase();
     if (state.satLayerObj) { state.satMap.removeLayer(state.satLayerObj); state.satLayerObj = null; }
     let url, maxZ, timeLabel, attr;
     if (name === "truecolor") {
-      const tm = new Date(Date.now() - 12 * 3600 * 1000).toISOString().slice(0, 10);
+      let tm = utcDate(0);
+      const probe = "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_SNPP_CorrectedReflectance_TrueColor/default/" +
+        tm + "/GoogleMapsCompatible_Level9/3/3/6.jpg";
+      if (!(await probeImg(probe))) tm = utcDate(-1);
       url = gibsUrl("VIIRS_SNPP_CorrectedReflectance_TrueColor", "GoogleMapsCompatible_Level9", "jpg").replace("{time}", tm);
       maxZ = 9; timeLabel = "VIIRS 真实色 " + tm; attr = "NASA GIBS / VIIRS";
     } else if (name === "infrared") {
@@ -1380,9 +1481,10 @@ button { color: inherit; }
     if (state.tyMap) { state.tyMap.invalidateSize(); drawTyphoonTracks(); return; }
     const map = L.map("tyMap", { zoomControl: true }).setView([20, 130], 4);
     map.attributionControl.setPrefix("");
-    L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}", {
-      maxZoom: 8, attribution: "Tiles © Esri"
-    }).addTo(map);
+    await pickDarkBase();
+    const tyBase = darkTileLayer(8);
+    if (darkBaseMode === "osm") map.getContainer().classList.add("leaflet-osm-dark");
+    tyBase.addTo(map);
     state.tyMap = map;
     state.tyLayer = L.layerGroup().addTo(map);
     drawTyphoonTracks();

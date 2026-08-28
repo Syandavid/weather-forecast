@@ -30,7 +30,7 @@ Android：Chrome 打开后，菜单里选添加到主屏幕或安装应用。
 - 雷达：RainViewer
 - 西北太平洋台风：中央气象台 CMA
 - 大西洋与东北太平洋：美国飓风中心 NHC
-- 台风页底图：CARTO Dark Matter
+- 台风页底图：Esri Canvas World Dark Gray（无密钥；若不可用则 OSM 加深）
 
 预警页优先列出在编台风，再根据气温、降水、大风、低温、大雾阈值生成本地提示。没有生效项目时显示「目前没有生效预警」。
 
