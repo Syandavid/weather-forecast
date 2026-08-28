@@ -125,16 +125,39 @@ button { color: inherit; }
   -webkit-overflow-scrolling: touch;
   padding: 8px 16px calc(16px + var(--safe-b));
 }
-.hero { padding: 8px 4px 16px; }
+.hero {
+  padding: 10px 12px 14px; margin: 0 -4px 4px; border-radius: 16px;
+  background: linear-gradient(180deg, rgba(78,162,255,0.14), transparent 80%);
+  transition: background 0.35s ease;
+}
+.hero.wx-clear { background: linear-gradient(180deg, rgba(62,140,255,0.20), transparent 82%); }
+.hero.wx-night { background: linear-gradient(180deg, rgba(16,28,62,0.58), transparent 84%); }
+.hero.wx-rain { background: linear-gradient(180deg, rgba(70,90,110,0.34), transparent 84%); }
+.hero.wx-storm { background: linear-gradient(180deg, rgba(88,56,140,0.36), transparent 84%); }
+.hero.wx-ty { background: linear-gradient(180deg, rgba(255,90,95,0.22), transparent 84%); }
+.hero-row { display: flex; align-items: flex-end; gap: 12px; }
+.hero-temp { flex: 1; min-width: 0; }
 .temp {
   font-size: clamp(64px, 18vw, 84px);
   font-weight: 600; letter-spacing: -0.04em; line-height: 1;
   font-variant-numeric: tabular-nums;
 }
 .temp span { font-size: 0.42em; font-weight: 500; letter-spacing: 0; }
-.phrase { margin-top: 8px; font-size: 17px; color: var(--muted); line-height: 1.45; max-width: 28em; }
+.hl { margin-top: 6px; font-size: 15px; color: var(--muted); font-weight: 500; }
+.hl b { color: var(--text); font-weight: 650; }
+.phrase-row { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+.phrase { margin-top: 0; font-size: 17px; color: var(--muted); line-height: 1.45; max-width: 28em; }
+.wx-ic { flex: none; display: block; }
+.summary {
+  background: var(--card); border: 1px solid var(--line);
+  border-radius: 14px; padding: 12px 14px; margin: 8px 0 4px;
+  font-size: 14px; line-height: 1.7; color: var(--text);
+}
 .metrics {
   display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 16px 0 8px;
+}
+@media (min-width: 520px) {
+  .metrics { grid-template-columns: repeat(3, 1fr); }
 }
 .metric {
   background: var(--card); border: 1px solid var(--line);
@@ -152,22 +175,72 @@ button { color: inherit; }
 }
 .hours::-webkit-scrollbar { display: none; }
 .hour {
-  flex: 0 0 64px; background: var(--card); border: 1px solid var(--line);
-  border-radius: 14px; padding: 10px 6px; text-align: center;
+  flex: 0 0 58px; background: var(--card); border: 1px solid var(--line);
+  border-radius: 14px; padding: 10px 6px 8px; text-align: center;
 }
+.hour.now { border-color: rgba(78,162,255,0.55); background: rgba(78,162,255,0.12); }
 .hour .t { font-size: 12px; color: var(--muted); }
-.hour .n { margin-top: 6px; font-size: 16px; font-weight: 650; font-variant-numeric: tabular-nums; }
+.hour .g { display: flex; justify-content: center; margin: 5px 0 2px; }
+.hour .n { margin-top: 2px; font-size: 16px; font-weight: 650; font-variant-numeric: tabular-nums; }
 .hour .p { margin-top: 4px; font-size: 11px; color: var(--sky); }
-.days { display: flex; flex-direction: column; gap: 4px; }
-.day {
-  display: grid; grid-template-columns: 3.2em 1fr auto auto;
-  gap: 10px; align-items: center;
-  padding: 10px 8px; border-radius: 12px;
+.pbar {
+  height: 3px; margin-top: 6px; border-radius: 99px;
+  background: rgba(255,255,255,0.08); overflow: hidden;
 }
-.day .name { font-weight: 600; }
-.day .desc { color: var(--muted); font-size: 13px; }
-.day .hi, .day .lo { font-variant-numeric: tabular-nums; font-weight: 650; }
+.pbar > i { display: block; height: 100%; background: var(--sky); border-radius: 99px; }
+.hour .mm { margin-top: 3px; font-size: 10px; color: var(--sky); }
+.days { display: flex; flex-direction: column; gap: 2px; }
+.day {
+  display: grid;
+  grid-template-columns: 2.7em 1.5em minmax(0,1fr) auto;
+  grid-template-areas: "name glyph desc pop" "bar bar bar bar";
+  gap: 4px 8px; align-items: center;
+  padding: 8px; border-radius: 12px;
+}
+.day .name { grid-area: name; font-weight: 600; font-size: 13px; }
+.day .g { grid-area: glyph; display: flex; }
+.day .desc { grid-area: desc; color: var(--muted); font-size: 13px; display: flex; align-items: center; gap: 6px; min-width: 0; }
+.day .pop { grid-area: pop; font-size: 12px; color: var(--sky); font-variant-numeric: tabular-nums; }
+.day .hi, .day .lo { font-variant-numeric: tabular-nums; font-weight: 650; font-size: 13px; }
 .day .lo { color: var(--muted); }
+.uv-badge {
+  flex: none; font-size: 10px; font-weight: 650;
+  padding: 1px 6px; border-radius: 99px;
+  background: rgba(255,90,95,0.18); color: var(--danger);
+}
+.tbar-wrap {
+  grid-area: bar; display: flex; align-items: center; gap: 8px;
+}
+.tbar {
+  flex: 1; height: 5px; border-radius: 99px;
+  background: rgba(255,255,255,0.08); position: relative;
+}
+.tbar > i {
+  position: absolute; top: 0; height: 100%; border-radius: 99px;
+  background: linear-gradient(90deg, #4ea2ff, #ffc56a 60%, #ff8a3d);
+}
+.sunrow {
+  display: flex; flex-wrap: wrap; gap: 14px 18px; align-items: center;
+  background: var(--card); border: 1px solid var(--line);
+  border-radius: 14px; padding: 12px 14px; margin: 8px 0 4px;
+  font-size: 13px;
+}
+.sunrow span { color: var(--muted); }
+.sunrow b { color: var(--text); font-weight: 650; font-variant-numeric: tabular-nums; }
+.life { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+.life-card {
+  background: var(--card); border: 1px solid var(--line);
+  border-radius: 14px; padding: 12px;
+}
+.life-card .k { font-size: 13px; font-weight: 650; }
+.life-card .a { margin-top: 4px; font-size: 12px; color: var(--muted); line-height: 1.45; }
+.pill {
+  display: inline-block; font-size: 11px; font-weight: 650;
+  padding: 2px 7px; border-radius: 999px; margin-top: 8px;
+}
+.pill.ok { background: rgba(62,207,142,0.16); color: var(--ok); }
+.pill.warn { background: rgba(255,138,61,0.16); color: var(--warn); }
+.pill.bad { background: rgba(255,90,95,0.16); color: var(--danger); }
 .map-wrap { position: relative; flex: 1; min-height: 0; background: #081018; }
 .map-wrap .leaflet-container { height: 100%; width: 100%; background: #081018; font-family: inherit; }
 .sat-hud {
@@ -187,6 +260,16 @@ button { color: inherit; }
   margin-left: auto; font-size: 11px; color: var(--muted);
   background: rgba(8,14,24,0.72); padding: 6px 10px; border-radius: 999px;
 }
+.sat-legend {
+  position: absolute; left: 10px; right: 10px; bottom: 22px; z-index: 500;
+  display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+  background: rgba(8,14,24,0.82); backdrop-filter: blur(10px);
+  border: 1px solid var(--line); border-radius: 12px;
+  padding: 8px 10px; font-size: 11px; color: var(--muted); line-height: 1.45;
+}
+.sat-legend .chip { padding: 4px 9px; font-size: 11px; }
+.sat-leg-text { flex: 1 1 160px; min-width: 0; }
+.op-group { margin-left: auto; display: flex; gap: 4px; }
 .ty-layout {
   flex: 1; min-height: 0; display: grid;
   grid-template-rows: minmax(160px, 38%) 1fr;
@@ -199,6 +282,37 @@ button { color: inherit; }
 .storm-card.active { border-color: var(--warn); box-shadow: inset 0 0 0 1px var(--warn); }
 .storm-card h3 { margin: 0; font-size: 16px; }
 .storm-card .meta { margin-top: 4px; color: var(--muted); font-size: 12px; line-height: 1.5; }
+.storm-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.storm-right { text-align: right; flex: none; font-variant-numeric: tabular-nums; }
+.storm-right .w { font-size: 13px; font-weight: 650; }
+.storm-right .d { margin-top: 3px; font-size: 12px; color: var(--muted); }
+.ty-detail { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line); }
+.ty-dist { font-size: 14px; font-weight: 650; }
+.ty-impact { margin: 4px 0 8px; font-size: 13px; }
+.ty-impact.ok { color: var(--ok); }
+.ty-impact.warn { color: var(--warn); }
+.ty-impact.danger { color: var(--danger); }
+.ty-stats {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 6px 12px; font-size: 12px;
+}
+.ty-stats .k { color: var(--muted); }
+.ty-stats .v { font-weight: 650; font-variant-numeric: tabular-nums; }
+.fc-title { margin: 10px 0 4px; font-size: 12px; color: var(--muted); font-weight: 600; }
+.fc-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.fc-table th { text-align: left; color: var(--muted); font-weight: 500; padding: 3px 6px 3px 0; }
+.fc-table td { padding: 4px 6px 4px 0; border-top: 1px solid var(--line); font-variant-numeric: tabular-nums; }
+.ty-legend {
+  position: absolute; left: 10px; bottom: 22px; z-index: 500;
+  background: rgba(8,14,24,0.82); backdrop-filter: blur(10px);
+  border: 1px solid var(--line); border-radius: 10px;
+  padding: 8px 10px; font-size: 11px; color: var(--muted); line-height: 1.75;
+  pointer-events: none;
+}
+.ty-legend i { display: inline-block; width: 14px; height: 8px; vertical-align: middle; margin-right: 6px; }
+.ty-legend .lg-past { border-top: 2px solid #5eb1ff; height: 0; }
+.ty-legend .lg-fc { border-top: 2px dashed #ff8a3d; height: 0; }
+.ty-legend .lg-wind { width: 8px; height: 8px; border-radius: 50%; border: 1.5px solid #ff8a3d; background: rgba(255,138,61,0.15); }
+.ty-legend .lg-now { width: 8px; height: 8px; border-radius: 50%; background: #ff8a3d; box-shadow: 0 0 0 3px rgba(255,138,61,0.22); }
 .grade {
   display: inline-block; font-size: 11px; font-weight: 650;
   padding: 2px 7px; border-radius: 999px; margin-left: 6px;
@@ -212,8 +326,12 @@ button { color: inherit; }
   background: var(--card); border: 1px solid var(--line);
   border-radius: 14px; padding: 14px; margin-bottom: 8px;
 }
-.alert-card h3 { margin: 0 0 6px; font-size: 15px; }
+.alert-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; }
+.alert-card h3 { margin: 0; font-size: 15px; }
+.alert-when { font-size: 12px; color: var(--muted); }
 .alert-card p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
+.alert-tip { margin-top: 8px; font-size: 13px; color: var(--text); }
+.alert-card .pill { margin-top: 0; }
 .alert-card.ty { border-color: rgba(255,138,61,0.35); }
 .alert-card.hot { border-color: rgba(255,90,95,0.35); }
 .sheet {
@@ -286,7 +404,7 @@ button { color: inherit; }
   .ty-list { border-bottom: 0; border-right: 1px solid var(--line); }
   .sheet { align-items: center; }
   .sheet-card { max-width: 480px; border-radius: 18px; }
-  .metrics { grid-template-columns: repeat(4, 1fr); }
+  .metrics { grid-template-columns: repeat(6, 1fr); }
   .wx-split { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 24px; align-items: start; }
 }
 </style>
@@ -325,10 +443,19 @@ button { color: inherit; }
         <div class="banner" id="banner"></div>
         <div class="wx-split">
           <div>
-            <div class="hero">
-              <div class="temp sk" id="temp">--<span>°</span></div>
-              <div class="phrase sk" id="phrase">正在获取天气</div>
+            <div class="hero" id="hero">
+              <div class="hero-row">
+                <div class="hero-temp">
+                  <div class="temp sk" id="temp">--<span>°</span></div>
+                  <div class="hl" id="hl"></div>
+                </div>
+                <div id="heroGlyph" aria-hidden="true"></div>
+              </div>
+              <div class="phrase-row">
+                <div class="phrase sk" id="phrase">正在获取天气</div>
+              </div>
             </div>
+            <div class="summary sk" id="summary">正在整理今日摘要</div>
             <div class="metrics" id="metrics"></div>
           </div>
           <div>
@@ -338,6 +465,9 @@ button { color: inherit; }
             <div class="days" id="days"></div>
           </div>
         </div>
+        <div class="sunrow" id="sunrow"></div>
+        <div class="sec-title">生活指数</div>
+        <div class="life" id="life"></div>
       </div>
     </section>
     <section class="panel" id="sat">
@@ -347,16 +477,34 @@ button { color: inherit; }
           <button class="chip active" data-layer="truecolor" type="button">真实色</button>
           <button class="chip" data-layer="infrared" type="button">红外</button>
           <button class="chip" data-layer="radar" type="button">雷达</button>
+          <button class="chip" data-layer="visible" type="button">可见光</button>
           <button class="chip" id="satLocate" type="button">定位</button>
           <button class="chip" id="satStorms" type="button">台风眼</button>
           <span class="stamp" id="satStamp">图层时间</span>
+        </div>
+        <div class="sat-legend">
+          <span class="sat-leg-text" id="satLegText">真实色：白天云和地表</span>
+          <button class="chip" id="satPlay" type="button" hidden>播放</button>
+          <span class="op-group">
+            <button class="chip" data-op="low" type="button">低</button>
+            <button class="chip active" data-op="mid" type="button">中</button>
+            <button class="chip" data-op="high" type="button">高</button>
+          </span>
         </div>
       </div>
     </section>
     <section class="panel" id="typhoon">
       <div class="ty-layout">
         <div class="ty-list" id="tyList"><div class="empty"><strong>正在读取台风</strong>先看实时，失败则用快照</div></div>
-        <div class="map-wrap"><div id="tyMap" style="height:100%;width:100%"></div></div>
+        <div class="map-wrap">
+          <div id="tyMap" style="height:100%;width:100%"></div>
+          <div class="ty-legend">
+            <div><i class="lg-past"></i>实线＝已过路径</div>
+            <div><i class="lg-fc"></i>虚线＝预报</div>
+            <div><i class="lg-wind"></i>橙圈＝风圈</div>
+            <div><i class="lg-now"></i>点＝当前</div>
+          </div>
+        </div>
       </div>
     </section>
     <section class="panel" id="alerts">
@@ -413,7 +561,13 @@ button { color: inherit; }
     satMap: null,
     tyMap: null,
     satLayerObj: null,
-    radarMeta: null
+    satBase: null,
+    radarMeta: null,
+    radarFrames: [],
+    radarPlaying: false,
+    radarTimer: null,
+    radarIdx: 0,
+    satOp: 0.68
   };
   const $ = (id) => document.getElementById(id);
   function showErr() {}
@@ -483,6 +637,159 @@ button { color: inherit; }
     };
     return map[code] || "天气不明";
   }
+
+  function wxIcon(code, isDay, px) {
+    const n = px || 22;
+    const cloud = '<path d="M6.5 16.5h11.2a3.4 3.4 0 0 0 .15-6.8 5.8 5.8 0 0 0-11.1 1.5A3.6 3.6 0 0 0 6.5 16.5z" fill="#9eb4cc"/>';
+    let inner = "";
+    if (code === 0 || code === 1) {
+      inner = isDay
+        ? '<circle cx="12" cy="12" r="4" fill="#ffd36a"/><g stroke="#ffd36a" fill="none" stroke-width="1.5" stroke-linecap="round"><path d="M12 3.2v1.8M12 19v1.8M3.2 12h1.8M19 12h1.8M5.5 5.5l1.3 1.3M17.2 17.2l1.3 1.3M5.5 18.5l1.3-1.3M17.2 6.8l1.3-1.3"/></g>'
+        : '<path d="M14.8 4.2A7.4 7.4 0 1 0 19.2 14 5.8 5.8 0 0 1 14.8 4.2z" fill="#c5d4ea"/>';
+      if (code === 1) inner += '<path d="M8 18h10a3 3 0 0 0 0-6 5 5 0 0 0-9.3 1.2A3.2 3.2 0 0 0 8 18z" fill="#9eb4cc" opacity=".9"/>';
+    } else if (code === 2) {
+      inner = '<circle cx="9" cy="9" r="3.2" fill="#ffd36a"/>' + cloud;
+    } else if (code === 3) {
+      inner = cloud;
+    } else if (code === 45 || code === 48) {
+      inner = '<g stroke="#9eb4cc" fill="none" stroke-width="1.6" stroke-linecap="round"><path d="M4 9h16M5 12.5h14M6 16h12"/></g>';
+    } else if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82)) {
+      inner = cloud + '<g stroke="#6cb0ff" fill="none" stroke-width="1.5" stroke-linecap="round"><path d="M8 18v2.4M12 18v2.4M16 18v2.4"/></g>';
+    } else if ((code >= 71 && code <= 77) || code === 85 || code === 86) {
+      inner = cloud + '<g fill="#d7e6ff"><circle cx="8.5" cy="19.2" r="1"/><circle cx="12" cy="20.2" r="1"/><circle cx="15.5" cy="19.2" r="1"/></g>';
+    } else if (code >= 95) {
+      inner = cloud + '<path d="M12.2 16l-2.2 4h3l-1.6 3.6 4.4-5.2h-2.7z" fill="#ffd36a"/>';
+    } else {
+      inner = cloud;
+    }
+    return '<svg class="wx-ic" viewBox="0 0 24 24" width="' + n + '" height="' + n + '" aria-hidden="true">' + inner + "</svg>";
+  }
+  function haversine(lat1, lon1, lat2, lon2) {
+    const R = 6371, toR = function (d) { return d * Math.PI / 180; };
+    const dLat = toR(lat2 - lat1), dLon = toR(lon2 - lon1);
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(toR(lat1)) * Math.cos(toR(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  }
+  function bearingWord(lat1, lon1, lat2, lon2) {
+    const toR = function (d) { return d * Math.PI / 180; };
+    const y = Math.sin(toR(lon2 - lon1)) * Math.cos(toR(lat2));
+    const x = Math.cos(toR(lat1)) * Math.sin(toR(lat2)) - Math.sin(toR(lat1)) * Math.cos(toR(lat2)) * Math.cos(toR(lon2 - lon1));
+    let br = Math.atan2(y, x) * 180 / Math.PI;
+    br = (br + 360) % 360;
+    const names = ["北", "东北", "东", "东南", "南", "西南", "西", "西北"];
+    return names[Math.round(br / 45) % 8];
+  }
+  function periodName(h) {
+    if (h < 6) return "凌晨";
+    if (h < 11) return "上午";
+    if (h < 14) return "中午";
+    if (h < 17) return "午后";
+    if (h < 20) return "傍晚";
+    return "夜间";
+  }
+  function fmtHM(iso) {
+    if (!iso) return "—";
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return "—";
+    const h = d.getHours(), m = d.getMinutes();
+    return (h < 10 ? "0" : "") + h + ":" + (m < 10 ? "0" : "") + m;
+  }
+  function uvLabel(v) {
+    if (v == null || isNaN(v)) return { text: "—", cls: "" };
+    if (v >= 11) return { text: "极强", cls: "danger" };
+    if (v >= 8) return { text: "很强", cls: "danger" };
+    if (v >= 6) return { text: "强", cls: "warn" };
+    if (v >= 3) return { text: "中等", cls: "warn" };
+    return { text: "弱", cls: "ok" };
+  }
+  function currentHourly(w, key) {
+    const h = (w && w.hourly) || {};
+    if (!h.time || !h[key]) return null;
+    const now = Date.now();
+    for (let i = 0; i < h.time.length; i++) {
+      const tm = new Date(h.time[i]).getTime();
+      if (tm >= now - 30 * 60 * 1000) return h[key][i];
+    }
+    return h[key][0];
+  }
+  function heroWash(code, isDay) {
+    const near = state.storms.some(function (s) { return s.basin === "WPAC" && s.lon != null && s.lon < 130 && s.lat > 15 && s.lat < 40; });
+    if (near) return "wx-ty";
+    if (code >= 95) return "wx-storm";
+    if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82)) return "wx-rain";
+    if (!isDay) return "wx-night";
+    return "wx-clear";
+  }
+  function todaySummary(w) {
+    const cur = w.current || {};
+    const daily = w.daily || {};
+    const hourly = w.hourly || {};
+    const code = (daily.weather_code || [])[0] != null ? daily.weather_code[0] : cur.weather_code;
+    const hi = (daily.temperature_2m_max || [])[0];
+    const lo = (daily.temperature_2m_min || [])[0];
+    let s1 = "今天" + wxPhrase(code, true);
+    if (hi != null) s1 += "，最高 " + Math.round(hi) + "°。";
+    else s1 += "。";
+    let rainPeak = 0, rainH = null;
+    const now = Date.now();
+    for (let i = 0; i < (hourly.time || []).length; i++) {
+      const tm = new Date(hourly.time[i]).getTime();
+      if (tm < now - 30 * 60 * 1000 || tm > now + 24 * 3600 * 1000) continue;
+      const pop = hourly.precipitation_probability ? (hourly.precipitation_probability[i] || 0) : 0;
+      if (pop > rainPeak) { rainPeak = pop; rainH = new Date(hourly.time[i]).getHours(); }
+    }
+    let s2;
+    if (rainPeak >= 50 && rainH != null) {
+      let win = periodName(rainH);
+      if (rainH >= 13 && rainH < 17) win = "午后到傍晚";
+      else if (rainH >= 17) win = "傍晚到夜间";
+      else if (rainH < 11) win = "上午";
+      s2 = win + "降水概率到 " + rainPeak + "%，出门带伞。";
+    } else if (rainPeak >= 30) s2 = "有短时降水可能，备把伞更稳妥。";
+    else s2 = "降水不多。";
+    const uv = (daily.uv_index_max || [])[0];
+    let s3;
+    if (uv >= 8) s3 = "紫外线很强，中午少暴晒。";
+    else if (uv >= 6) s3 = "紫外线较强，外出注意防晒。";
+    else if (hi != null && hi >= 33) s3 = "天气偏热，注意补水。";
+    else if (lo != null && lo <= 8) s3 = "早晚较凉，出门添件外套。";
+    else s3 = "穿衣按气温即可。";
+    return s1 + s2 + s3;
+  }
+  function lifeIndices(w) {
+    const cur = w.current || {};
+    const daily = w.daily || {};
+    const hi = (daily.temperature_2m_max || [])[0];
+    const feels = cur.apparent_temperature != null ? cur.apparent_temperature : cur.temperature_2m;
+    const pop = (daily.precipitation_probability_max || [])[0] || 0;
+    const psum = (daily.precipitation_sum || [])[0] || 0;
+    const uv = (daily.uv_index_max || [])[0] || 0;
+    const wind = Math.max(cur.wind_speed_10m || 0, (daily.wind_speed_10m_max || [])[0] || 0);
+    const code = (daily.weather_code || [])[0] || 0;
+    let cloth;
+    if (feels >= 28) cloth = { k: "穿衣", a: "短袖单衣即可，注意防暑。", lv: feels >= 33 ? "注意" : "适宜", cls: feels >= 33 ? "warn" : "ok" };
+    else if (feels >= 22) cloth = { k: "穿衣", a: "长袖衬衫或薄外套合适。", lv: "适宜", cls: "ok" };
+    else if (feels >= 15) cloth = { k: "穿衣", a: "薄外套或卫衣，早晚再加一件。", lv: "适宜", cls: "ok" };
+    else if (feels >= 8) cloth = { k: "穿衣", a: "夹克或毛衣，注意保暖。", lv: "注意", cls: "warn" };
+    else cloth = { k: "穿衣", a: "厚外套，做好防寒。", lv: "注意", cls: "warn" };
+    let uvI;
+    if (uv >= 8) uvI = { k: "紫外线", a: "很强，中午减少暴晒，涂防晒。", lv: "不宜", cls: "bad" };
+    else if (uv >= 6) uvI = { k: "紫外线", a: "较强，外出戴帽涂防晒。", lv: "注意", cls: "warn" };
+    else if (uv >= 3) uvI = { k: "紫外线", a: "中等，短时外出问题不大。", lv: "注意", cls: "warn" };
+    else uvI = { k: "紫外线", a: "较弱，正常出行即可。", lv: "适宜", cls: "ok" };
+    let sport;
+    const raining = pop >= 60 || psum >= 5 || code >= 61;
+    if (code >= 95 || wind >= 17.2) sport = { k: "出行/运动", a: "雷雨或大风，减少户外活动。", lv: "不宜", cls: "bad" };
+    else if (raining || (hi != null && hi >= 35)) sport = { k: "出行/运动", a: raining ? "可能下雨，出行带伞、运动改室内。" : "高温，避开正午再出门。", lv: "注意", cls: "warn" };
+    else sport = { k: "出行/运动", a: "天气合适，适合外出和运动。", lv: "适宜", cls: "ok" };
+    const pop2 = (daily.precipitation_probability_max || [])[1] || 0;
+    const psum2 = (daily.precipitation_sum || [])[1] || 0;
+    let wash;
+    if (pop >= 50 || psum >= 1) wash = { k: "洗车", a: "今天可能下雨，洗了容易再脏。", lv: "不宜", cls: "bad" };
+    else if (pop2 >= 50 || psum2 >= 1) wash = { k: "洗车", a: "明天可能有雨，建议再等等。", lv: "注意", cls: "warn" };
+    else wash = { k: "洗车", a: "近两天降水不多，适合洗车。", lv: "适宜", cls: "ok" };
+    return [cloth, uvI, sport, wash];
+  }
   function speakLine(code, temp, feels, isDay) {
     const p = wxPhrase(code, isDay);
     const t = Math.round(temp);
@@ -545,11 +852,12 @@ button { color: inherit; }
     const c = state.city;
     $("temp").classList.add("sk");
     $("phrase").classList.add("sk");
+    if ($("summary")) $("summary").classList.add("sk");
     const q = "latitude=" + c.lat + "&longitude=" + c.lon + "&timezone=auto&wind_speed_unit=ms";
     const wurl = "https://api.open-meteo.com/v1/forecast?" + q +
-      "&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,wind_gusts_10m,relative_humidity_2m,precipitation,is_day,wind_direction_10m" +
-      "&hourly=temperature_2m,precipitation_probability,weather_code,wind_speed_10m" +
-      "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,uv_index_max,wind_speed_10m_max" +
+      "&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,wind_gusts_10m,relative_humidity_2m,precipitation,is_day,wind_direction_10m,surface_pressure,dew_point_2m,visibility,cloud_cover" +
+      "&hourly=temperature_2m,precipitation,precipitation_probability,weather_code,wind_speed_10m,uv_index,cloud_cover,apparent_temperature" +
+      "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max,uv_index_max,wind_speed_10m_max,sunrise,sunset,sunshine_duration" +
       "&forecast_days=7";
     const aurl = "https://air-quality-api.open-meteo.com/v1/air-quality?" + q + "&current=us_aqi,pm2_5,pm10";
     try {
@@ -559,6 +867,7 @@ button { color: inherit; }
     } catch (e) {
       $("temp").classList.remove("sk");
       $("phrase").classList.remove("sk");
+      if ($("summary")) $("summary").classList.remove("sk");
       $("phrase").textContent = "天气暂时无法获取，请稍后重试";
     }
     try {
@@ -571,44 +880,91 @@ button { color: inherit; }
     const w = state.weather;
     if (!w || !w.current) return;
     const cur = w.current;
+    const daily = w.daily || {};
+    const isDay = cur.is_day === 1;
     $("temp").classList.remove("sk");
     $("phrase").classList.remove("sk");
+    if ($("summary")) $("summary").classList.remove("sk");
     $("temp").innerHTML = Math.round(cur.temperature_2m) + "<span>°</span>";
-    $("phrase").textContent = speakLine(cur.weather_code, cur.temperature_2m, cur.apparent_temperature, cur.is_day === 1);
+    const hi = (daily.temperature_2m_max || [])[0];
+    const lo = (daily.temperature_2m_min || [])[0];
+    $("hl").innerHTML = (hi != null && lo != null) ? ("今 <b>" + Math.round(hi) + "°</b> / " + Math.round(lo) + "°") : "";
+    $("hero").className = "hero " + heroWash(cur.weather_code, isDay);
+    $("heroGlyph").innerHTML = wxIcon(cur.weather_code, isDay, 52);
+    $("phrase").textContent = wxPhrase(cur.weather_code, isDay);
+    $("summary").textContent = todaySummary(w);
     const hours = w.hourly || {};
     const now = Date.now();
     let html = "";
     let n = 0;
     for (let i = 0; i < (hours.time || []).length && n < 24; i++) {
-      const t = new Date(hours.time[i]).getTime();
-      if (t < now - 30 * 60 * 1000) continue;
-      html += '<div class="hour"><div class="t">' + fmtHour(hours.time[i]) + '</div><div class="n">' +
-        Math.round(hours.temperature_2m[i]) + '°</div><div class="p">' +
-        (hours.precipitation_probability[i] != null ? hours.precipitation_probability[i] + "%" : "") + "</div></div>";
+      const tm = new Date(hours.time[i]).getTime();
+      if (tm < now - 30 * 60 * 1000) continue;
+      const pop = hours.precipitation_probability ? (hours.precipitation_probability[i] || 0) : 0;
+      const mm = hours.precipitation ? (hours.precipitation[i] || 0) : 0;
+      const hcode = hours.weather_code ? hours.weather_code[i] : cur.weather_code;
+      const hh = new Date(hours.time[i]).getHours();
+      const hIsDay = hh >= 6 && hh < 19;
+      html += '<div class="hour' + (n === 0 ? " now" : "") + '"><div class="t">' + (n === 0 ? "现在" : fmtHour(hours.time[i])) +
+        '</div><div class="g">' + wxIcon(hcode, hIsDay, 20) + '</div><div class="n">' +
+        Math.round(hours.temperature_2m[i]) + '°</div><div class="pbar"><i style="width:' + Math.max(0, Math.min(100, pop)) +
+        '%"></i></div>';
+      if (mm > 0) html += '<div class="mm">' + (mm < 0.1 ? "<0.1" : mm.toFixed(1)) + "mm</div>";
+      else if (pop > 0) html += '<div class="p">' + pop + "%</div>";
+      html += "</div>";
       n++;
     }
     $("hours").innerHTML = html || '<div class="empty">暂无逐时预报</div>';
     const d = w.daily || {};
+    const mins = (d.temperature_2m_min || []).filter(function (x) { return x != null; });
+    const maxs = (d.temperature_2m_max || []).filter(function (x) { return x != null; });
+    const weekMin = mins.length ? Math.min.apply(null, mins) : 0;
+    const weekMax = maxs.length ? Math.max.apply(null, maxs) : 1;
+    const span = Math.max(1, weekMax - weekMin);
     let dh = "";
-    (d.time || []).forEach((iso, i) => {
-      dh += '<div class="day"><div class="name">' + dayName(iso, i) + '</div><div class="desc">' +
-        wxPhrase(d.weather_code[i], true) + '</div><div class="hi">' + Math.round(d.temperature_2m_max[i]) +
-        '°</div><div class="lo">' + Math.round(d.temperature_2m_min[i]) + "°</div></div>";
+    (d.time || []).forEach(function (iso, i) {
+      const tmin = d.temperature_2m_min[i], tmax = d.temperature_2m_max[i];
+      const left = tmin == null ? 0 : ((tmin - weekMin) / span) * 100;
+      const width = (tmin == null || tmax == null) ? 0 : ((tmax - tmin) / span) * 100;
+      const popd = (d.precipitation_probability_max || [])[i];
+      const uv = (d.uv_index_max || [])[i];
+      dh += '<div class="day"><div class="name">' + dayName(iso, i) + '</div><div class="g">' +
+        wxIcon(d.weather_code[i], true, 20) + '</div><div class="desc">' + wxPhrase(d.weather_code[i], true) +
+        (uv >= 8 ? '<span class="uv-badge">UV ' + Math.round(uv) + "</span>" : "") +
+        '</div><div class="pop">' + (popd != null ? popd + "%" : "") + '</div><div class="tbar-wrap"><span class="lo">' +
+        (tmin == null ? "—" : Math.round(tmin) + "°") + '</span><div class="tbar"><i style="left:' + left.toFixed(1) +
+        "%;width:" + Math.max(8, width).toFixed(1) + '%"></i></div><span class="hi">' +
+        (tmax == null ? "—" : Math.round(tmax) + "°") + "</span></div></div>";
     });
     $("days").innerHTML = dh;
+    const rise = (daily.sunrise || [])[0], sunset = (daily.sunset || [])[0], shine = (daily.sunshine_duration || [])[0];
+    $("sunrow").innerHTML = "<span>日出 <b>" + fmtHM(rise) + "</b></span><span>日落 <b>" + fmtHM(sunset) +
+      "</b></span>" + (shine != null ? "<span>日照 <b>" + (shine / 3600).toFixed(1) + " 小时</b></span>" : "");
+    $("life").innerHTML = lifeIndices(w).map(function (it) {
+      return '<div class="life-card"><div class="k">' + it.k + '</div><div class="a">' + it.a +
+        '</div><span class="pill ' + it.cls + '">' + it.lv + "</span></div>";
+    }).join("");
   }
   function renderMetrics() {
-    const cur = (state.weather && state.weather.current) || {};
+    const w = state.weather || {};
+    const cur = w.current || {};
     const aqi = (state.aqi && state.aqi.current) || {};
     const aq = aqiInfo(aqi.us_aqi);
     const ms = cur.wind_speed_10m;
     const wind = (ms == null ? "—" : Math.round(ms * 10) / 10 + " 米/秒 · " + windLevel(ms) + " 级");
     const dir = dirFromDeg(cur.wind_direction_10m);
+    const uvNow = currentHourly(w, "uv_index");
+    const uvMax = ((w.daily && w.daily.uv_index_max) || [])[0];
+    const uv = uvNow != null ? uvNow : uvMax;
+    const uvi = uvLabel(uv);
     $("metrics").innerHTML =
-      '<div class="metric"><div class="k">体感</div><div class="v">' + (cur.apparent_temperature == null ? "—" : Math.round(cur.apparent_temperature) + "°") + '</div></div>' +
-      '<div class="metric"><div class="k">风 · ' + dir + '</div><div class="v">' + wind + '</div></div>' +
-      '<div class="metric"><div class="k">湿度</div><div class="v">' + (cur.relative_humidity_2m == null ? "—" : cur.relative_humidity_2m + "%") + '</div></div>' +
-      '<div class="metric"><div class="k">空气质量</div><div class="v ' + aq.cls + '">' + (aqi.us_aqi == null ? "—" : aqi.us_aqi + " · " + aq.label) + "</div></div>";
+      '<div class="metric"><div class="k">体感</div><div class="v">' + (cur.apparent_temperature == null ? "—" : Math.round(cur.apparent_temperature) + "°") + "</div></div>" +
+      '<div class="metric"><div class="k">风 · ' + dir + '</div><div class="v">' + wind + "</div></div>" +
+      '<div class="metric"><div class="k">湿度</div><div class="v">' + (cur.relative_humidity_2m == null ? "—" : cur.relative_humidity_2m + "%") + "</div></div>" +
+      '<div class="metric"><div class="k">空气质量</div><div class="v ' + aq.cls + '">' + (aqi.us_aqi == null ? "—" : aqi.us_aqi + " · " + aq.label) + "</div></div>" +
+      '<div class="metric"><div class="k">气压</div><div class="v">' + (cur.surface_pressure == null ? "—" : Math.round(cur.surface_pressure) + " 百帕") + "</div></div>" +
+      '<div class="metric"><div class="k">紫外线' + (uvMax != null && uvNow != null ? " · 今高 " + Math.round(uvMax) : "") + '</div><div class="v ' + uvi.cls + '">' +
+      (uv == null ? "—" : Math.round(uv * 10) / 10 + " · " + uvi.text) + "</div></div>";
   }
   function parseCmaTime(s) {
     if (!s || String(s).length < 10) return null;
@@ -712,6 +1068,7 @@ button { color: inherit; }
     state.storms = storms.filter(isShownStorm);
     state.source = source.join(" · ") || "台风数据";
     state.snapUpdated = (cmaLive.length || nhcLive.length) ? new Date().toISOString() : ((snap && snap.updated) || "");
+    if (!state.selected && state.storms.length) state.selected = state.storms.slice().sort(wpacFirst)[0];
     renderTyphoonList();
     renderAlerts();
     drawTyphoonTracks();
@@ -725,6 +1082,46 @@ button { color: inherit; }
     if (d) return d;
     return (b.windMs || 0) - (a.windMs || 0);
   }
+  function stormDist(s) {
+    const c = state.city;
+    if (!c || s.lat == null || s.lon == null) return null;
+    return Math.round(haversine(c.lat, c.lon, s.lat, s.lon));
+  }
+  function stormImpact(s, dist) {
+    let inRadius = false;
+    if (s.radii && s.radii.length && dist != null) {
+      const r = s.radii[0];
+      const maxKm = Math.max(r.ne || 0, r.se || 0, r.sw || 0, r.nw || 0);
+      if (maxKm && dist <= maxKm) inRadius = true;
+    }
+    if (inRadius || (dist != null && dist < 400)) return { t: "靠近需关注", cls: "danger" };
+    if (dist != null && dist < 800) return { t: "外围可能有风雨", cls: "warn" };
+    return { t: "远离", cls: "ok" };
+  }
+  function stormDetailHtml(s) {
+    const c = state.city;
+    const dist = stormDist(s);
+    const bear = (c && s.lat != null) ? bearingWord(c.lat, c.lon, s.lat, s.lon) : "";
+    const distLine = dist != null ? ("距" + ((c && c.name) || "所选城市") + bear + "约 " + dist + " 公里") : "位置待定";
+    const imp = stormImpact(s, dist);
+    let html = '<div class="ty-detail"><div class="ty-dist">' + distLine + '</div><div class="ty-impact ' + imp.cls + '">' + imp.t +
+      '</div><div class="ty-stats"><div><div class="k">风力</div><div class="v">' +
+      (s.windMs != null ? windLevel(s.windMs) + " 级 · " + s.windMs + " 米/秒" : "—") +
+      '</div></div><div><div class="k">气压</div><div class="v">' + (s.pressure ? s.pressure + " 百帕" : "—") +
+      '</div></div><div><div class="k">移向移速</div><div class="v">' + moveText(s.moveDir, s.moveSpeedKmh) +
+      '</div></div><div><div class="k">编号</div><div class="v">' + (s.code || "—") + "</div></div></div>";
+    const fc = (s.forecast || []).filter(function (pt) { return pt.lat != null && pt.lon != null; }).slice(0, 8);
+    if (fc.length) {
+      html += '<div class="fc-title">未来路径</div><table class="fc-table"><thead><tr><th>时间</th><th>位置</th><th>强度</th></tr></thead><tbody>' +
+        fc.map(function (f) {
+          return "<tr><td>" + (f.leadH != null ? "+" + f.leadH + "时" : (f.time ? fmtHM(f.time) : "—")) +
+            "</td><td>" + fmtLatLon(f.lat, f.lon) + "</td><td>" + (f.gradeZh || gradeZh(f.grade, f.windMs)) +
+            (f.windMs != null ? " " + Math.round(f.windMs) + " 米/秒" : "") + "</td></tr>";
+        }).join("") + "</tbody></table>";
+    }
+    html += "</div>";
+    return html;
+  }
   function renderTyphoonList() {
     const box = $("tyList");
     const storms = state.storms.slice().sort(wpacFirst);
@@ -732,19 +1129,20 @@ button { color: inherit; }
       box.innerHTML = '<div class="empty"><strong>目前没有在编台风</strong>快照时间 ' + (state.snapUpdated || "未知") + "<br>" + state.source + "</div>";
       return;
     }
-    box.innerHTML = storms.map((s) => {
+    box.innerHTML = storms.map(function (s) {
       const active = state.selected && state.selected.id === s.id;
-      return '<div class="storm-card' + (active ? " active" : "") + '" data-id="' + s.id + '"><h3>' +
-        (s.nameZh || s.nameEn || "未命名") + '<span class="grade ' + (s.grade || "") + '">' + (s.gradeZh || "") + '</span></h3><div class="meta">' +
-        (s.basinZh || "") + " · " + (s.provider || "") + (s.code ? " · " + s.code : "") + "<br>" +
-        (s.lat != null ? fmtLatLon(s.lat, s.lon) : "") + " · 最大风 " +
-        (s.windMs != null ? s.windMs + " 米/秒 · " + windLevel(s.windMs) + " 级" : "—") + "<br>" +
-        moveText(s.moveDir, s.moveSpeedKmh) + (s.pressure ? " · 气压 " + s.pressure + " 百帕" : "") +
-        "</div></div>";
+      const dist = stormDist(s);
+      const wind = s.windMs != null ? (windLevel(s.windMs) + " 级") : "—";
+      return '<div class="storm-card' + (active ? " active" : "") + '" data-id="' + s.id + '"><div class="storm-top"><div><h3>' +
+        (s.nameZh || s.nameEn || "未命名") + '<span class="grade ' + (s.grade || "") + '">' + (s.gradeZh || "") +
+        '</span></h3><div class="meta">' + (s.basinZh || "") + (s.provider ? " · " + s.provider : "") +
+        '</div></div><div class="storm-right"><div class="w">' + wind + (s.windMs != null ? " · " + s.windMs + " 米/秒" : "") +
+        '</div><div class="d">' + (dist != null ? dist + " 公里" : "") + "</div></div></div>" +
+        (active ? stormDetailHtml(s) : "") + "</div>";
     }).join("") + '<div class="empty" style="margin:8px">数据：' + state.source + (state.snapUpdated ? " · " + state.snapUpdated.replace("T", " ").slice(0, 16) : "") + "</div>";
-    box.querySelectorAll(".storm-card").forEach((el) => {
-      el.addEventListener("click", () => {
-        const s = state.storms.find((x) => x.id === el.getAttribute("data-id"));
+    box.querySelectorAll(".storm-card").forEach(function (el) {
+      el.addEventListener("click", function () {
+        const s = state.storms.find(function (x) { return x.id === el.getAttribute("data-id"); });
         if (s) selectStorm(s);
       });
     });
@@ -755,6 +1153,10 @@ button { color: inherit; }
     const near = wpac.find((s) => s.lon != null && s.lon < 130 && s.lat > 15 && s.lat < 40);
     const severe = wpac.find((s) => (s.windMs || 0) >= 32.7);
     const target = near || severe || wpac[0] || state.storms[0];
+    if (state.weather && state.weather.current && $("hero")) {
+      const c0 = state.weather.current;
+      $("hero").className = "hero " + heroWash(c0.weather_code, c0.is_day === 1);
+    }
     if (!target) { el.className = "banner"; el.textContent = ""; return; }
     el.className = "banner show" + (near || severe ? " danger" : "");
     el.textContent = (target.gradeZh || "台风") + "「" + (target.nameZh || target.nameEn) + "」正在活动，点此查看路径";
@@ -762,12 +1164,20 @@ button { color: inherit; }
   }
   function renderAlerts() {
     const items = [];
-    state.storms.slice().sort(wpacFirst).forEach((s) => {
+    state.storms.slice().sort(wpacFirst).forEach(function (s) {
+      const dist = stormDist(s);
+      const imp = stormImpact(s, dist);
+      const warn = imp.cls === "danger" || (s.windMs || 0) >= 32.7;
       items.push({
         cls: "ty",
         title: (s.gradeZh || "热带气旋") + " " + (s.nameZh || s.nameEn),
-        body: (s.basinZh || "") + " · 最大风 " + (s.windMs != null ? s.windMs + " 米/秒" : "—") + " · " + moveText(s.moveDir, s.moveSpeedKmh),
-        go: () => { showTab("typhoon"); selectStorm(s); }
+        body: (s.basinZh || "") + " · 最大风 " + (s.windMs != null ? s.windMs + " 米/秒" : "—") + " · " + moveText(s.moveDir, s.moveSpeedKmh) +
+          (dist != null ? " · 距" + ((state.city && state.city.name) || "") + "约 " + dist + " 公里" : ""),
+        level: warn ? "警告" : "关注",
+        lvCls: warn ? "bad" : "warn",
+        when: "实时",
+        advice: imp.t === "远离" ? "暂无直接风雨，留意路径变化" : (imp.t === "靠近需关注" ? "关注风雨影响，减少沿海活动" : "外围可能有风雨，出行留意"),
+        go: function () { showTab("typhoon"); selectStorm(s); }
       });
     });
     const w = state.weather;
@@ -776,7 +1186,7 @@ button { color: inherit; }
       const daily = w.daily || {};
       const hourly = w.hourly || {};
       const tmax = (daily.temperature_2m_max || [])[0];
-      if (tmax != null && tmax >= 35) items.push({ cls: "hot", title: "高温", body: "今天最高气温约 " + Math.round(tmax) + " 度，注意防暑补水。" });
+      if (tmax != null && tmax >= 35) items.push({ cls: "hot", title: "高温", body: "今天最高气温约 " + Math.round(tmax) + " 度。", level: tmax >= 37 ? "警告" : "关注", lvCls: tmax >= 37 ? "bad" : "warn", when: "今天", advice: "防暑补水，减少正午户外" });
       const rainCodes = { 65: 1, 82: 1, 95: 1, 96: 1, 99: 1 };
       const pmax = (daily.precipitation_probability_max || [])[0];
       const dcode = (daily.weather_code || [])[0];
@@ -791,12 +1201,12 @@ button { color: inherit; }
           if (pop >= 70 && (rainCodes[code] || code >= 95)) { rainHit = true; break; }
         }
       }
-      if (rainHit) items.push({ cls: "rain", title: "暴雨", body: "未来降水概率高，并可能出现大雨、强阵雨或雷暴，注意积水和出行安全。" });
+      if (rainHit) items.push({ cls: "rain", title: "暴雨", body: "未来降水概率高，并可能出现大雨、强阵雨或雷暴。", level: "警告", lvCls: "bad", when: "未来24小时", advice: "带伞，注意积水和出行安全" });
       const gust = cur.wind_gusts_10m || 0;
       const vmax = Math.max(cur.wind_speed_10m || 0, gust, Math.max.apply(null, [0].concat(daily.wind_speed_10m_max || [])));
-      if (vmax >= 17.2) items.push({ cls: "gale", title: "大风", body: "风力约 " + Math.round(vmax) + " 米/秒，" + windLevel(vmax) + " 级，注意高空坠物。" });
+      if (vmax >= 17.2) items.push({ cls: "gale", title: "大风", body: "风力约 " + Math.round(vmax) + " 米/秒，" + windLevel(vmax) + " 级。", level: vmax >= 24.5 ? "警告" : "关注", lvCls: vmax >= 24.5 ? "bad" : "warn", when: "今天", advice: "注意高空坠物，减少户外停留" });
       const tmin = Math.min.apply(null, [99].concat((daily.temperature_2m_min || []).map((x) => x == null ? 99 : x)));
-      if (tmin <= 0) items.push({ cls: "", title: "低温冰冻", body: "最低气温可能降至 " + Math.round(tmin) + " 度，注意防寒防冻。" });
+      if (tmin <= 0) items.push({ cls: "", title: "低温冰冻", body: "最低气温可能降至 " + Math.round(tmin) + " 度。", level: "关注", lvCls: "warn", when: "未来几天", advice: "防寒防冻，留意路面结冰" });
       let fog = cur.weather_code === 45 || cur.weather_code === 48;
       if (!fog && hourly.weather_code) {
         const now = Date.now();
@@ -806,16 +1216,21 @@ button { color: inherit; }
           if (hourly.weather_code[i] === 45 || hourly.weather_code[i] === 48) { fog = true; break; }
         }
       }
-      if (fog) items.push({ cls: "", title: "大雾", body: "能见度较差，出行小心。" });
+      if (fog) items.push({ cls: "", title: "大雾", body: "能见度较差。", level: "关注", lvCls: "warn", when: "今天", advice: "出行小心，驾驶减速" });
     }
     const box = $("alertList");
     if (!items.length) {
-      box.innerHTML = '<div class="empty"><strong>目前没有生效预警</strong>台风、高温、暴雨、大风、低温和大雾都会出现在这里。</div>';
+      box.innerHTML = '<div class="empty"><strong>目前没有生效预警</strong>已监测：台风、高温、暴雨、大风、低温、大雾</div>';
       return;
     }
-    box.innerHTML = items.map((it, i) => '<div class="alert-card ' + (it.cls || "") + '" data-i="' + i + '"><h3>' + it.title + "</h3><p>" + it.body + "</p></div>").join("");
-    box.querySelectorAll(".alert-card").forEach((el, i) => {
-      if (items[i].go) el.style.cursor = "pointer", el.addEventListener("click", items[i].go);
+    box.innerHTML = items.map(function (it, i) {
+      return '<div class="alert-card ' + (it.cls || "") + '" data-i="' + i + '"><div class="alert-head"><h3>' +
+        it.title + '</h3><span class="pill ' + (it.lvCls || "warn") + '">' + (it.level || "关注") +
+        '</span><span class="alert-when">' + (it.when || "") + "</span></div><p>" + it.body +
+        "</p>" + (it.advice ? '<div class="alert-tip">建议：' + it.advice + "</div>" : "") + "</div>";
+    }).join("");
+    box.querySelectorAll(".alert-card").forEach(function (el, i) {
+      if (items[i].go) { el.style.cursor = "pointer"; el.addEventListener("click", items[i].go); }
     });
   }
   function leafBase() {
@@ -858,26 +1273,84 @@ button { color: inherit; }
     setSatLayer(state.satLayer);
     if (state.storms.length) drawSatMarkers();
   }
+  function stopRadarLoop() {
+    state.radarPlaying = false;
+    if (state.radarTimer) { clearInterval(state.radarTimer); state.radarTimer = null; }
+    const btn = $("satPlay");
+    if (btn) { btn.textContent = "播放"; btn.hidden = state.satLayer !== "radar" || state.radarFrames.length < 2; }
+  }
+  function satLegendText(name) {
+    if (name === "infrared") return "红外：云顶温度，夜间也可用";
+    if (name === "radar") return "雷达：降水回波";
+    if (name === "visible") return "可见光：白天云和地表细节（夜间较暗）";
+    return "真实色：白天云和地表";
+  }
+  function applySatOpacity() {
+    if (state.satLayerObj) state.satLayerObj.setOpacity(state.satOp);
+    document.querySelectorAll("#sat [data-op]").forEach(function (b) {
+      const v = b.getAttribute("data-op");
+      const on = (v === "low" && state.satOp <= 0.5) || (v === "mid" && state.satOp > 0.5 && state.satOp < 0.85) || (v === "high" && state.satOp >= 0.85);
+      b.classList.toggle("active", on);
+    });
+  }
+  function ensureSatBase() {
+    if (!state.satMap || !window.L) return;
+    if (!state.satBase) {
+      state.satBase = L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+        maxZoom: 9, subdomains: "abcd", attribution: "CARTO"
+      });
+      state.satBase.addTo(state.satMap);
+    }
+  }
+  function showRadarFrame(i) {
+    if (!state.radarFrames.length || !state.satMap) return;
+    state.radarIdx = (i + state.radarFrames.length) % state.radarFrames.length;
+    const f = state.radarFrames[state.radarIdx];
+    if (state.satLayerObj && state.satLayerObj.setUrl) state.satLayerObj.setUrl(f.url);
+    $("satStamp").textContent = "雷达 " + new Date(f.time * 1000).toISOString().replace("T", " ").slice(0, 16) + " UTC";
+  }
+  function toggleRadarPlay() {
+    if (state.satLayer !== "radar" || state.radarFrames.length < 2) return;
+    if (state.radarPlaying) { stopRadarLoop(); return; }
+    state.radarPlaying = true;
+    $("satPlay").textContent = "暂停";
+    $("satPlay").hidden = false;
+    state.radarTimer = setInterval(function () { showRadarFrame(state.radarIdx + 1); }, 480);
+  }
   async function setSatLayer(name) {
+    stopRadarLoop();
     state.satLayer = name;
-    document.querySelectorAll("#sat .chip[data-layer]").forEach((b) => b.classList.toggle("active", b.getAttribute("data-layer") === name));
+    state.radarFrames = [];
+    document.querySelectorAll("#sat .chip[data-layer]").forEach(function (b) {
+      b.classList.toggle("active", b.getAttribute("data-layer") === name);
+    });
+    if ($("satLegText")) $("satLegText").textContent = satLegendText(name);
     if (!state.satMap) return;
-    if (state.satLayerObj) { if (state.satLayerObj._base) state.satMap.removeLayer(state.satLayerObj._base); state.satMap.removeLayer(state.satLayerObj); state.satLayerObj = null; }
+    ensureSatBase();
+    if (state.satLayerObj) { state.satMap.removeLayer(state.satLayerObj); state.satLayerObj = null; }
     let url, maxZ, timeLabel, attr;
     if (name === "truecolor") {
-      const t = new Date(Date.now() - 12 * 3600 * 1000).toISOString().slice(0, 10);
-      url = gibsUrl("VIIRS_SNPP_CorrectedReflectance_TrueColor", "GoogleMapsCompatible_Level9", "jpg").replace("{time}", t);
-      maxZ = 9; timeLabel = "VIIRS 真实色 " + t; attr = "NASA GIBS / VIIRS";
+      const tm = new Date(Date.now() - 12 * 3600 * 1000).toISOString().slice(0, 10);
+      url = gibsUrl("VIIRS_SNPP_CorrectedReflectance_TrueColor", "GoogleMapsCompatible_Level9", "jpg").replace("{time}", tm);
+      maxZ = 9; timeLabel = "VIIRS 真实色 " + tm; attr = "NASA GIBS / VIIRS";
     } else if (name === "infrared") {
-      const t = himawariTime();
-      url = gibsUrl("Himawari_AHI_Band13_Clean_Infrared", "GoogleMapsCompatible_Level6", "png").replace("{time}", t);
-      maxZ = 6; timeLabel = "葵花红外 " + t.replace("T", " ").replace("Z", " UTC"); attr = "NASA GIBS / Himawari";
+      const tm = himawariTime();
+      url = gibsUrl("Himawari_AHI_Band13_Clean_Infrared", "GoogleMapsCompatible_Level6", "png").replace("{time}", tm);
+      maxZ = 6; timeLabel = "葵花红外 " + tm.replace("T", " ").replace("Z", " UTC"); attr = "NASA GIBS / Himawari";
+    } else if (name === "visible") {
+      const tm = himawariTime();
+      url = gibsUrl("Himawari_AHI_Band3_Red_Visible_01", "GoogleMapsCompatible_Level6", "png").replace("{time}", tm);
+      maxZ = 6; timeLabel = "葵花可见光 " + tm.replace("T", " ").replace("Z", " UTC"); attr = "NASA GIBS / Himawari";
     } else if (name === "radar") {
       try {
         if (!state.radarMeta) state.radarMeta = await getJson("https://api.rainviewer.com/public/weather-maps.json");
         const past = ((state.radarMeta.radar || {}).past || []);
-        const last = past[past.length - 1];
         const host = state.radarMeta.host || "https://tilecache.rainviewer.com";
+        const frames = past.slice(-8);
+        state.radarFrames = frames.map(function (f) {
+          return { time: f.time, url: host + f.path + "/256/{z}/{x}/{y}/2/1_1.png" };
+        });
+        const last = frames[frames.length - 1] || past[past.length - 1];
         if (last) {
           url = host + last.path + "/256/{z}/{x}/{y}/2/1_1.png";
           timeLabel = "雷达 " + new Date(last.time * 1000).toISOString().replace("T", " ").slice(0, 16) + " UTC";
@@ -885,23 +1358,19 @@ button { color: inherit; }
         maxZ = 7; attr = "RainViewer";
       } catch (e) {
         $("satStamp").textContent = "雷达暂不可用";
+        if ($("satPlay")) $("satPlay").hidden = true;
         return;
       }
     }
     if (!url) return;
     state.satLayerObj = L.tileLayer(url, {
       maxNativeZoom: maxZ || 7, maxZoom: 9, tileSize: 256,
-      attribution: attr, opacity: name === "radar" ? 0.78 : 1
+      attribution: attr, opacity: state.satOp
     });
-    if (name === "radar") {
-      const base = L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
-        maxZoom: 9, subdomains: "abcd", attribution: "CARTO"
-      });
-      base.addTo(state.satMap);
-      state.satLayerObj._base = base;
-    }
     state.satLayerObj.addTo(state.satMap);
     $("satStamp").textContent = timeLabel || "";
+    if ($("satPlay")) $("satPlay").hidden = !(name === "radar" && state.radarFrames.length >= 2);
+    applySatOpacity();
   }
   function eyeIcon() {
     return L.divIcon({ className: "eye-icon", html: '<div class="eye"></div>', iconSize: [18, 18], iconAnchor: [9, 9] });
@@ -1054,7 +1523,17 @@ button { color: inherit; }
       if (state.satMap && state.city) state.satMap.flyTo([state.city.lat, state.city.lon], 6);
     });
     $("satStorms").addEventListener("click", () => { jumpStorms(); });
-    document.querySelectorAll("#sat .chip[data-layer]").forEach((b) => b.addEventListener("click", () => setSatLayer(b.getAttribute("data-layer"))));
+    document.querySelectorAll("#sat .chip[data-layer]").forEach(function (b) {
+      b.addEventListener("click", function () { setSatLayer(b.getAttribute("data-layer")); });
+    });
+    $("satPlay").addEventListener("click", function () { toggleRadarPlay(); });
+    document.querySelectorAll("#sat [data-op]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        const v = b.getAttribute("data-op");
+        state.satOp = v === "low" ? 0.4 : (v === "mid" ? 0.68 : 0.95);
+        applySatOpacity();
+      });
+    });
     let timer = 0;
     $("citySearch").addEventListener("input", () => {
       clearTimeout(timer);
