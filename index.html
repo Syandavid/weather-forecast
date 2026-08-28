@@ -1296,8 +1296,8 @@ button { color: inherit; }
   function ensureSatBase() {
     if (!state.satMap || !window.L) return;
     if (!state.satBase) {
-      state.satBase = L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
-        maxZoom: 9, subdomains: "abcd", attribution: "CARTO"
+      state.satBase = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}", {
+        maxZoom: 9, attribution: "Tiles © Esri"
       });
       state.satBase.addTo(state.satMap);
     }
@@ -1380,8 +1380,8 @@ button { color: inherit; }
     if (state.tyMap) { state.tyMap.invalidateSize(); drawTyphoonTracks(); return; }
     const map = L.map("tyMap", { zoomControl: true }).setView([20, 130], 4);
     map.attributionControl.setPrefix("");
-    L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
-      maxZoom: 8, attribution: "CARTO"
+    L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}", {
+      maxZoom: 8, attribution: "Tiles © Esri"
     }).addTo(map);
     state.tyMap = map;
     state.tyLayer = L.layerGroup().addTo(map);
