@@ -14,6 +14,8 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 <style>
 :root {
   --bg: #070b12;
@@ -75,6 +77,16 @@ button { color: inherit; }
   cursor: pointer; font-size: 14px;
 }
 .icon-btn:active { opacity: 0.8; }
+.icon-btn { display: grid; place-items: center; }
+.icon-btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.nav-item svg { stroke-linecap: round; stroke-linejoin: round; }
+.handle { width: 36px; height: 4px; border-radius: 99px; background: rgba(255,255,255,0.22); margin: 2px auto 10px; }
+.grade.TD { background: rgba(78,162,255,0.16); color: var(--sky); }
+.grade.TS { background: rgba(62,207,142,0.16); color: var(--ok); }
+.grade.STS, .grade.PTC { background: rgba(255,138,61,0.16); color: var(--warn); }
+.grade.TY, .grade.STY, .grade.SuperTY, .grade.SUPERTY, .grade.HU, .grade.MH { background: rgba(255,90,95,0.16); color: var(--danger); }
+.alert-card.rain { border-color: rgba(78,162,255,0.35); }
+.alert-card.gale { border-color: rgba(255,138,61,0.35); }
 .banner {
   display: none; align-items: center; gap: 8px;
   margin: 0 16px 8px; padding: 10px 12px;
@@ -205,7 +217,7 @@ button { color: inherit; }
 .alert-card.ty { border-color: rgba(255,138,61,0.35); }
 .alert-card.hot { border-color: rgba(255,90,95,0.35); }
 .sheet {
-  display: none; position: absolute; inset: 0; z-index: 20;
+  display: none; position: fixed; inset: 0; z-index: 20;
   background: rgba(0,0,0,0.55);
 }
 .sheet.open { display: flex; align-items: flex-end; justify-content: center; }
@@ -303,14 +315,14 @@ button { color: inherit; }
   <header class="topbar">
     <button class="city-btn" id="cityBtn" type="button">上海 <small>选择城市</small></button>
     <div class="top-actions">
-      <button class="icon-btn" id="geoBtn" type="button" title="定位">定位</button>
-      <button class="icon-btn" id="aboutBtn" type="button" title="说明">说明</button>
+      <button class="icon-btn" id="geoBtn" type="button" title="定位" aria-label="定位"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg></button>
+      <button class="icon-btn" id="aboutBtn" type="button" title="说明" aria-label="说明"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7h.01"/></svg></button>
     </div>
   </header>
   <main id="stage">
     <section class="panel active" id="weather">
       <div class="scroll">
-        <div class="banner" id="wxBanner"></div>
+        <div class="banner" id="banner"></div>
         <div class="wx-split">
           <div>
             <div class="hero">
@@ -333,11 +345,10 @@ button { color: inherit; }
         <div id="satMap" style="height:100%;width:100%"></div>
         <div class="sat-hud">
           <button class="chip active" data-layer="truecolor" type="button">真实色</button>
-          <button class="chip" data-layer="himawari" type="button">葵花</button>
           <button class="chip" data-layer="infrared" type="button">红外</button>
           <button class="chip" data-layer="radar" type="button">雷达</button>
           <button class="chip" id="satLocate" type="button">定位</button>
-          <button class="chip" id="satStorms" type="button">跳到风暴</button>
+          <button class="chip" id="satStorms" type="button">台风眼</button>
           <span class="stamp" id="satStamp">图层时间</span>
         </div>
       </div>
@@ -355,9 +366,11 @@ button { color: inherit; }
 </div>
 <div class="sheet" id="citySheet">
   <div class="sheet-card">
+    <div class="handle"></div>
     <h2>选择城市</h2>
     <input class="search" id="citySearch" placeholder="搜索城市，例如 杭州" autocomplete="off">
-    <div id="geoHint" class="empty" style="margin:12px 0">可使用定位获取当前城市</div>
+    <button class="city-row" id="sheetLocate" type="button">定位到当前位置</button>
+    <div id="geoHint" class="empty" style="margin:12px 0">也可在顶部使用定位</div>
     <div class="sec-title">最近</div>
     <div id="recents"></div>
     <div class="sec-title">搜索结果</div>
@@ -367,6 +380,7 @@ button { color: inherit; }
 </div>
 <div class="sheet" id="aboutSheet">
   <div class="sheet-card about">
+    <div class="handle"></div>
     <h2>说明</h2>
     <p>天气预报是静态网页，也可加到主屏幕当独立应用使用。核心功能无需账号。</p>
     <p>天气、预报、空气质量和城市搜索来自 Open-Meteo。真实色卫星来自 NASA GIBS 的 VIIRS / MODIS，东亚可见光与红外来自葵花 Himawari AHI。雷达来自 RainViewer。</p>
@@ -439,6 +453,11 @@ button { color: inherit; }
     let lv = 0;
     for (let i = 0; i < t.length; i++) if (ms >= t[i]) lv = i + 1;
     return lv;
+  }
+  function fmtLatLon(lat, lon) {
+    const ns = lat >= 0 ? "N" : "S";
+    const ew = lon >= 0 ? "E" : "W";
+    return Math.abs(lat).toFixed(1) + "°" + ns + " " + Math.abs(lon).toFixed(1) + "°" + ew;
   }
   function dirFromDeg(d) {
     if (d == null || isNaN(d)) return "—";
@@ -528,9 +547,9 @@ button { color: inherit; }
     $("phrase").classList.add("sk");
     const q = "latitude=" + c.lat + "&longitude=" + c.lon + "&timezone=auto&wind_speed_unit=ms";
     const wurl = "https://api.open-meteo.com/v1/forecast?" + q +
-      "&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,wind_direction_10m,is_day,precipitation" +
+      "&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,wind_gusts_10m,relative_humidity_2m,precipitation,is_day,wind_direction_10m" +
       "&hourly=temperature_2m,precipitation_probability,weather_code,wind_speed_10m" +
-      "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max,wind_speed_10m_max,apparent_temperature_max" +
+      "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,uv_index_max,wind_speed_10m_max" +
       "&forecast_days=7";
     const aurl = "https://air-quality-api.open-meteo.com/v1/air-quality?" + q + "&current=us_aqi,pm2_5,pm10";
     try {
@@ -652,9 +671,17 @@ button { color: inherit; }
       forecast: []
     };
   }
+  function isShownStorm(s) {
+    if (!s) return false;
+    if (s.status === "start") return true;
+    return s.lat != null && s.lon != null;
+  }
   async function loadStorms() {
-    const live = [];
+    const cmaLive = [];
+    const nhcLive = [];
     let source = [];
+    let snap = null;
+    try { snap = await getJson("./data/typhoons.json"); } catch (e) { snap = null; }
     try {
       const listTxt = await getText("https://typhoon.nmc.cn/weatherservice/typhoon/jsons/list_default");
       const list = unwrapJson(listTxt);
@@ -662,31 +689,29 @@ button { color: inherit; }
       for (const t of active) {
         try {
           const viewTxt = await getText("https://typhoon.nmc.cn/weatherservice/typhoon/jsons/view_" + t[0]);
-          live.push(parseCmaStorm(unwrapJson(viewTxt)));
+          cmaLive.push(parseCmaStorm(unwrapJson(viewTxt)));
         } catch (e) {}
       }
-      if (live.length) source.push("CMA 实时");
+      if (cmaLive.length) source.push("CMA 实时");
     } catch (e) {}
     try {
       const nhc = await getJson("https://www.nhc.noaa.gov/CurrentStorms.json");
-      (nhc.activeStorms || []).forEach((s) => live.push(parseNhcStorm(s)));
-      source.push("NHC 实时");
+      (nhc.activeStorms || []).forEach((s) => nhcLive.push(parseNhcStorm(s)));
+      if (nhcLive.length) source.push("NHC 实时");
     } catch (e) {}
-    if (live.length) {
-      state.storms = live;
-      state.source = source.join(" · ");
-      state.snapUpdated = new Date().toISOString();
-    } else {
-      try {
-        const snap = await getJson("./data/typhoons.json");
-        state.storms = snap.storms || [];
-        state.snapUpdated = snap.updated || "";
-        state.source = "本地快照";
-      } catch (e) {
-        state.storms = [];
-        state.source = "暂无数据";
-      }
-    }
+    let storms = [];
+    if (cmaLive.length) storms = storms.concat(cmaLive);
+    else if (snap) storms = storms.concat((snap.storms || []).filter((s) => s.provider === "CMA"));
+    if (nhcLive.length) storms = storms.concat(nhcLive);
+    else if (snap) storms = storms.concat((snap.storms || []).filter((s) => s.provider === "NHC"));
+    if (!cmaLive.length && !nhcLive.length && snap) {
+      storms = snap.storms || [];
+      source = ["本地快照"];
+    } else if (!cmaLive.length && snap) source.push("CMA 快照");
+    else if (!nhcLive.length && snap) source.push("NHC 快照");
+    state.storms = storms.filter(isShownStorm);
+    state.source = source.join(" · ") || "台风数据";
+    state.snapUpdated = (cmaLive.length || nhcLive.length) ? new Date().toISOString() : ((snap && snap.updated) || "");
     renderTyphoonList();
     renderAlerts();
     drawTyphoonTracks();
@@ -710,9 +735,9 @@ button { color: inherit; }
     box.innerHTML = storms.map((s) => {
       const active = state.selected && state.selected.id === s.id;
       return '<div class="storm-card' + (active ? " active" : "") + '" data-id="' + s.id + '"><h3>' +
-        (s.nameZh || s.nameEn || "未命名") + '<span class="grade">' + (s.gradeZh || "") + '</span></h3><div class="meta">' +
+        (s.nameZh || s.nameEn || "未命名") + '<span class="grade ' + (s.grade || "") + '">' + (s.gradeZh || "") + '</span></h3><div class="meta">' +
         (s.basinZh || "") + " · " + (s.provider || "") + (s.code ? " · " + s.code : "") + "<br>" +
-        (s.lat != null ? s.lat.toFixed(1) + "°N " + s.lon.toFixed(1) + "°E" : "") + " · 最大风 " +
+        (s.lat != null ? fmtLatLon(s.lat, s.lon) : "") + " · 最大风 " +
         (s.windMs != null ? s.windMs + " 米/秒 · " + windLevel(s.windMs) + " 级" : "—") + "<br>" +
         moveText(s.moveDir, s.moveSpeedKmh) + (s.pressure ? " · 气压 " + s.pressure + " 百帕" : "") +
         "</div></div>";
@@ -725,7 +750,7 @@ button { color: inherit; }
     });
   }
   function updateBanner() {
-    const el = $("wxBanner");
+    const el = $("banner");
     const wpac = state.storms.filter((s) => s.basin === "WPAC");
     const near = wpac.find((s) => s.lon != null && s.lon < 130 && s.lat > 15 && s.lat < 40);
     const severe = wpac.find((s) => (s.windMs || 0) >= 32.7);
@@ -749,18 +774,39 @@ button { color: inherit; }
     if (w && w.current) {
       const cur = w.current;
       const daily = w.daily || {};
-      const feels = cur.apparent_temperature;
-      if (feels >= 40) items.push({ cls: "hot", title: "酷热", body: "体感约 " + Math.round(feels) + " 度，避免长时间户外暴晒。" });
-      else if (feels >= 37) items.push({ cls: "hot", title: "高温", body: "体感约 " + Math.round(feels) + " 度，注意防暑补水。" });
-      const pmax = Math.max.apply(null, (daily.precipitation_sum || [0]).map((x) => x || 0));
-      if (pmax >= 100) items.push({ cls: "hot", title: "大暴雨", body: "未来几天累计降水可达 " + Math.round(pmax) + " 毫米。" });
-      else if (pmax >= 50) items.push({ cls: "", title: "暴雨", body: "未来几天累计降水约 " + Math.round(pmax) + " 毫米，注意积水。" });
-      const vmax = Math.max(cur.wind_speed_10m || 0, Math.max.apply(null, (daily.wind_speed_10m_max || [0]).map((x) => x || 0)));
-      if (vmax >= 24.5) items.push({ cls: "hot", title: "狂风", body: "阵风可达 " + Math.round(vmax) + " 米/秒，" + windLevel(vmax) + " 级。" });
-      else if (vmax >= 17.2) items.push({ cls: "", title: "大风", body: "风力约 " + Math.round(vmax) + " 米/秒，" + windLevel(vmax) + " 级。" });
-      const tmin = Math.min.apply(null, (daily.temperature_2m_min || [99]).map((x) => x == null ? 99 : x));
-      if (cur.temperature_2m <= 0 || tmin <= 0) items.push({ cls: "", title: "低温冰冻", body: "气温可能降至冰点，注意防寒。" });
-      if (cur.weather_code === 45 || cur.weather_code === 48) items.push({ cls: "", title: "大雾", body: "能见度较差，出行小心。" });
+      const hourly = w.hourly || {};
+      const tmax = (daily.temperature_2m_max || [])[0];
+      if (tmax != null && tmax >= 35) items.push({ cls: "hot", title: "高温", body: "今天最高气温约 " + Math.round(tmax) + " 度，注意防暑补水。" });
+      const rainCodes = { 65: 1, 82: 1, 95: 1, 96: 1, 99: 1 };
+      const pmax = (daily.precipitation_probability_max || [])[0];
+      const dcode = (daily.weather_code || [])[0];
+      let rainHit = pmax != null && pmax >= 70 && rainCodes[dcode];
+      if (!rainHit && hourly.time) {
+        const now = Date.now();
+        for (let i = 0; i < hourly.time.length; i++) {
+          const t = new Date(hourly.time[i]).getTime();
+          if (t < now - 30 * 60 * 1000 || t > now + 24 * 3600 * 1000) continue;
+          const pop = hourly.precipitation_probability[i];
+          const code = hourly.weather_code[i];
+          if (pop >= 70 && (rainCodes[code] || code >= 95)) { rainHit = true; break; }
+        }
+      }
+      if (rainHit) items.push({ cls: "rain", title: "暴雨", body: "未来降水概率高，并可能出现大雨、强阵雨或雷暴，注意积水和出行安全。" });
+      const gust = cur.wind_gusts_10m || 0;
+      const vmax = Math.max(cur.wind_speed_10m || 0, gust, Math.max.apply(null, [0].concat(daily.wind_speed_10m_max || [])));
+      if (vmax >= 17.2) items.push({ cls: "gale", title: "大风", body: "风力约 " + Math.round(vmax) + " 米/秒，" + windLevel(vmax) + " 级，注意高空坠物。" });
+      const tmin = Math.min.apply(null, [99].concat((daily.temperature_2m_min || []).map((x) => x == null ? 99 : x)));
+      if (tmin <= 0) items.push({ cls: "", title: "低温冰冻", body: "最低气温可能降至 " + Math.round(tmin) + " 度，注意防寒防冻。" });
+      let fog = cur.weather_code === 45 || cur.weather_code === 48;
+      if (!fog && hourly.weather_code) {
+        const now = Date.now();
+        for (let i = 0; i < (hourly.time || []).length && i < 12; i++) {
+          const t = new Date(hourly.time[i]).getTime();
+          if (t < now - 30 * 60 * 1000) continue;
+          if (hourly.weather_code[i] === 45 || hourly.weather_code[i] === 48) { fog = true; break; }
+        }
+      }
+      if (fog) items.push({ cls: "", title: "大雾", body: "能见度较差，出行小心。" });
     }
     const box = $("alertList");
     if (!items.length) {
@@ -819,13 +865,9 @@ button { color: inherit; }
     if (state.satLayerObj) { if (state.satLayerObj._base) state.satMap.removeLayer(state.satLayerObj._base); state.satMap.removeLayer(state.satLayerObj); state.satLayerObj = null; }
     let url, maxZ, timeLabel, attr;
     if (name === "truecolor") {
-      const t = utcDate(-1);
+      const t = new Date(Date.now() - 12 * 3600 * 1000).toISOString().slice(0, 10);
       url = gibsUrl("VIIRS_SNPP_CorrectedReflectance_TrueColor", "GoogleMapsCompatible_Level9", "jpg").replace("{time}", t);
       maxZ = 9; timeLabel = "VIIRS 真实色 " + t; attr = "NASA GIBS / VIIRS";
-    } else if (name === "himawari") {
-      const t = himawariTime();
-      url = gibsUrl("Himawari_AHI_Band3_Red_Visible_1km", "GoogleMapsCompatible_Level6", "png").replace("{time}", t);
-      maxZ = 6; timeLabel = "葵花可见光 " + t.replace("T", " ").replace("Z", " UTC"); attr = "NASA GIBS / Himawari";
     } else if (name === "infrared") {
       const t = himawariTime();
       url = gibsUrl("Himawari_AHI_Band13_Clean_Infrared", "GoogleMapsCompatible_Level6", "png").replace("{time}", t);
@@ -849,12 +891,11 @@ button { color: inherit; }
     if (!url) return;
     state.satLayerObj = L.tileLayer(url, {
       maxNativeZoom: maxZ || 7, maxZoom: 9, tileSize: 256,
-      attribution: attr, opacity: name === "radar" ? 0.85 : 1
+      attribution: attr, opacity: name === "radar" ? 0.78 : 1
     });
     if (name === "radar") {
-      const baseT = utcDate(-1);
-      const base = L.tileLayer(gibsUrl("VIIRS_SNPP_CorrectedReflectance_TrueColor", "GoogleMapsCompatible_Level9", "jpg").replace("{time}", baseT), {
-        maxNativeZoom: 9, maxZoom: 9, attribution: "NASA GIBS"
+      const base = L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+        maxZoom: 9, subdomains: "abcd", attribution: "CARTO"
       });
       base.addTo(state.satMap);
       state.satLayerObj._base = base;
@@ -887,7 +928,7 @@ button { color: inherit; }
       { kt: r.nw, a0: 270, a1: 360 }
     ];
     q.forEach((seg) => {
-      const km = (seg.kt || 0) * 1.852;
+      const km = seg.kt || 0;
       for (let a = seg.a0; a <= seg.a1; a += 10) {
         const rad = a * Math.PI / 180;
         const dlat = (km / 111.32) * Math.cos(rad);
@@ -1008,6 +1049,7 @@ button { color: inherit; }
     $("citySheet").addEventListener("click", (e) => { if (e.target.id === "citySheet") closeSheet("citySheet"); });
     $("aboutSheet").addEventListener("click", (e) => { if (e.target.id === "aboutSheet") closeSheet("aboutSheet"); });
     $("geoBtn").addEventListener("click", () => tryGeo(false));
+    $("sheetLocate").addEventListener("click", () => tryGeo(false));
     $("satLocate").addEventListener("click", () => {
       if (state.satMap && state.city) state.satMap.flyTo([state.city.lat, state.city.lon], 6);
     });
@@ -1030,7 +1072,8 @@ button { color: inherit; }
     loadWeather();
     loadStorms();
     if (!saved) tryGeo(true);
-    if ("serviceWorker" in navigator) {
+    const swOk = location.protocol === "https:" || location.hostname === "localhost" || location.hostname === "127.0.0.1";
+    if (swOk && "serviceWorker" in navigator) {
       navigator.serviceWorker.register("./sw.js").catch(function () {});
     }
   }
