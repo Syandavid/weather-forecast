@@ -243,11 +243,201 @@ button { color: inherit; }
 .map-wrap { position: relative; flex: 1; min-height: 0; background: #081018; }
 .map-wrap .leaflet-container { height: 100%; width: 100%; background: #081018; font-family: inherit; }
 .sat-hud {
-  position: absolute; left: 10px; right: 10px; top: 10px; z-index: 500;
-  display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+  position: absolute; inset: 0; z-index: 500;
   pointer-events: none;
 }
 .sat-hud > * { pointer-events: auto; }
+.sat-glass {
+  background: rgba(8,14,22,0.55);
+  border: 1px solid rgba(255,255,255,0.14);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+.sat-wind {
+  position: absolute; top: 10px; left: 50%;
+  transform: translateX(-50%);
+  z-index: 520;
+  display: flex; align-items: center; gap: 10px;
+  appearance: none; border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(8,14,22,0.55); color: var(--text);
+  border-radius: 999px; padding: 8px 14px;
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+  white-space: nowrap; box-shadow: 0 8px 24px rgba(0,0,0,0.28);
+}
+.sat-wind b { font-variant-numeric: tabular-nums; font-size: 15px; }
+.sat-wind-dir { display: flex; align-items: center; gap: 4px; color: rgba(244,247,251,0.88); font-weight: 500; }
+.sat-wind-arrow {
+  display: inline-block; width: 14px; height: 14px;
+  transition: transform 0.35s ease;
+}
+.sat-wind-arrow svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2.2; }
+.sat-rail {
+  display: none;
+  position: absolute; top: 12px; right: 12px;
+  width: 200px; z-index: 530;
+  flex-direction: column; gap: 2px;
+  padding: 12px 10px 10px;
+  border-radius: 20px;
+  background: rgba(8,14,22,0.55);
+  border: 1px solid rgba(255,255,255,0.14);
+  backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.35);
+  max-height: calc(100% - 88px);
+  overflow: auto;
+}
+.sat-rail.open { display: flex; }
+.sat-rail-title {
+  font-size: 13px; font-weight: 700; letter-spacing: 0.02em;
+  padding: 2px 8px 10px; color: #f4f7fb;
+}
+.sat-sat-block {
+  padding: 4px 6px 8px; margin-bottom: 4px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.sat-ly {
+  display: flex; align-items: center; gap: 10px;
+  width: 100%; appearance: none; border: 0;
+  background: transparent; color: #f4f7fb;
+  padding: 8px 8px; border-radius: 12px;
+  font-size: 13px; font-weight: 550; cursor: pointer; text-align: left;
+}
+.sat-ly svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.7; flex: none; }
+.sat-ly.on { background: rgba(78,162,255,0.18); color: #d7ebff; }
+.sat-ly .ck { margin-left: auto; color: var(--sky); font-size: 13px; font-weight: 700; width: 1em; text-align: center; }
+.sat-ly.dim, .sat-hd {
+  color: rgba(244,247,251,0.32); cursor: not-allowed;
+}
+.sat-sat-sub {
+  display: flex; gap: 8px; padding: 2px 8px 4px 36px;
+  font-size: 12px;
+}
+.sat-live { color: rgba(244,247,251,0.86); font-weight: 550; }
+.sat-live i { color: var(--sky); font-style: normal; margin-left: 4px; font-weight: 700; }
+.sat-hd { font-weight: 500; }
+.sat-fab {
+  position: absolute; left: 12px; bottom: 70px; z-index: 530;
+  width: 42px; height: 42px; border-radius: 14px;
+  appearance: none; border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(8,14,22,0.55); color: #f4f7fb; cursor: pointer;
+  display: grid; place-items: center;
+  backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+  box-shadow: 0 8px 22px rgba(0,0,0,0.3);
+}
+.sat-fab svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.7; }
+.sat-bmap {
+  display: none;
+  position: absolute; left: 12px; bottom: 120px; z-index: 540;
+  flex-direction: column; gap: 4px; padding: 8px;
+  border-radius: 16px; min-width: 108px;
+  background: rgba(8,14,22,0.55);
+  border: 1px solid rgba(255,255,255,0.14);
+  backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+}
+.sat-bmap.open { display: flex; }
+.sat-bm {
+  appearance: none; border: 0; background: transparent;
+  color: #f4f7fb; text-align: left; padding: 8px 10px;
+  border-radius: 10px; font-size: 13px; cursor: pointer;
+}
+.sat-bm.on { background: rgba(78,162,255,0.18); color: #d7ebff; }
+.sat-playbar {
+  position: absolute; left: 12px; right: 12px; bottom: 12px; z-index: 530;
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 12px; border-radius: 18px;
+  background: rgba(8,14,22,0.55);
+  border: 1px solid rgba(255,255,255,0.14);
+  backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+  box-shadow: 0 8px 28px rgba(0,0,0,0.32);
+}
+.sat-play-btn {
+  appearance: none; border: 0; background: rgba(255,255,255,0.08);
+  color: #f4f7fb; width: 34px; height: 34px; border-radius: 999px;
+  cursor: pointer; display: grid; place-items: center; flex: none;
+}
+.sat-play-btn:disabled { opacity: 0.35; cursor: default; }
+.sat-play-btn svg { width: 16px; height: 16px; fill: currentColor; }
+.sat-play-time {
+  flex: none; font-size: 12px; font-weight: 600;
+  font-variant-numeric: tabular-nums; min-width: 7.5em;
+  color: rgba(244,247,251,0.92);
+}
+/* playback ticks */
+.sat-ticks {
+  flex: 1; position: relative; height: 28px;
+  display: flex; align-items: stretch; min-width: 0;
+  cursor: pointer;
+}
+.sat-tick {
+  flex: 1; position: relative; min-width: 0;
+}
+.sat-tick::before {
+  content: "";
+  position: absolute; left: 0; top: 8px; bottom: 8px;
+  width: 1px; background: rgba(255,255,255,0.38);
+}
+.sat-tick:nth-child(odd)::before { height: 8px; top: 10px; bottom: auto; background: rgba(255,255,255,0.22); }
+.sat-playhead {
+  position: absolute; top: 4px; bottom: 4px; width: 3px; margin-left: -1.5px;
+  background: #4ea2ff; border-radius: 2px;
+  box-shadow: 0 0 8px rgba(78,162,255,0.8);
+  pointer-events: none; z-index: 2;
+}
+.sat-credit {
+  position: absolute; right: 16px; bottom: 56px; z-index: 510;
+  font-size: 9px; color: rgba(255,255,255,0.42);
+  pointer-events: none; text-shadow: 0 1px 2px rgba(0,0,0,0.65);
+}
+.sat-city-icon {
+  background: transparent !important;
+  border: 0 !important;
+}
+.sat-city-pill {
+  background: #f0d35a; color: #1a1400;
+  border-radius: 999px; padding: 4px 8px;
+  font-size: 12px; font-weight: 600; line-height: 1.2;
+  white-space: nowrap;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.35);
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+}
+.sat-eye {
+  width: 14px; height: 14px; border-radius: 50%;
+  background: #b44cff;
+  border: 2px solid #ff8a3d;
+  box-shadow: 0 0 0 4px rgba(180,76,255,0.22), 0 0 10px rgba(255,138,61,0.55);
+  position: relative;
+}
+.sat-eye::after {
+  content: "";
+  position: absolute; inset: -3px;
+  border-radius: 50%;
+  border: 2px solid #ff8a3d;
+  animation: eyePulse 1.8s ease-out infinite;
+}
+#sat .leaflet-control-attribution { display: none !important; }
+#sat .leaflet-bottom.leaflet-right { bottom: 72px; right: 6px; }
+#sat .leaflet-bottom.leaflet-left { display: none; }
+@media (min-width: 960px) {
+  .sat-rail { display: flex; }
+  .sat-rail-close { display: none; }
+}
+.sat-rail-close {
+  appearance: none; border: 0; background: transparent;
+  color: var(--muted); font-size: 12px; padding: 4px 8px;
+  cursor: pointer; align-self: flex-end;
+}
+.sat-rail-bases { display: none; gap: 4px; padding: 8px 4px 2px; border-top: 1px solid rgba(255,255,255,0.08); margin-top: 6px; }
+@media (max-width: 959px) {
+  .sat-rail-bases { display: flex; flex-wrap: wrap; }
+  .sat-rail.open {
+    display: flex;
+    top: 52px; bottom: 78px; right: 10px; left: auto;
+    width: min(210px, calc(100% - 64px));
+  }
+  .sat-wind { font-size: 12px; padding: 7px 12px; }
+  .sat-play-time { min-width: 0; font-size: 11px; }
+}
 .chip {
   appearance: none; border: 1px solid var(--line);
   background: rgba(8,14,24,0.82); color: var(--text);
@@ -259,16 +449,6 @@ button { color: inherit; }
   margin-left: auto; font-size: 11px; color: var(--muted);
   background: rgba(8,14,24,0.72); padding: 6px 10px; border-radius: 999px;
 }
-.sat-legend {
-  position: absolute; left: 10px; right: 10px; bottom: 22px; z-index: 500;
-  display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
-  background: rgba(8,14,24,0.82); backdrop-filter: blur(10px);
-  border: 1px solid var(--line); border-radius: 12px;
-  padding: 8px 10px; font-size: 11px; color: var(--muted); line-height: 1.45;
-}
-.sat-legend .chip { padding: 4px 9px; font-size: 11px; }
-.sat-leg-text { flex: 1 1 160px; min-width: 0; }
-.op-group { margin-left: auto; display: flex; gap: 4px; }
 .ty-layout {
   flex: 1; min-height: 0; display: grid;
   grid-template-rows: minmax(160px, 38%) 1fr;
@@ -701,6 +881,7 @@ body.sky-still .banner.show::after {
   animation-play-state: paused !important;
 }
 body.loop-still .eye.selected::after,
+body.loop-still .sat-eye::after,
 body.loop-still .storm-card.active::before,
 body.loop-still .nav-item.ty-spin svg,
 body.loop-still .banner.show::after,
@@ -747,7 +928,7 @@ body.loop-still .pill.bad {
 @media (prefers-reduced-motion: reduce) {
   #wxSky *, #wxSky *::before, #wxSky *::after,
   .wx-ic .wx-rays, .wx-ic .wx-drips path, .wx-ic .wx-moon-glyph,
-  .pill.bad, .banner.show::after, .eye.selected::after,
+  .pill.bad, .banner.show::after, .eye.selected::after, .sat-eye::after,
   .storm-card.active::before, .nav-item.ty-spin svg,
   #hours .hour, .temp.temp-in, .alert-card, .wx-flash {
     animation: none !important;
@@ -837,22 +1018,74 @@ body.loop-still .pill.bad {
     <section class="panel" id="sat">
       <div class="map-wrap">
         <div id="satMap" style="height:100%;width:100%"></div>
-        <div class="sat-hud">
-          <button class="chip active" data-layer="truecolor" type="button">真实色</button>
-          <button class="chip" data-layer="infrared" type="button">红外</button>
-          <button class="chip" data-layer="radar" type="button">雷达</button>
-          <button class="chip" id="satLocate" type="button">定位</button>
-          <button class="chip" id="satStorms" type="button">台风眼</button>
-          <span class="stamp" id="satStamp">图层时间</span>
-        </div>
-        <div class="sat-legend">
-          <span class="sat-leg-text" id="satLegText">真实色：白天云和地表</span>
-          <button class="chip" id="satPlay" type="button" hidden>播放</button>
-          <span class="op-group">
-            <button class="chip" data-op="low" type="button">低</button>
-            <button class="chip active" data-op="mid" type="button">中</button>
-            <button class="chip" data-op="high" type="button">高</button>
-          </span>
+        <div class="sat-hud" aria-hidden="false">
+          <button class="sat-wind" id="satWind" type="button" title="定位到所选城市">
+            <span><b id="satWindNum">—</b> 公里/小时</span>
+            <span class="sat-wind-dir">
+              <span class="sat-wind-arrow" id="satWindArrow"><svg viewBox="0 0 24 24"><path d="M12 19V5M12 5l-5 5M12 5l5 5"/></svg></span>
+              <span id="satWindDir">—</span>
+            </span>
+          </button>
+          <aside class="sat-rail" id="satRail">
+            <button class="sat-rail-close" id="satRailClose" type="button">关闭</button>
+            <div class="sat-rail-title">天气图</div>
+            <div class="sat-sat-block">
+              <div class="sat-ly on" id="satLySat">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>
+                <span>卫星</span>
+                <span class="ck">✓</span>
+              </div>
+              <div class="sat-sat-sub">
+                <span class="sat-live">实时<i>✓</i></span>
+                <span class="sat-hd" title="需要专业数据">高清</span>
+              </div>
+            </div>
+            <button class="sat-ly on" data-toggle="radar" type="button">
+              <svg viewBox="0 0 24 24"><path d="M4 18a8 8 0 0 1 16 0"/><path d="M7 18a5 5 0 0 1 10 0"/><circle cx="12" cy="18" r="1.2" fill="currentColor" stroke="none"/></svg>
+              <span>雷达</span><span class="ck">✓</span>
+            </button>
+            <button class="sat-ly" data-toggle="precip" type="button">
+              <svg viewBox="0 0 24 24"><path d="M8 15h9a3.5 3.5 0 0 0 .2-7 6 6 0 0 0-11.4 1.6A3.6 3.6 0 0 0 8 15z"/><path d="M9 18v2M12 17.5v2.5M15 18v2"/></svg>
+              <span>降水</span><span class="ck"></span>
+            </button>
+            <button class="sat-ly" data-metric="wind" type="button">
+              <svg viewBox="0 0 24 24"><path d="M4 8h11a3 3 0 1 0-3-3"/><path d="M4 12h14a3 3 0 1 1-3 3"/><path d="M4 16h7"/></svg>
+              <span>风</span><span class="ck"></span>
+            </button>
+            <button class="sat-ly on" data-metric="temp" type="button">
+              <svg viewBox="0 0 24 24"><path d="M10 14.5V6.5a2 2 0 1 1 4 0v8a3.2 3.2 0 1 1-4 0z"/><path d="M12 12v4"/></svg>
+              <span>气温</span><span class="ck">✓</span>
+            </button>
+            <button class="sat-ly" data-metric="humidity" type="button">
+              <svg viewBox="0 0 24 24"><path d="M12 4s6 7 6 11a6 6 0 1 1-12 0c0-4 6-11 6-11z"/></svg>
+              <span>湿度</span><span class="ck"></span>
+            </button>
+            <button class="sat-ly" data-metric="pressure" type="button">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="7"/><path d="M12 13l4-3M8 8.5h8"/></svg>
+              <span>气压</span><span class="ck"></span>
+            </button>
+            <div class="sat-rail-bases">
+              <button class="sat-bm on" data-base="truecolor" type="button">真实色</button>
+              <button class="sat-bm" data-base="infrared" type="button">红外</button>
+              <button class="sat-bm on" data-ty="1" type="button">台风</button>
+            </div>
+          </aside>
+          <button class="sat-fab" id="satLayersBtn" type="button" title="图层" aria-label="图层">
+            <svg viewBox="0 0 24 24"><rect x="4" y="9" width="11" height="11" rx="1.6"/><rect x="9" y="4" width="11" height="11" rx="1.6"/></svg>
+          </button>
+          <div class="sat-bmap" id="satBmap">
+            <button class="sat-bm on" data-base="truecolor" type="button">真实色</button>
+            <button class="sat-bm" data-base="infrared" type="button">红外</button>
+            <button class="sat-bm on" data-ty="1" id="satTyToggle" type="button">台风</button>
+          </div>
+          <div class="sat-playbar" id="satPlaybar">
+            <button class="sat-play-btn" id="satPlay" type="button" aria-label="播放">
+              <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            </button>
+            <div class="sat-play-time" id="satPlayTime">今天 —</div>
+            <div class="sat-ticks" id="satTicks" role="slider" aria-label="时间轴"></div>
+          </div>
+          <div class="sat-credit">© NASA · Esri · RainViewer</div>
         </div>
       </div>
     </section>
@@ -922,6 +1155,17 @@ body.loop-still .pill.bad {
     source: "",
     tab: "weather",
     satLayer: "truecolor",
+    satRadarOn: true,
+    satPrecipOn: false,
+    satMetric: "temp",
+    satTyphoonOn: true,
+    satRadarLayer: null,
+    satPrecipLayer: null,
+    precipFrames: [],
+    satTimeFrames: [],
+    satPills: null,
+    satTracks: null,
+    satRailUser: false,
     selected: null,
     recents: [],
     satMap: null,
@@ -1286,7 +1530,7 @@ body.loop-still .pill.bad {
   }
   function maybeAutoplayRadar() {
     if (state.tab !== "sat") return;
-    if (state.satLayer !== "radar" || state.radarFrames.length < 2) return;
+    if (playFrames().length < 2) return;
     if (state.radarPlaying || prefersReduced()) return;
     toggleRadarPlay();
   }
@@ -1550,6 +1794,7 @@ body.loop-still .pill.bad {
       return '<div class="life-card"><div class="k">' + it.k + '</div><div class="a">' + it.a +
         '</div><span class="pill ' + it.cls + '">' + it.lv + "</span></div>";
     }).join("");
+    updateWindPill();
   }
   function renderMetrics() {
     const w = state.weather || {};
@@ -1678,6 +1923,7 @@ body.loop-still .pill.bad {
     renderTyphoonList();
     renderAlerts();
     drawTyphoonTracks();
+    drawSatTracks();
     updateBanner();
     updateTyNavSpin();
     const about = $("aboutSnap");
@@ -1867,6 +2113,27 @@ body.loop-still .pill.bad {
     });
     return window.__leafP;
   }
+  const SAT_CITIES = [
+    { name: "北京", lat: 39.90, lon: 116.41 },
+    { name: "青岛", lat: 36.07, lon: 120.38 },
+    { name: "南京", lat: 32.06, lon: 118.80 },
+    { name: "合肥", lat: 31.82, lon: 117.23 },
+    { name: "上海", lat: 31.23, lon: 121.47 },
+    { name: "杭州", lat: 30.27, lon: 120.15 },
+    { name: "武汉", lat: 30.59, lon: 114.31 },
+    { name: "宁波", lat: 29.87, lon: 121.55 },
+    { name: "南昌", lat: 28.68, lon: 115.86 },
+    { name: "温州", lat: 28.00, lon: 120.70 },
+    { name: "长沙", lat: 28.23, lon: 112.94 },
+    { name: "福州", lat: 26.07, lon: 119.30 },
+    { name: "台北", lat: 25.03, lon: 121.57 },
+    { name: "厦门", lat: 24.48, lon: 118.09 },
+    { name: "广州", lat: 23.13, lon: 113.26 },
+    { name: "高雄", lat: 22.63, lon: 120.30 },
+    { name: "深圳", lat: 22.54, lon: 114.06 }
+  ];
+  const ICON_PLAY = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+  const ICON_PAUSE = '<svg viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>';
   function utcDate(off) {
     const d = new Date(Date.now() + (off || 0) * 86400000);
     return d.toISOString().slice(0, 10);
@@ -1879,117 +2146,401 @@ body.loop-still .pill.bad {
   function gibsUrl(layer, tms, ext) {
     return "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/" + layer + "/default/{time}/" + tms + "/{z}/{y}/{x}." + ext;
   }
+  function satWide() {
+    return window.matchMedia && window.matchMedia("(min-width: 960px)").matches;
+  }
+  function syncSatRail() {
+    const rail = $("satRail");
+    if (!rail) return;
+    if (satWide()) rail.classList.add("open");
+    else if (!state.satRailUser) rail.classList.remove("open");
+  }
+  function fmtPlayZh(d) {
+    if (!(d instanceof Date) || isNaN(d.getTime())) return "—";
+    const tz = "Asia/Shanghai";
+    const parts = new Intl.DateTimeFormat("en-GB", {
+      timeZone: tz, year: "numeric", month: "2-digit", day: "2-digit",
+      hour: "2-digit", minute: "2-digit", hourCycle: "h23"
+    }).formatToParts(d);
+    const get = function (t) {
+      const x = parts.find(function (p) { return p.type === t; });
+      return x ? x.value : "";
+    };
+    const nowP = new Intl.DateTimeFormat("en-GB", {
+      timeZone: tz, year: "numeric", month: "2-digit", day: "2-digit"
+    }).formatToParts(new Date());
+    const nget = function (t) {
+      const x = nowP.find(function (p) { return p.type === t; });
+      return x ? x.value : "";
+    };
+    const h = parseInt(get("hour"), 10) || 0;
+    const m = get("minute") || "00";
+    let h12 = h % 12;
+    if (h12 === 0) h12 = 12;
+    const same = get("year") === nget("year") && get("month") === nget("month") && get("day") === nget("day");
+    const day = same ? "今天" : (parseInt(get("month"), 10) + "月" + parseInt(get("day"), 10) + "日");
+    return day + " " + h12 + ":" + m + " " + periodName(h);
+  }
+  function playFrames() {
+    if (state.satRadarOn && state.radarFrames.length) return state.radarFrames;
+    if (state.satPrecipOn && state.precipFrames.length) return state.precipFrames;
+    return state.satTimeFrames || [];
+  }
+  function nearestFrame(frames, t) {
+    if (!frames || !frames.length) return null;
+    let best = frames[0], d = Infinity;
+    for (let i = 0; i < frames.length; i++) {
+      const dd = Math.abs((frames[i].time || 0) - t);
+      if (dd < d) { d = dd; best = frames[i]; }
+    }
+    return best;
+  }
+  function updatePlayhead() {
+    const frames = playFrames();
+    const n = frames.length;
+    const ticks = $("satTicks");
+    const timeEl = $("satPlayTime");
+    const playBtn = $("satPlay");
+    if (!ticks) return;
+    if (!n) {
+      ticks.innerHTML = "";
+      if (timeEl) timeEl.textContent = "今天 —";
+      if (playBtn) playBtn.disabled = true;
+      return;
+    }
+    const idx = Math.max(0, Math.min(n - 1, state.radarIdx));
+    if (ticks.querySelectorAll(".sat-tick").length !== n) {
+      let html = "";
+      for (let i = 0; i < n; i++) html += '<span class="sat-tick" data-i="' + i + '"></span>';
+      html += '<div class="sat-playhead" id="satPlayhead"></div>';
+      ticks.innerHTML = html;
+    }
+    const head = $("satPlayhead") || ticks.querySelector(".sat-playhead");
+    const pct = n <= 1 ? 0 : (idx / (n - 1)) * 100;
+    if (head) head.style.left = pct + "%";
+    const fr = frames[idx];
+    const dt = fr && fr.time ? new Date(fr.time * 1000) : (fr && fr.iso ? new Date(fr.iso) : null);
+    if (timeEl) timeEl.textContent = dt ? fmtPlayZh(dt) : "今天 —";
+    if (playBtn) {
+      playBtn.disabled = n < 2;
+      playBtn.innerHTML = state.radarPlaying ? ICON_PAUSE : ICON_PLAY;
+      playBtn.setAttribute("aria-label", state.radarPlaying ? "暂停" : "播放");
+    }
+  }
+  function cityPillText(c) {
+    const wx = c.wx || {};
+    const m = state.satMetric || "temp";
+    if (m === "humidity") {
+      return c.name + " " + (wx.relative_humidity_2m == null ? "—" : Math.round(wx.relative_humidity_2m) + "%");
+    }
+    if (m === "pressure") {
+      return c.name + " " + (wx.surface_pressure == null ? "—" : Math.round(wx.surface_pressure) + "百帕");
+    }
+    if (m === "wind") {
+      const ms = wx.wind_speed_10m;
+      if (ms == null) return c.name + " —";
+      return c.name + " " + windLevel(ms) + "级 " + dirFromDeg(wx.wind_direction_10m);
+    }
+    const t = wx.temperature_2m;
+    return c.name + " " + (t == null ? "—" : Math.round(t) + "°");
+  }
+  function refreshCityPills() {
+    if (!state.satMap || !window.L) return;
+    if (state.satPills) { state.satMap.removeLayer(state.satPills); state.satPills = null; }
+    const cities = SAT_CITIES.filter(function (c) { return c.wx; });
+    if (!cities.length) return;
+    const z = state.satMap.getZoom();
+    let n = 8;
+    if (z >= 7) n = SAT_CITIES.length;
+    else if (z >= 6) n = 14;
+    else if (z >= 5) n = 10;
+    const ctr = state.satMap.getCenter();
+    const ranked = cities.slice().sort(function (a, b) {
+      return haversine(ctr.lat, ctr.lng, a.lat, a.lon) - haversine(ctr.lat, ctr.lng, b.lat, b.lon);
+    });
+    const show = ranked.slice(0, n);
+    state.satPills = L.layerGroup();
+    show.forEach(function (c) {
+      const html = '<div class="sat-city-pill">' + cityPillText(c) + "</div>";
+      const ic = L.divIcon({ className: "sat-city-icon", html: html, iconSize: [0, 0], iconAnchor: [0, 0] });
+      L.marker([c.lat, c.lon], { icon: ic, interactive: false, keyboard: false }).addTo(state.satPills);
+    });
+    state.satPills.addTo(state.satMap);
+  }
+  function updateWindPill() {
+    const elN = $("satWindNum");
+    const elD = $("satWindDir");
+    const elA = $("satWindArrow");
+    if (!elN) return;
+    let wx = null;
+    const city = state.city || DEFAULT_CITY;
+    const hit = SAT_CITIES.find(function (c) { return c.name === city.name && c.wx; });
+    if (hit) wx = hit.wx;
+    else if (state.weather && state.weather.current) wx = state.weather.current;
+    if (!wx || wx.wind_speed_10m == null) {
+      elN.textContent = "—";
+      if (elD) elD.textContent = "—";
+      return;
+    }
+    elN.textContent = String(Math.round(wx.wind_speed_10m * 3.6));
+    if (elD) elD.textContent = dirFromDeg(wx.wind_direction_10m);
+    if (elA && wx.wind_direction_10m != null) {
+      elA.style.transform = "rotate(" + ((wx.wind_direction_10m + 180) % 360) + "deg)";
+    }
+  }
+  async function loadSatCityWx() {
+    try {
+      const lats = SAT_CITIES.map(function (c) { return c.lat; }).join(",");
+      const lons = SAT_CITIES.map(function (c) { return c.lon; }).join(",");
+      const url = "https://api.open-meteo.com/v1/forecast?latitude=" + lats + "&longitude=" + lons +
+        "&current=temperature_2m,relative_humidity_2m,wind_speed_10m,wind_direction_10m,surface_pressure" +
+        "&wind_speed_unit=ms&timezone=Asia/Shanghai";
+      const data = await getJson(url);
+      const arr = Array.isArray(data) ? data : [data];
+      arr.forEach(function (d, i) {
+        if (SAT_CITIES[i] && d && d.current) SAT_CITIES[i].wx = d.current;
+      });
+    } catch (e) {}
+    refreshCityPills();
+    updateWindPill();
+  }
+  function syncSatLy() {
+    document.querySelectorAll("#satRail [data-toggle]").forEach(function (b) {
+      const k = b.getAttribute("data-toggle");
+      const on = k === "radar" ? state.satRadarOn : state.satPrecipOn;
+      b.classList.toggle("on", on);
+      const ck = b.querySelector(".ck");
+      if (ck) ck.textContent = on ? "✓" : "";
+    });
+    document.querySelectorAll("#satRail [data-metric]").forEach(function (b) {
+      const on = b.getAttribute("data-metric") === state.satMetric;
+      b.classList.toggle("on", on);
+      const ck = b.querySelector(".ck");
+      if (ck) ck.textContent = on ? "✓" : "";
+    });
+    document.querySelectorAll("#sat [data-base]").forEach(function (b) {
+      b.classList.toggle("on", b.getAttribute("data-base") === state.satLayer);
+    });
+    document.querySelectorAll("#sat [data-ty]").forEach(function (b) {
+      b.classList.toggle("on", !!state.satTyphoonOn);
+    });
+  }
   async function ensureSatMap() {
     try { await loadLeaflet(); } catch (e) { return; }
-    if (state.satMap) { state.satMap.invalidateSize(); return; }
-    const map = L.map("satMap", { zoomControl: true, attributionControl: true }).setView([state.city.lat, state.city.lon], 5);
+    syncSatRail();
+    if (state.satMap) {
+      state.satMap.invalidateSize();
+      refreshCityPills();
+      drawSatTracks();
+      return;
+    }
+    const map = L.map("satMap", { zoomControl: false, attributionControl: true }).setView([26, 121], 5.5);
     map.attributionControl.setPrefix("");
+    L.control.zoom({ position: "bottomright" }).addTo(map);
+    map.createPane("radarPane");
+    map.getPane("radarPane").style.zIndex = 360;
+    map.getPane("radarPane").style.pointerEvents = "none";
+    map.createPane("precipPane");
+    map.getPane("precipPane").style.zIndex = 350;
+    map.getPane("precipPane").style.pointerEvents = "none";
+    map.createPane("satTrackPane");
+    map.getPane("satTrackPane").style.zIndex = 450;
     state.satMap = map;
-    setSatLayer(state.satLayer);
-    if (state.storms.length) drawSatMarkers();
+    map.on("moveend zoomend", function () { refreshCityPills(); });
+    await setSatBase(state.satLayer || "truecolor");
+    await loadRadarMeta();
+    applySatOverlays();
+    updatePlayhead();
+    drawSatTracks();
+    loadSatCityWx();
+    maybeAutoplayRadar();
   }
   function stopRadarLoop() {
     state.radarPlaying = false;
     if (state.radarTimer) { clearInterval(state.radarTimer); state.radarTimer = null; }
     const btn = $("satPlay");
-    if (btn) { btn.textContent = "播放"; btn.hidden = state.satLayer !== "radar" || state.radarFrames.length < 2; }
+    if (btn) {
+      btn.innerHTML = ICON_PLAY;
+      btn.setAttribute("aria-label", "播放");
+    }
   }
-  function satLegendText(name) {
-    if (name === "infrared") return "红外：云顶温度，夜间也可用";
-    if (name === "radar") return "雷达：降水回波";
-    if (name === "visible") return "可见光：白天云和地表细节（夜间较暗）";
-    return "真实色：白天云和地表";
-  }
-  function applySatOpacity() {
-    if (state.satLayerObj) state.satLayerObj.setOpacity(state.satOp);
-    document.querySelectorAll("#sat [data-op]").forEach(function (b) {
-      const v = b.getAttribute("data-op");
-      const on = (v === "low" && state.satOp <= 0.5) || (v === "mid" && state.satOp > 0.5 && state.satOp < 0.85) || (v === "high" && state.satOp >= 0.85);
-      b.classList.toggle("active", on);
-    });
-  }
-  async function ensureSatBase() {
+  async function ensureSatFallback() {
     if (!state.satMap || !window.L) return;
-    await pickDarkBase();
     if (state.satBase) return;
+    await pickDarkBase();
     const layer = darkTileLayer(9);
     if (darkBaseMode === "osm") state.satMap.getContainer().classList.add("leaflet-osm-dark");
     layer.addTo(state.satMap);
+    try { layer.bringToBack(); } catch (e) {}
     state.satBase = layer;
   }
-  function showRadarFrame(i) {
-    if (!state.radarFrames.length || !state.satMap) return;
-    state.radarIdx = (i + state.radarFrames.length) % state.radarFrames.length;
-    const f = state.radarFrames[state.radarIdx];
-    if (state.satLayerObj && state.satLayerObj.setUrl) state.satLayerObj.setUrl(f.url);
-    $("satStamp").textContent = "雷达 " + fmtUtcBj(new Date(f.time * 1000));
-  }
-  function toggleRadarPlay() {
-    if (state.satLayer !== "radar" || state.radarFrames.length < 2) return;
-    if (state.radarPlaying) { stopRadarLoop(); return; }
-    state.radarPlaying = true;
-    $("satPlay").textContent = "暂停";
-    $("satPlay").hidden = false;
-    state.radarTimer = setInterval(function () { showRadarFrame(state.radarIdx + 1); }, 700);
-  }
-  async function setSatLayer(name) {
-    stopRadarLoop();
-    state.satLayer = name;
-    state.radarFrames = [];
-    document.querySelectorAll("#sat .chip[data-layer]").forEach(function (b) {
-      b.classList.toggle("active", b.getAttribute("data-layer") === name);
-    });
-    if ($("satLegText")) $("satLegText").textContent = satLegendText(name);
+  async function setSatBase(name) {
+    state.satLayer = name || "truecolor";
+    syncSatLy();
     if (!state.satMap) return;
-    await ensureSatBase();
     if (state.satLayerObj) { state.satMap.removeLayer(state.satLayerObj); state.satLayerObj = null; }
-    let url, maxZ, timeLabel, attr;
-    if (name === "truecolor") {
+    let url, maxZ, iso, attr;
+    if (name === "infrared") {
+      const tm = himawariTime();
+      url = gibsUrl("Himawari_AHI_Band13_Clean_Infrared", "GoogleMapsCompatible_Level6", "png").replace("{time}", tm);
+      maxZ = 6; iso = tm; attr = "NASA GIBS / Himawari";
+      state.satTimeFrames = [{ time: Math.floor(new Date(tm).getTime() / 1000), iso: tm, url: url }];
+    } else {
       let tm = utcDate(0);
       const probe = "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_SNPP_CorrectedReflectance_TrueColor/default/" +
         tm + "/GoogleMapsCompatible_Level9/3/3/6.jpg";
       if (!(await probeImg(probe))) tm = utcDate(-1);
       url = gibsUrl("VIIRS_SNPP_CorrectedReflectance_TrueColor", "GoogleMapsCompatible_Level9", "jpg").replace("{time}", tm);
-      maxZ = 9; timeLabel = "VIIRS 真实色 " + tm + " · 北京时间"; attr = "NASA GIBS / VIIRS";
-    } else if (name === "infrared") {
-      const tm = himawariTime();
-      url = gibsUrl("Himawari_AHI_Band13_Clean_Infrared", "GoogleMapsCompatible_Level6", "png").replace("{time}", tm);
-      maxZ = 6; timeLabel = "葵花红外 " + fmtUtcBj(new Date(tm)); attr = "NASA GIBS / Himawari";
-    } else if (name === "visible") {
-      const tm = himawariTime();
-      url = gibsUrl("Himawari_AHI_Band3_Red_Visible_01", "GoogleMapsCompatible_Level6", "png").replace("{time}", tm);
-      maxZ = 6; timeLabel = "葵花可见光 " + fmtUtcBj(new Date(tm)); attr = "NASA GIBS / Himawari";
-    } else if (name === "radar") {
-      try {
-        if (!state.radarMeta) state.radarMeta = await getJson("https://api.rainviewer.com/public/weather-maps.json");
-        const past = ((state.radarMeta.radar || {}).past || []);
-        const host = state.radarMeta.host || "https://tilecache.rainviewer.com";
-        const frames = past.slice(-8);
-        state.radarFrames = frames.map(function (f) {
-          return { time: f.time, url: host + f.path + "/256/{z}/{x}/{y}/2/1_1.png" };
+      maxZ = 9; iso = tm + "T00:00:00Z"; attr = "NASA GIBS / VIIRS";
+      const frames = [];
+      for (let d = -2; d <= 0; d++) {
+        const day = utcDate(d);
+        frames.push({
+          time: Math.floor(new Date(day + "T00:00:00Z").getTime() / 1000),
+          iso: day,
+          url: gibsUrl("VIIRS_SNPP_CorrectedReflectance_TrueColor", "GoogleMapsCompatible_Level9", "jpg").replace("{time}", day)
         });
-        const last = frames[frames.length - 1] || past[past.length - 1];
-        if (last) {
-          url = host + last.path + "/256/{z}/{x}/{y}/2/1_1.png";
-          timeLabel = "雷达 " + fmtUtcBj(new Date(last.time * 1000));
-        }
-        maxZ = 7; attr = "RainViewer";
-      } catch (e) {
-        $("satStamp").textContent = "雷达暂不可用";
-        if ($("satPlay")) $("satPlay").hidden = true;
-        return;
       }
+      state.satTimeFrames = frames;
     }
-    if (!url) return;
+    if (!url) {
+      await ensureSatFallback();
+      return;
+    }
     state.satLayerObj = L.tileLayer(url, {
       maxNativeZoom: maxZ || 7, maxZoom: 9, tileSize: 256,
-      attribution: attr, opacity: state.satOp
+      attribution: attr, opacity: 1
+    });
+    let errN = 0;
+    state.satLayerObj.on("tileerror", function () {
+      errN++;
+      if (errN === 3) ensureSatFallback();
     });
     state.satLayerObj.addTo(state.satMap);
-    $("satStamp").textContent = timeLabel || "";
-    if ($("satPlay")) $("satPlay").hidden = !(name === "radar" && state.radarFrames.length >= 2);
-    applySatOpacity();
-    if (name === "radar") maybeAutoplayRadar();
+    updatePlayhead();
+  }
+  async function loadRadarMeta() {
+    try {
+      if (!state.radarMeta) state.radarMeta = await getJson("https://api.rainviewer.com/public/weather-maps.json");
+      const host = state.radarMeta.host || "https://tilecache.rainviewer.com";
+      const past = ((state.radarMeta.radar || {}).past || []).slice(-12);
+      const nowc = ((state.radarMeta.radar || {}).nowcast || []).slice(0, 0);
+      const frames = past.concat(nowc);
+      state.radarFrames = frames.map(function (f) {
+        return { time: f.time, url: host + f.path + "/256/{z}/{x}/{y}/2/1_1.png" };
+      });
+      const ir = ((state.radarMeta.satellite || {}).infrared || []).slice(-12);
+      if (ir.length) {
+        state.precipFrames = ir.map(function (f) {
+          return { time: f.time, url: host + f.path + "/256/{z}/{x}/{y}/0/0_0.png" };
+        });
+      } else {
+        state.precipFrames = state.radarFrames.slice();
+      }
+      if (state.radarFrames.length) state.radarIdx = state.radarFrames.length - 1;
+    } catch (e) {
+      state.radarFrames = state.radarFrames || [];
+      state.precipFrames = state.precipFrames || [];
+    }
+  }
+  function applySatOverlays() {
+    if (!state.satMap) return;
+    if (state.satRadarLayer) { state.satMap.removeLayer(state.satRadarLayer); state.satRadarLayer = null; }
+    if (state.satPrecipLayer) { state.satMap.removeLayer(state.satPrecipLayer); state.satPrecipLayer = null; }
+    const frames = playFrames();
+    if (frames.length) state.radarIdx = Math.max(0, Math.min(frames.length - 1, state.radarIdx));
+    const t = frames.length ? (frames[state.radarIdx].time || 0) : 0;
+    if (state.satRadarOn && state.radarFrames.length) {
+      const f = nearestFrame(state.radarFrames, t) || state.radarFrames[state.radarFrames.length - 1];
+      state.satRadarLayer = L.tileLayer(f.url, {
+        pane: "radarPane", opacity: 0.65, maxZoom: 9, maxNativeZoom: 7,
+        attribution: "RainViewer", tileSize: 256
+      }).addTo(state.satMap);
+    }
+    if (state.satPrecipOn && state.precipFrames.length) {
+      const f = nearestFrame(state.precipFrames, t) || state.precipFrames[state.precipFrames.length - 1];
+      state.satPrecipLayer = L.tileLayer(f.url, {
+        pane: "precipPane", opacity: 0.55, maxZoom: 9, maxNativeZoom: 7,
+        attribution: "RainViewer", tileSize: 256
+      }).addTo(state.satMap);
+    }
+    updatePlayhead();
+  }
+  function showRadarFrame(i) {
+    const frames = playFrames();
+    if (!frames.length || !state.satMap) return;
+    state.radarIdx = (i + frames.length) % frames.length;
+    const t = frames[state.radarIdx].time || 0;
+    if (state.satRadarLayer && state.radarFrames.length) {
+      const f = nearestFrame(state.radarFrames, t);
+      if (f && state.satRadarLayer.setUrl) state.satRadarLayer.setUrl(f.url);
+    }
+    if (state.satPrecipLayer && state.precipFrames.length) {
+      const f = nearestFrame(state.precipFrames, t);
+      if (f && state.satPrecipLayer.setUrl) state.satPrecipLayer.setUrl(f.url);
+    }
+    if (!state.satRadarOn && !state.satPrecipOn && state.satLayerObj && frames[state.radarIdx].url) {
+      state.satLayerObj.setUrl(frames[state.radarIdx].url);
+    }
+    updatePlayhead();
+  }
+  function toggleRadarPlay() {
+    const frames = playFrames();
+    if (frames.length < 2) return;
+    if (state.radarPlaying) { stopRadarLoop(); updatePlayhead(); return; }
+    state.radarPlaying = true;
+    const btn = $("satPlay");
+    if (btn) {
+      btn.innerHTML = ICON_PAUSE;
+      btn.setAttribute("aria-label", "暂停");
+    }
+    state.radarTimer = setInterval(function () { showRadarFrame(state.radarIdx + 1); }, 700);
+  }
+  function satEyeIcon() {
+    return L.divIcon({ className: "eye-icon", html: '<div class="sat-eye"></div>', iconSize: [14, 14], iconAnchor: [7, 7] });
+  }
+  function drawSatTracks() {
+    if (!state.satMap || !window.L) return;
+    if (state.satTracks) { state.satMap.removeLayer(state.satTracks); state.satTracks = null; }
+    if (!state.satTyphoonOn) return;
+    const storms = state.storms || [];
+    if (!storms.length) return;
+    state.satTracks = L.layerGroup();
+    storms.forEach(function (s) {
+      const past = (s.track || []).filter(function (p) { return p.lat != null && p.lon != null; }).map(function (p) { return [p.lat, p.lon]; });
+      const fut = (s.forecast || []).filter(function (p) { return p.lat != null && p.lon != null; }).map(function (p) { return [p.lat, p.lon]; });
+      const lineOpt = { pane: "satTrackPane", interactive: false };
+      if (past.length > 1) {
+        L.polyline(past, Object.assign({ color: "#f5d04a", weight: 2.4, opacity: 0.95 }, lineOpt)).addTo(state.satTracks);
+      }
+      if (past.length && fut.length) {
+        L.polyline([past[past.length - 1]].concat(fut), Object.assign({ color: "#f5d04a", weight: 2, opacity: 0.85, dashArray: "5 6" }, lineOpt)).addTo(state.satTracks);
+      } else if (fut.length > 1) {
+        L.polyline(fut, Object.assign({ color: "#f5d04a", weight: 2, opacity: 0.85, dashArray: "5 6" }, lineOpt)).addTo(state.satTracks);
+      }
+      if (s.lat != null) {
+        const m = L.marker([s.lat, s.lon], { icon: satEyeIcon() }).addTo(state.satTracks);
+        m.bindPopup("<b>" + (s.nameZh || s.nameEn) + "</b><br>" + (s.gradeZh || ""));
+        m.on("click", function () { showTab("typhoon"); selectStorm(s); });
+      }
+    });
+    state.satTracks.addTo(state.satMap);
+  }
+  function drawSatMarkers() { drawSatTracks(); }
+  async function setSatLayer(name) {
+    if (name === "radar") {
+      state.satRadarOn = true;
+      syncSatLy();
+      await loadRadarMeta();
+      applySatOverlays();
+      maybeAutoplayRadar();
+      return;
+    }
+    if (name === "infrared" || name === "truecolor" || name === "visible") {
+      await setSatBase(name === "visible" ? "truecolor" : name);
+      return;
+    }
+    await setSatBase(name);
   }
   function eyeIcon(selected) {
     return L.divIcon({ className: "eye-icon", html: '<div class="eye' + (selected ? " selected" : "") + '"></div>', iconSize: [18, 18], iconAnchor: [9, 9] });
@@ -2069,20 +2620,8 @@ body.loop-still .pill.bad {
       state.tyMap.flyTo([s.lat, s.lon], Math.max(state.tyMap.getZoom(), 5), { duration: 0.6 });
     }
     if (s && s.lat != null && state.satMap) {
-      drawSatMarkers();
+      drawSatTracks();
     }
-  }
-  function drawSatMarkers() {
-    if (!state.satMap || !window.L) return;
-    if (state.satMarks) { state.satMap.removeLayer(state.satMarks); }
-    state.satMarks = L.layerGroup();
-    state.storms.forEach((s) => {
-      if (s.lat == null) return;
-      const m = L.marker([s.lat, s.lon], { icon: eyeIcon() }).addTo(state.satMarks);
-      m.bindPopup((s.nameZh || s.nameEn) + " · " + (s.gradeZh || ""));
-      m.on("click", () => { showTab("typhoon"); selectStorm(s); });
-    });
-    state.satMarks.addTo(state.satMap);
   }
   function jumpStorms() {
     const s = state.storms.slice().sort(wpacFirst)[0];
@@ -2120,6 +2659,7 @@ body.loop-still .pill.bad {
     saveCity(c);
     closeSheet("citySheet");
     if (state.satMap) state.satMap.setView([c.lat, c.lon], 6);
+    updateWindPill();
     loadWeather();
   }
   function tryGeo(quiet) {
@@ -2150,20 +2690,69 @@ body.loop-still .pill.bad {
     $("aboutSheet").addEventListener("click", (e) => { if (e.target.id === "aboutSheet") closeSheet("aboutSheet"); });
     $("geoBtn").addEventListener("click", () => tryGeo(false));
     $("sheetLocate").addEventListener("click", () => tryGeo(false));
-    $("satLocate").addEventListener("click", () => {
+    const satPlay = $("satPlay");
+    if (satPlay) satPlay.addEventListener("click", function () { toggleRadarPlay(); });
+    const satWind = $("satWind");
+    if (satWind) satWind.addEventListener("click", function () {
       if (state.satMap && state.city) state.satMap.flyTo([state.city.lat, state.city.lon], 6);
     });
-    $("satStorms").addEventListener("click", () => { jumpStorms(); });
-    document.querySelectorAll("#sat .chip[data-layer]").forEach(function (b) {
-      b.addEventListener("click", function () { setSatLayer(b.getAttribute("data-layer")); });
+    const satLayers = $("satLayersBtn");
+    if (satLayers) satLayers.addEventListener("click", function () {
+      if (satWide()) {
+        $("satBmap").classList.toggle("open");
+      } else {
+        state.satRailUser = !$("satRail").classList.contains("open");
+        $("satRail").classList.toggle("open", state.satRailUser);
+        $("satBmap").classList.remove("open");
+      }
     });
-    $("satPlay").addEventListener("click", function () { toggleRadarPlay(); });
-    document.querySelectorAll("#sat [data-op]").forEach(function (b) {
+    const satRailClose = $("satRailClose");
+    if (satRailClose) satRailClose.addEventListener("click", function () {
+      state.satRailUser = false;
+      $("satRail").classList.remove("open");
+      syncSatRail();
+    });
+    document.querySelectorAll("#satRail [data-toggle]").forEach(function (b) {
       b.addEventListener("click", function () {
-        const v = b.getAttribute("data-op");
-        state.satOp = v === "low" ? 0.4 : (v === "mid" ? 0.68 : 0.95);
-        applySatOpacity();
+        const k = b.getAttribute("data-toggle");
+        if (k === "radar") state.satRadarOn = !state.satRadarOn;
+        if (k === "precip") state.satPrecipOn = !state.satPrecipOn;
+        syncSatLy();
+        loadRadarMeta().then(function () {
+          applySatOverlays();
+          if ((state.satRadarOn || state.satPrecipOn) && playFrames().length >= 2) maybeAutoplayRadar();
+          else if (!state.satRadarOn && !state.satPrecipOn) { stopRadarLoop(); updatePlayhead(); }
+        });
       });
+    });
+    document.querySelectorAll("#satRail [data-metric]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        state.satMetric = b.getAttribute("data-metric");
+        syncSatLy();
+        refreshCityPills();
+        updateWindPill();
+      });
+    });
+    document.querySelectorAll("#sat [data-base]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        setSatBase(b.getAttribute("data-base"));
+        $("satBmap").classList.remove("open");
+      });
+    });
+    document.querySelectorAll("#sat [data-ty]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        state.satTyphoonOn = !state.satTyphoonOn;
+        syncSatLy();
+        drawSatTracks();
+      });
+    });
+    const ticks = $("satTicks");
+    if (ticks) ticks.addEventListener("click", function (e) {
+      const frames = playFrames();
+      if (!frames.length) return;
+      const rect = ticks.getBoundingClientRect();
+      const t = (e.clientX - rect.left) / Math.max(1, rect.width);
+      showRadarFrame(Math.round(t * (frames.length - 1)));
     });
     let timer = 0;
     $("citySearch").addEventListener("input", () => {
@@ -2179,6 +2768,7 @@ body.loop-still .pill.bad {
     const saved = loadCity();
     saveCity(saved || DEFAULT_CITY);
     bind();
+    syncSatRail();
     syncMotion();
     loadWeather();
     loadStorms();
@@ -2188,7 +2778,7 @@ body.loop-still .pill.bad {
       navigator.serviceWorker.register("./sw.js").catch(function () {});
     }
   }
-  window.addEventListener("resize", function () { invalidateMaps(); resizeParticles(); });
+  window.addEventListener("resize", function () { invalidateMaps(); resizeParticles(); syncSatRail(); });
   document.addEventListener("visibilitychange", syncMotion);
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
   else init();
