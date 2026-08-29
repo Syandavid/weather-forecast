@@ -62,12 +62,13 @@ button { color: inherit; }
   min-height: calc(var(--safe-t) + 52px);
   border-bottom: 1px solid var(--line);
   background: var(--bg);
-  z-index: 3;
+  z-index: 40;
 }
 .city-btn {
   appearance: none; border: 0; background: transparent;
   color: var(--text); font-size: 18px; font-weight: 650;
-  padding: 6px 4px; cursor: pointer; display: flex; align-items: center; gap: 6px;
+  padding: 8px 8px; cursor: pointer; display: flex; align-items: center; gap: 6px;
+  min-height: 44px;
 }
 .city-btn small { color: var(--muted); font-size: 12px; font-weight: 500; }
 .top-actions { margin-left: auto; display: flex; gap: 6px; }
@@ -247,6 +248,10 @@ button { color: inherit; }
   pointer-events: none;
 }
 .sat-hud > * { pointer-events: auto; }
+.sat-hud > .sat-legend,
+.sat-hud > .sat-storms,
+.sat-hud > .sat-credit { pointer-events: none; }
+.sat-hud > .sat-storms > * { pointer-events: auto; }
 .sat-glass {
   background: rgba(8,14,22,0.55);
   border: 1px solid rgba(255,255,255,0.14);
@@ -316,7 +321,7 @@ button { color: inherit; }
 .sat-live i { color: var(--sky); font-style: normal; margin-left: 4px; font-weight: 700; }
 .sat-hd { font-weight: 500; }
 .sat-fab {
-  position: absolute; left: 12px; bottom: 70px; z-index: 530;
+  position: absolute; left: 12px; bottom: 86px; z-index: 530;
   width: 42px; height: 42px; border-radius: 14px;
   appearance: none; border: 1px solid rgba(255,255,255,0.14);
   background: rgba(8,14,22,0.55); color: #f4f7fb; cursor: pointer;
@@ -327,7 +332,7 @@ button { color: inherit; }
 .sat-fab svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.7; }
 .sat-bmap {
   display: none;
-  position: absolute; left: 12px; bottom: 120px; z-index: 540;
+  position: absolute; left: 12px; bottom: 136px; z-index: 540;
   flex-direction: column; gap: 4px; padding: 8px;
   border-radius: 16px; min-width: 108px;
   background: rgba(8,14,22,0.55);
@@ -343,12 +348,21 @@ button { color: inherit; }
 .sat-bm.on { background: rgba(78,162,255,0.18); color: #d7ebff; }
 .sat-playbar {
   position: absolute; left: 12px; right: 12px; bottom: 12px; z-index: 530;
-  display: flex; align-items: center; gap: 10px;
-  padding: 8px 12px; border-radius: 18px;
+  display: flex; flex-direction: column; gap: 4px;
+  padding: 8px 12px 7px; border-radius: 18px;
   background: rgba(8,14,22,0.55);
   border: 1px solid rgba(255,255,255,0.14);
   backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
   box-shadow: 0 8px 28px rgba(0,0,0,0.32);
+}
+.sat-playbar-row {
+  display: flex; align-items: center; gap: 10px; width: 100%;
+}
+.sat-caption {
+  font-size: 11px; font-weight: 550; line-height: 1.25;
+  color: rgba(244,247,251,0.88);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  min-height: 1.2em; pointer-events: none;
 }
 .sat-play-btn {
   appearance: none; border: 0; background: rgba(255,255,255,0.08);
@@ -377,6 +391,28 @@ button { color: inherit; }
   width: 1px; background: rgba(255,255,255,0.38);
 }
 .sat-tick:nth-child(odd)::before { height: 8px; top: 10px; bottom: auto; background: rgba(255,255,255,0.22); }
+.sat-tick.future::before { background: rgba(78,162,255,0.38); }
+.sat-tick.is-now::before { background: #fff; width: 2px; top: 4px; bottom: 4px; }
+.sat-ticks.fc-na .sat-tick.future { opacity: 0.28; }
+.sat-now-mark {
+  position: absolute; top: 0; bottom: 0; width: 2px; margin-left: -1px;
+  background: linear-gradient(180deg, #fff, #7dd3fc);
+  box-shadow: 0 0 8px rgba(125,211,252,0.9);
+  pointer-events: none; z-index: 3;
+}
+.sat-now-mark b {
+  position: absolute; top: -11px; left: 50%; transform: translateX(-50%);
+  font-size: 9px; font-weight: 700; color: #e8f4ff;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.75); white-space: nowrap;
+}
+.sat-fc-na {
+  position: absolute; right: 4px; top: 0; bottom: 0; width: 72%;
+  display: none; align-items: center; justify-content: flex-end;
+  font-size: 10px; color: rgba(255,200,120,0.92); font-weight: 650;
+  pointer-events: none; z-index: 4;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.65);
+}
+.sat-ticks.fc-na .sat-fc-na { display: flex; }
 .sat-playhead {
   position: absolute; top: 4px; bottom: 4px; width: 3px; margin-left: -1.5px;
   background: #4ea2ff; border-radius: 2px;
@@ -384,13 +420,18 @@ button { color: inherit; }
   pointer-events: none; z-index: 2;
 }
 .sat-credit {
-  position: absolute; right: 16px; bottom: 56px; z-index: 510;
+  position: absolute; right: 16px; bottom: 78px; z-index: 510;
   font-size: 9px; color: rgba(255,255,255,0.42);
   pointer-events: none; text-shadow: 0 1px 2px rgba(0,0,0,0.65);
 }
 .sat-city-icon {
   background: transparent !important;
   border: 0 !important;
+  overflow: visible !important;
+}
+.leaflet-marker-icon.sat-city-icon.leaflet-interactive {
+  pointer-events: auto !important;
+  cursor: pointer;
 }
 .sat-city-pill {
   background: #f0d35a; color: #1a1400;
@@ -398,7 +439,7 @@ button { color: inherit; }
   font-size: 12px; font-weight: 600; line-height: 1.2;
   white-space: nowrap;
   box-shadow: 0 1px 4px rgba(0,0,0,0.35);
-  pointer-events: none;
+  pointer-events: auto; cursor: pointer;
   transform: translate(-50%, -50%);
 }
 .sat-eye {
@@ -416,7 +457,7 @@ button { color: inherit; }
   animation: eyePulse 1.8s ease-out infinite;
 }
 #sat .leaflet-control-attribution { display: none !important; }
-#sat .leaflet-bottom.leaflet-right { bottom: 72px; right: 6px; }
+#sat .leaflet-bottom.leaflet-right { bottom: 84px; right: 6px; }
 #sat .leaflet-bottom.leaflet-left { display: none; }
 
 /* stacked met fields + storm HUD on the map */
@@ -506,7 +547,7 @@ button { color: inherit; }
 .sat-storms-toggle .gchip { margin-left: auto; }
 .sat-storms-panel {
   display: none; flex-direction: column;
-  width: 252px; min-height: 0;
+  width: 220px; min-height: 0;
   border-radius: 18px; overflow: hidden;
   background: rgba(8,14,22,0.55);
   border: 1px solid rgba(255,255,255,0.14);
@@ -524,16 +565,37 @@ button { color: inherit; }
 .sat-storm-list .fc-table { font-size: 11px; }
 .sat-legend {
   position: absolute; z-index: 522; pointer-events: none;
-  left: 12px; bottom: 78px;
-  padding: 8px 10px; border-radius: 12px;
+  right: 12px; bottom: 160px; left: auto;
+  display: flex; flex-direction: column; align-items: flex-end; gap: 6px;
+}
+.sat-legend-chip {
+  appearance: none; border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(8,14,22,0.55); color: #f4f7fb;
+  border-radius: 999px; padding: 6px 11px;
+  font-size: 11px; font-weight: 650; cursor: pointer;
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  pointer-events: auto;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.28);
+}
+.sat-legend-body {
+  display: none;
+  padding: 10px 12px 8px; border-radius: 12px;
   background: rgba(8,14,22,0.55);
   border: 1px solid rgba(255,255,255,0.14);
   backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
   font-size: 10px; color: rgba(244,247,251,0.82); line-height: 1.65;
-  display: none;
+  pointer-events: auto;
+  min-width: 148px; max-width: 176px;
+  position: relative;
 }
-.sat-legend.show { display: block; }
-.sat-legend .lg-title { font-weight: 700; color: #f4f7fb; margin-bottom: 4px; }
+.sat-legend.open .sat-legend-body { display: block; }
+.sat-legend-x {
+  appearance: none; border: 0; background: transparent;
+  color: rgba(244,247,251,0.72); cursor: pointer;
+  position: absolute; top: 2px; right: 4px;
+  font-size: 15px; line-height: 1; padding: 4px 6px;
+}
+.sat-legend .lg-title { font-weight: 700; color: #f4f7fb; margin-bottom: 4px; padding-right: 16px; }
 .sat-legend i {
   display: inline-block; width: 12px; height: 8px; border-radius: 2px;
   vertical-align: middle; margin-right: 6px;
@@ -551,25 +613,26 @@ button { color: inherit; }
 .sat-legend .lg-r12 { background: rgba(239,68,68,0.55); border: 1px solid #ef4444; }
 @media (min-width: 960px) {
   .sat-storms {
-    top: 56px; left: 12px; bottom: 78px;
-    width: 252px;
+    top: 56px; left: 12px; bottom: 92px;
+    width: 220px;
   }
   .sat-storms-panel { display: flex; height: 100%; width: 100%; }
   .sat-storms-toggle { display: none !important; }
-  .sat-legend { left: 276px; }
 }
 @media (max-width: 959px) {
   .sat-storms {
-    left: 58px; right: 12px; bottom: 70px;
+    left: 58px; right: auto; bottom: 88px;
+    width: auto; max-width: min(280px, calc(100% - 80px));
   }
   .sat-storms-toggle { display: flex; }
+  .sat-storms.open { right: 12px; }
   .sat-storms.open .sat-storms-panel {
     display: flex;
     width: 100%;
-    max-height: min(42vh, 340px);
+    max-height: min(34vh, 260px);
     margin-bottom: 0;
   }
-  .sat-legend { left: 58px; bottom: 122px; max-width: min(220px, calc(100% - 80px)); }
+  .sat-legend { right: 12px; bottom: 160px; left: auto; }
 }
 body.loop-still .sat-eye-ring.pulse::after { animation-play-state: paused !important; }
 
@@ -669,8 +732,9 @@ body.loop-still .sat-eye-ring.pulse::after { animation-play-state: paused !impor
 .alert-card.ty { border-color: rgba(255,138,61,0.35); }
 .alert-card.hot { border-color: rgba(255,90,95,0.35); }
 .sheet {
-  display: none; position: fixed; inset: 0; z-index: 20;
+  display: none; position: fixed; inset: 0; z-index: 10000;
   background: rgba(0,0,0,0.55);
+  pointer-events: auto;
 }
 .sheet.open { display: flex; align-items: flex-end; justify-content: center; }
 .sheet-card {
@@ -678,6 +742,7 @@ body.loop-still .sat-eye-ring.pulse::after { animation-play-state: paused !impor
   background: var(--bg-2); border-radius: 18px 18px 0 0;
   padding: 12px 16px calc(16px + var(--safe-b));
   overflow: auto; border: 1px solid var(--line);
+  pointer-events: auto;
 }
 .sheet h2 { margin: 4px 0 12px; font-size: 18px; }
 .search {
@@ -691,6 +756,14 @@ body.loop-still .sat-eye-ring.pulse::after { animation-play-state: paused !impor
   border-bottom: 1px solid var(--line); cursor: pointer; font-size: 15px;
 }
 .city-row small, .recent-row small { color: var(--muted); margin-left: 8px; }
+.hot-cities { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 12px; }
+.hot-chip {
+  appearance: none; border: 1px solid var(--line);
+  background: var(--card); color: var(--text);
+  border-radius: 999px; padding: 8px 12px;
+  font-size: 13px; cursor: pointer; min-height: 36px;
+}
+.hot-chip:active { background: rgba(78,162,255,0.2); }
 .about p { color: var(--muted); font-size: 14px; line-height: 1.65; }
 .sk { background: linear-gradient(90deg, #182232, #243044, #182232); background-size: 200% 100%; animation: sk 1.1s ease-in-out infinite; border-radius: 10px; color: transparent; }
 @keyframes sk { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
@@ -1240,13 +1313,19 @@ body.loop-still .pill.bad {
             <button class="sat-bm" data-base="infrared" type="button">红外</button>
           </div>
           <div class="sat-playbar" id="satPlaybar">
-            <button class="sat-play-btn" id="satPlay" type="button" aria-label="播放">
-              <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-            </button>
-            <div class="sat-play-time" id="satPlayTime">今天 —</div>
-            <div class="sat-ticks" id="satTicks" role="slider" aria-label="时间轴"></div>
+            <div class="sat-playbar-row">
+              <button class="sat-play-btn" id="satPlay" type="button" aria-label="播放">
+                <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+              </button>
+              <div class="sat-play-time" id="satPlayTime">今天 —</div>
+              <div class="sat-ticks" id="satTicks" role="slider" aria-label="时间轴"></div>
+            </div>
+            <div class="sat-caption" id="satCaption">现在：雷达实况</div>
           </div>
           <div class="sat-legend" id="satLegend">
+            <button class="sat-legend-chip" id="satLegendChip" type="button" aria-expanded="false">图例</button>
+            <div class="sat-legend-body" id="satLegendBody">
+            <button class="sat-legend-x" id="satLegendClose" type="button" aria-label="关闭图例">×</button>
             <div class="lg-title">台风图例</div>
             <div class="chip-row">
               <span><i style="background:#4ea2ff"></i>TD</span>
@@ -1261,6 +1340,7 @@ body.loop-still .pill.bad {
             <div><i class="lg-r12"></i>风圈 12级</div>
             <div><i class="lg-dash"></i>虚线＝预报</div>
             <div><i class="lg-cone"></i>锥＝不确定范围</div>
+            </div>
           </div>
           <div class="sat-credit">© NASA · Esri · RainViewer</div>
         </div>
@@ -1278,9 +1358,11 @@ body.loop-still .pill.bad {
     <input class="search" id="citySearch" placeholder="搜索城市，例如 杭州" autocomplete="off">
     <button class="city-row" id="sheetLocate" type="button">定位到当前位置</button>
     <div id="geoHint" class="empty" style="margin:12px 0">也可在顶部使用定位</div>
+    <div class="sec-title">热门城市</div>
+    <div class="hot-cities" id="hotCities"></div>
     <div class="sec-title">最近</div>
     <div id="recents"></div>
-    <div class="sec-title">搜索结果</div>
+    <div class="sec-title" id="cityResultsTitle" hidden>搜索结果</div>
     <div id="cityResults"></div>
     <button class="chip" id="closeCity" type="button" style="margin-top:12px">关闭</button>
   </div>
@@ -1342,7 +1424,11 @@ body.loop-still .pill.bad {
     radarTimer: null,
     radarIdx: 0,
     satOp: 0.68,
-    tempRevealed: false
+    tempRevealed: false,
+    timeline: [],
+    fcUnavailable: false,
+    legendOpen: false,
+    playDelay: 550
   };
   const $ = (id) => document.getElementById(id);
   function ov(k) { return !!(state.overlays && state.overlays[k]); }
@@ -1661,9 +1747,9 @@ body.loop-still .pill.bad {
     if (!reduced && !pageHidden && weatherOn && particleMode) startSkyFx();
     else stopSkyFx();
     if (pageHidden) {
-      if (state.radarTimer) { clearInterval(state.radarTimer); state.radarTimer = null; }
+      clearPlayTimer();
     } else if (state.radarPlaying && state.tab === "sat" && !state.radarTimer) {
-      state.radarTimer = setInterval(function () { showRadarFrame(state.radarIdx + 1); }, 700);
+      schedulePlayTick(state.playDelay || 550);
     }
   }
   function applySky(code, isDay) {
@@ -2310,6 +2396,27 @@ body.loop-still .pill.bad {
     { name: "高雄", lat: 22.63, lon: 120.30 },
     { name: "深圳", lat: 22.54, lon: 114.06 }
   ];
+  const HOT_CITIES = [
+    { name: "北京", lat: 39.90, lon: 116.41, admin: "北京市" },
+    { name: "上海", lat: 31.23, lon: 121.47, admin: "上海市" },
+    { name: "杭州", lat: 30.27, lon: 120.15, admin: "浙江省" },
+    { name: "南京", lat: 32.06, lon: 118.80, admin: "江苏省" },
+    { name: "苏州", lat: 31.30, lon: 120.62, admin: "江苏省" },
+    { name: "合肥", lat: 31.82, lon: 117.23, admin: "安徽省" },
+    { name: "宁波", lat: 29.87, lon: 121.55, admin: "浙江省" },
+    { name: "福州", lat: 26.07, lon: 119.30, admin: "福建省" },
+    { name: "厦门", lat: 24.48, lon: 118.09, admin: "福建省" },
+    { name: "广州", lat: 23.13, lon: 113.26, admin: "广东省" },
+    { name: "深圳", lat: 22.54, lon: 114.06, admin: "广东省" },
+    { name: "成都", lat: 30.67, lon: 104.06, admin: "四川省" },
+    { name: "重庆", lat: 29.56, lon: 106.55, admin: "重庆市" },
+    { name: "武汉", lat: 30.59, lon: 114.31, admin: "湖北省" },
+    { name: "西安", lat: 34.27, lon: 108.95, admin: "陕西省" },
+    { name: "青岛", lat: 36.07, lon: 120.38, admin: "山东省" },
+    { name: "长沙", lat: 28.23, lon: 112.94, admin: "湖南省" },
+    { name: "台北", lat: 25.03, lon: 121.57, admin: "台湾" },
+    { name: "香港", lat: 22.32, lon: 114.17, admin: "香港" }
+  ];
   const ICON_PLAY = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
   const ICON_PAUSE = '<svg viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>';
   function utcDate(off) {
@@ -2333,36 +2440,93 @@ body.loop-still .pill.bad {
     if (satWide()) rail.classList.add("open");
     else if (!state.satRailUser) rail.classList.remove("open");
   }
-  function fmtPlayZh(d) {
-    if (!(d instanceof Date) || isNaN(d.getTime())) return "—";
-    const tz = "Asia/Shanghai";
-    const parts = new Intl.DateTimeFormat("en-GB", {
+  function ymdParts(d, tz) {
+    return new Intl.DateTimeFormat("en-GB", {
       timeZone: tz, year: "numeric", month: "2-digit", day: "2-digit",
       hour: "2-digit", minute: "2-digit", hourCycle: "h23"
     }).formatToParts(d);
-    const get = function (t) {
-      const x = parts.find(function (p) { return p.type === t; });
-      return x ? x.value : "";
-    };
-    const nowP = new Intl.DateTimeFormat("en-GB", {
-      timeZone: tz, year: "numeric", month: "2-digit", day: "2-digit"
-    }).formatToParts(new Date());
-    const nget = function (t) {
-      const x = nowP.find(function (p) { return p.type === t; });
-      return x ? x.value : "";
-    };
+  }
+  function partVal(parts, t) {
+    const x = parts.find(function (p) { return p.type === t; });
+    return x ? x.value : "";
+  }
+  function addDaysYmd(y, m, d, n) {
+    const dt = new Date(Date.UTC(Number(y), Number(m) - 1, Number(d) + n));
+    return { y: String(dt.getUTCFullYear()), m: String(dt.getUTCMonth() + 1).padStart(2, "0"), d: String(dt.getUTCDate()).padStart(2, "0") };
+  }
+  function fmtPlayZh(d, isForecast) {
+    if (!(d instanceof Date) || isNaN(d.getTime())) return "—";
+    const tz = "Asia/Shanghai";
+    const parts = ymdParts(d, tz);
+    const get = function (t) { return partVal(parts, t); };
+    const nowP = ymdParts(new Date(), tz);
+    const nget = function (t) { return partVal(nowP, t); };
     const h = parseInt(get("hour"), 10) || 0;
     const m = get("minute") || "00";
+    const same = get("year") === nget("year") && get("month") === nget("month") && get("day") === nget("day");
+    const tom = addDaysYmd(nget("year"), nget("month"), nget("day"), 1);
+    const isTom = get("year") === tom.y && get("month") === tom.m && get("day") === tom.d;
+    const day = same ? "今天" : (isTom ? "明天" : (parseInt(get("month"), 10) + "月" + parseInt(get("day"), 10) + "日"));
+    if (isForecast) {
+      const hh = get("hour") || "00";
+      return day + " " + hh + ":" + m + " · 预报";
+    }
     let h12 = h % 12;
     if (h12 === 0) h12 = 12;
-    const same = get("year") === nget("year") && get("month") === nget("month") && get("day") === nget("day");
-    const day = same ? "今天" : (parseInt(get("month"), 10) + "月" + parseInt(get("day"), 10) + "日");
     return day + " " + h12 + ":" + m + " " + periodName(h);
   }
+  function buildTimeline() {
+    const now = Math.floor(Date.now() / 1000);
+    const frames = [];
+    const radar = state.radarFrames || [];
+    const pastCut = now - 2 * 3600 - 8 * 60;
+    let past = radar.filter(function (f) { return f.time && f.time >= pastCut && f.time <= now + 180; });
+    if (!past.length && radar.length) past = radar.slice(-12);
+    if (past.length > 10) {
+      const keep = [];
+      const step = Math.ceil(past.length / 8);
+      for (let i = 0; i < past.length; i += step) keep.push(past[i]);
+      if (keep[keep.length - 1] !== past[past.length - 1]) keep.push(past[past.length - 1]);
+      past = keep;
+    }
+    past.forEach(function (f) {
+      frames.push({ time: f.time, kind: "radar", url: f.url });
+    });
+    frames.push({ time: now, kind: "now" });
+    const d0 = new Date();
+    d0.setMinutes(0, 0, 0);
+    if (d0.getTime() / 1000 <= now) d0.setHours(d0.getHours() + 1);
+    for (let h = 0; h < 48; h++) {
+      const t = Math.floor(d0.getTime() / 1000) + h * 3600;
+      frames.push({ time: t, kind: "forecast" });
+    }
+    state.timeline = frames;
+    return frames;
+  }
   function playFrames() {
-    if (ov("radar") && state.radarFrames.length) return state.radarFrames;
-    if (ov("precip") && state.precipFrames.length) return state.precipFrames;
-    return state.satTimeFrames || [];
+    if (state.timeline && state.timeline.length) return state.timeline;
+    return buildTimeline();
+  }
+  function snapPlayheadToNow() {
+    const frames = playFrames();
+    if (!frames.length) { state.radarIdx = 0; return; }
+    const now = Date.now() / 1000;
+    let idx = 0, d = Infinity;
+    for (let i = 0; i < frames.length; i++) {
+      const dd = Math.abs((frames[i].time || 0) - now);
+      if (dd < d) { d = dd; idx = i; }
+    }
+    state.radarIdx = idx;
+  }
+  function playheadFrame() {
+    const frames = playFrames();
+    return frames[Math.max(0, Math.min(frames.length - 1, state.radarIdx))] || null;
+  }
+  function playheadIsFuture() {
+    const fr = playheadFrame();
+    if (!fr) return false;
+    if (fr.kind === "forecast") return true;
+    return (fr.time || 0) > Date.now() / 1000 + 45;
   }
   function nearestFrame(frames, t) {
     if (!frames || !frames.length) return null;
@@ -2384,26 +2548,125 @@ body.loop-still .pill.bad {
       ticks.innerHTML = "";
       if (timeEl) timeEl.textContent = "今天 —";
       if (playBtn) playBtn.disabled = true;
+      updateCaption();
       return;
     }
     const idx = Math.max(0, Math.min(n - 1, state.radarIdx));
-    if (ticks.querySelectorAll(".sat-tick").length !== n) {
+    const stamp = n + (state.fcUnavailable ? "-na" : "");
+    if (ticks.getAttribute("data-n") !== stamp) {
       let html = "";
-      for (let i = 0; i < n; i++) html += '<span class="sat-tick" data-i="' + i + '"></span>';
+      for (let i = 0; i < n; i++) {
+        const k = frames[i].kind || "";
+        html += '<span class="sat-tick' + (k === "forecast" ? " future" : "") + (k === "now" ? " is-now" : "") + '" data-i="' + i + '"></span>';
+      }
+      html += '<div class="sat-now-mark" id="satNowMark"><b>现在</b></div>';
       html += '<div class="sat-playhead" id="satPlayhead"></div>';
+      html += '<div class="sat-fc-na" id="satFcNa">预报场暂不可用</div>';
       ticks.innerHTML = html;
+      ticks.setAttribute("data-n", stamp);
     }
+    ticks.classList.toggle("fc-na", !!state.fcUnavailable);
     const head = $("satPlayhead") || ticks.querySelector(".sat-playhead");
     const pct = n <= 1 ? 0 : (idx / (n - 1)) * 100;
     if (head) head.style.left = pct + "%";
+    let nowIdx = -1;
+    for (let i = 0; i < n; i++) if (frames[i].kind === "now") { nowIdx = i; break; }
+    const nowMark = $("satNowMark");
+    if (nowMark) {
+      const np = n <= 1 || nowIdx < 0 ? 0 : (nowIdx / (n - 1)) * 100;
+      nowMark.style.left = np + "%";
+    }
     const fr = frames[idx];
-    const dt = fr && fr.time ? new Date(fr.time * 1000) : (fr && fr.iso ? new Date(fr.iso) : null);
-    if (timeEl) timeEl.textContent = dt ? fmtPlayZh(dt) : "今天 —";
+    const dt = fr && fr.time ? new Date(fr.time * 1000) : null;
+    if (timeEl) timeEl.textContent = dt ? fmtPlayZh(dt, fr && fr.kind === "forecast") : "今天 —";
     if (playBtn) {
       playBtn.disabled = n < 2;
       playBtn.innerHTML = state.radarPlaying ? ICON_PAUSE : ICON_PLAY;
       playBtn.setAttribute("aria-label", state.radarPlaying ? "暂停" : "播放");
     }
+    updateCaption();
+  }
+  function precipColor(mm, pop) {
+    const v = mm != null ? mm : (pop || 0) / 20;
+    if (v < 0.08 && (pop || 0) < 18) return null;
+    if (v < 0.5) return { c: "#7dd3fc", o: 0.28, r: 9 };
+    if (v < 2) return { c: "#38bdf8", o: 0.42, r: 12 };
+    if (v < 6) return { c: "#0ea5e9", o: 0.55, r: 15 };
+    if (v < 15) return { c: "#6366f1", o: 0.62, r: 18 };
+    return { c: "#7c3aed", o: 0.72, r: 20 };
+  }
+  function hourIndex(pt, unix) {
+    const times = pt.hourly && pt.hourly.time;
+    if (!times || !times.length) return -1;
+    let best = -1, d = Infinity;
+    for (let i = 0; i < times.length; i++) {
+      const tt = new Date(times[i]).getTime() / 1000;
+      const dd = Math.abs(tt - unix);
+      if (dd < d) { d = dd; best = i; }
+    }
+    return d < 50 * 60 ? best : -1;
+  }
+  function metAt(pt, unix, future) {
+    if (future && pt.hourly) {
+      const i = hourIndex(pt, unix);
+      if (i >= 0) {
+        const h = pt.hourly;
+        return {
+          t: h.temperature_2m ? h.temperature_2m[i] : pt.t,
+          rh: h.relative_humidity_2m ? h.relative_humidity_2m[i] : pt.rh,
+          ws: h.wind_speed_10m ? h.wind_speed_10m[i] : pt.ws,
+          wd: h.wind_direction_10m ? h.wind_direction_10m[i] : pt.wd,
+          p: h.surface_pressure ? h.surface_pressure[i] : pt.p,
+          mm: h.precipitation ? h.precipitation[i] : 0,
+          pop: h.precipitation_probability ? h.precipitation_probability[i] : 0,
+          code: h.weather_code ? h.weather_code[i] : 0
+        };
+      }
+    }
+    return { t: pt.t, rh: pt.rh, ws: pt.ws, wd: pt.wd, p: pt.p, mm: pt.mm || 0, pop: pt.pop || 0, code: 0 };
+  }
+  function updateCaption() {
+    const el = $("satCaption");
+    if (!el) return;
+    const fr = playheadFrame();
+    const now = Date.now() / 1000;
+    if (!fr) { el.textContent = ""; return; }
+    if (fr.kind === "forecast" && state.fcUnavailable) {
+      el.textContent = "预报场暂不可用";
+      return;
+    }
+    const leadH = Math.round(((fr.time || now) - now) / 3600);
+    if (fr.kind !== "forecast" || leadH <= 0) {
+      el.textContent = Math.abs((fr.time || now) - now) < 20 * 60 ? "现在：雷达实况" : "雷达实况";
+      return;
+    }
+    let rainPts = 0, maxMm = 0, maxPop = 0, n = 0;
+    const pts = (state.metGrid && state.metGrid.points) || [];
+    pts.forEach(function (pt) {
+      const m = metAt(pt, fr.time, true);
+      n++;
+      if ((m.mm || 0) >= 0.2 || (m.pop || 0) >= 40) rainPts++;
+      if ((m.mm || 0) > maxMm) maxMm = m.mm || 0;
+      if ((m.pop || 0) > maxPop) maxPop = m.pop || 0;
+    });
+    const cityH = state.weather && state.weather.hourly;
+    if (cityH && cityH.time) {
+      let bi = -1, bd = Infinity;
+      for (let i = 0; i < cityH.time.length; i++) {
+        const dd = Math.abs(new Date(cityH.time[i]).getTime() / 1000 - fr.time);
+        if (dd < bd) { bd = dd; bi = i; }
+      }
+      if (bi >= 0 && bd < 50 * 60) {
+        const mm = (cityH.precipitation && cityH.precipitation[bi]) || 0;
+        const pop = (cityH.precipitation_probability && cityH.precipitation_probability[bi]) || 0;
+        if (mm > maxMm) maxMm = mm;
+        if (pop > maxPop) maxPop = pop;
+      }
+    }
+    const prefix = "+" + Math.max(1, leadH) + "小时：";
+    if (maxMm >= 2 || (n && rainPts >= Math.max(2, n * 0.22))) el.textContent = prefix + "华东有雨";
+    else if (maxPop >= 50 || maxMm >= 0.2) el.textContent = prefix + "局部有雨";
+    else el.textContent = prefix + "降水不多";
   }
   function fmtBjShort(iso) {
     if (!iso) return "—";
@@ -2466,7 +2729,12 @@ body.loop-still .pill.bad {
       const extra = (!ov("temp")) ? extraMetricText(c) : "";
       if (extra) html += '<div class="sat-city-pill sub">' + extra + "</div>";
       const ic = L.divIcon({ className: "sat-city-icon", html: html, iconSize: [0, 0], iconAnchor: [0, 0] });
-      L.marker([c.lat, c.lon], { icon: ic, interactive: false, keyboard: false, pane: pane }).addTo(state.satPills);
+      const mk = L.marker([c.lat, c.lon], { icon: ic, interactive: true, keyboard: false, pane: pane, zIndexOffset: 200 });
+      mk.on("click", function (e) {
+        if (L.DomEvent) L.DomEvent.stop(e);
+        pickCity({ name: c.name, lat: c.lat, lon: c.lon, admin: c.admin || "" });
+      });
+      mk.addTo(state.satPills);
     });
     state.satPills.addTo(state.satMap);
     if (my && my.lat != null) {
@@ -2522,7 +2790,7 @@ body.loop-still .pill.bad {
     updateWindPill();
   }
   function needsMet() {
-    return ov("temp") || ov("wind") || ov("humidity") || ov("pressure");
+    return true;
   }
   function metBoundsKey() {
     const b = state.satMap.getBounds();
@@ -2587,32 +2855,43 @@ body.loop-still .pill.bad {
     const metPane = state.satMap.getPane("metPane") ? "metPane" : "overlayPane";
     const windPane = state.satMap.getPane("windPane") ? "windPane" : "overlayPane";
     const presPane = state.satMap.getPane("presPane") ? "presPane" : "overlayPane";
-    if (ov("humidity")) {
-      pts.forEach(function (pt) {
-        if (pt.rh == null) return;
-        const op = 0.12 + 0.4 * Math.max(0, Math.min(1, pt.rh / 100));
+    const precipPane = state.satMap.getPane("precipPane") ? "precipPane" : "overlayPane";
+    const future = playheadIsFuture();
+    const unix = (playheadFrame() && playheadFrame().time) || (Date.now() / 1000);
+    const showFcPrecip = future && !state.fcUnavailable;
+    pts.forEach(function (pt) {
+      const m = metAt(pt, unix, future);
+      if (showFcPrecip) {
+        const col = precipColor(m.mm, m.pop);
+        if (col) {
+          L.circleMarker([pt.lat, pt.lon], {
+            pane: precipPane, radius: col.r, color: col.c, weight: 0,
+            fillColor: col.c, fillOpacity: col.o, interactive: false
+          }).addTo(g);
+        }
+      }
+      if (ov("humidity") && m.rh != null) {
+        const op = 0.12 + 0.4 * Math.max(0, Math.min(1, m.rh / 100));
         L.circleMarker([pt.lat, pt.lon], {
           pane: metPane, radius: 12, color: "#14b8a6", weight: 0,
           fillColor: "#2dd4bf", fillOpacity: op, interactive: false
         }).addTo(g);
-      });
-    }
-    if (ov("temp")) {
-      pts.forEach(function (pt) {
-        if (pt.t == null) return;
-        const r = 10 + Math.max(0, Math.min(4, (pt.t - 8) / 8));
+      }
+      if (ov("temp") && m.t != null) {
+        const r = 10 + Math.max(0, Math.min(4, (m.t - 8) / 8));
         L.circleMarker([pt.lat, pt.lon], {
-          pane: metPane, radius: r, color: tempColor(pt.t), weight: 0,
-          fillColor: tempColor(pt.t), fillOpacity: 0.35, interactive: false
+          pane: metPane, radius: r, color: tempColor(m.t), weight: 0,
+          fillColor: tempColor(m.t), fillOpacity: 0.35, interactive: false
         }).addTo(g);
-      });
-    }
+      }
+    });
     if (ov("pressure")) {
       pts.forEach(function (pt, i) {
-        if (i % 2 !== 0 || pt.p == null) return;
+        const m = metAt(pt, unix, future);
+        if (i % 2 !== 0 || m.p == null) return;
         const ic = L.divIcon({
           className: "sat-city-icon",
-          html: '<div class="sat-p-lab">「' + Math.round(pt.p) + "」</div>",
+          html: '<div class="sat-p-lab">「' + Math.round(m.p) + "」</div>",
           iconSize: [0, 0], iconAnchor: [0, 0]
         });
         L.marker([pt.lat, pt.lon], { icon: ic, interactive: false, keyboard: false, pane: presPane }).addTo(g);
@@ -2620,10 +2899,11 @@ body.loop-still .pill.bad {
     }
     if (ov("wind")) {
       pts.forEach(function (pt) {
-        if (pt.ws == null) return;
-        const len = 16 + Math.min(16, pt.ws * 0.7);
-        const op = 0.4 + Math.min(0.55, pt.ws / 20);
-        const rot = ((pt.wd == null ? 0 : pt.wd) + 180) % 360;
+        const m = metAt(pt, unix, future);
+        if (m.ws == null) return;
+        const len = 16 + Math.min(16, m.ws * 0.7);
+        const op = 0.4 + Math.min(0.55, m.ws / 20);
+        const rot = ((m.wd == null ? 0 : m.wd) + 180) % 360;
         const svg = '<div style="width:' + len + "px;height:" + len + "px;transform:rotate(" + rot +
           "deg);opacity:" + op.toFixed(2) + '">' +
           '<svg viewBox="0 0 24 24" width="' + len + '" height="' + len +
@@ -2640,6 +2920,7 @@ body.loop-still .pill.bad {
     const key = metBoundsKey();
     if (!force && state.metGrid && state.metGrid.key === key && state.metGrid.points && state.metGrid.points.length) {
       drawMetFields();
+      updateCaption();
       return;
     }
     const pts = sampleMetGrid();
@@ -2648,23 +2929,29 @@ body.loop-still .pill.bad {
       const lons = pts.map(function (p) { return p.lon.toFixed(3); }).join(",");
       const url = "https://api.open-meteo.com/v1/forecast?latitude=" + lats + "&longitude=" + lons +
         "&current=temperature_2m,relative_humidity_2m,wind_speed_10m,wind_direction_10m,surface_pressure" +
-        "&wind_speed_unit=ms&timezone=Asia/Shanghai";
+        "&hourly=precipitation,precipitation_probability,weather_code,wind_speed_10m,temperature_2m,relative_humidity_2m,wind_direction_10m,surface_pressure" +
+        "&forecast_days=3&past_days=1&wind_speed_unit=ms&timezone=Asia/Shanghai";
       const data = await getJson(url);
       const arr = Array.isArray(data) ? data : [data];
       arr.forEach(function (d, i) {
-        if (!pts[i] || !d || !d.current) return;
-        const c = d.current;
+        if (!pts[i] || !d) return;
+        const c = d.current || {};
         pts[i].t = c.temperature_2m;
         pts[i].rh = c.relative_humidity_2m;
         pts[i].ws = c.wind_speed_10m;
         pts[i].wd = c.wind_direction_10m;
         pts[i].p = c.surface_pressure;
+        if (d.hourly && d.hourly.time) pts[i].hourly = d.hourly;
       });
       state.metGrid = { key: key, points: pts };
+      state.fcUnavailable = !arr.some(function (d) { return d && d.hourly && d.hourly.time; });
     } catch (e) {
+      const msg = String((e && e.message) || e);
+      if (msg.indexOf("429") >= 0) state.fcUnavailable = true;
       if (!state.metGrid) state.metGrid = { key: "", points: pts };
     }
     drawMetFields();
+    updatePlayhead();
   }
   function scheduleMetGrid() {
     if (state.metTimer) clearTimeout(state.metTimer);
@@ -2676,7 +2963,10 @@ body.loop-still .pill.bad {
     const on = ov("typhoon");
     if (wrap) wrap.style.display = on ? "" : "none";
     const n = (state.storms || []).length;
-    if (legend) legend.classList.toggle("show", !!(on && n));
+    if (legend) {
+      legend.style.display = "";
+      legend.classList.toggle("open", !!state.legendOpen);
+    }
     const peek = $("satStormsPeek");
     if (peek) {
       const s = state.selected || (state.storms || []).slice().sort(wpacFirst)[0];
@@ -2739,15 +3029,23 @@ body.loop-still .pill.bad {
     await setSatBase(state.satLayer || "truecolor");
     await loadRadarMeta();
     applySatOverlays();
+    drawMetFields();
     updatePlayhead();
     drawSatTracks();
     loadSatCityWx();
     loadMetGrid(true);
     maybeAutoplayRadar();
   }
+  function clearPlayTimer() {
+    if (state.radarTimer) {
+      clearTimeout(state.radarTimer);
+      clearInterval(state.radarTimer);
+      state.radarTimer = null;
+    }
+  }
   function stopRadarLoop() {
     state.radarPlaying = false;
-    if (state.radarTimer) { clearInterval(state.radarTimer); state.radarTimer = null; }
+    clearPlayTimer();
     const btn = $("satPlay");
     if (btn) {
       btn.innerHTML = ICON_PLAY;
@@ -2827,11 +3125,14 @@ body.loop-still .pill.bad {
       } else {
         state.precipFrames = state.radarFrames.slice();
       }
-      if (state.radarFrames.length) state.radarIdx = state.radarFrames.length - 1;
     } catch (e) {
       state.radarFrames = state.radarFrames || [];
       state.precipFrames = state.precipFrames || [];
     }
+    const first = !(state.timeline && state.timeline.length);
+    buildTimeline();
+    if (first) snapPlayheadToNow();
+    else state.radarIdx = Math.max(0, Math.min(state.timeline.length - 1, state.radarIdx));
   }
   function applySatOverlays() {
     if (!state.satMap) return;
@@ -2840,14 +3141,15 @@ body.loop-still .pill.bad {
     const frames = playFrames();
     if (frames.length) state.radarIdx = Math.max(0, Math.min(frames.length - 1, state.radarIdx));
     const t = frames.length ? (frames[state.radarIdx].time || 0) : 0;
-    if (ov("radar") && state.radarFrames.length) {
+    const future = playheadIsFuture();
+    if (!future && ov("radar") && state.radarFrames.length) {
       const f = nearestFrame(state.radarFrames, t) || state.radarFrames[state.radarFrames.length - 1];
       state.satRadarLayer = L.tileLayer(f.url, {
         pane: "radarPane", opacity: 0.65, maxZoom: 9, maxNativeZoom: 7,
         attribution: "RainViewer", tileSize: 256
       }).addTo(state.satMap);
     }
-    if (ov("precip") && state.precipFrames.length) {
+    if (!future && ov("precip") && state.precipFrames.length) {
       const f = nearestFrame(state.precipFrames, t) || state.precipFrames[state.precipFrames.length - 1];
       state.satPrecipLayer = L.tileLayer(f.url, {
         pane: "precipPane", opacity: 0.55, maxZoom: 9, maxNativeZoom: 7,
@@ -2859,20 +3161,42 @@ body.loop-still .pill.bad {
   function showRadarFrame(i) {
     const frames = playFrames();
     if (!frames.length || !state.satMap) return;
+    const wasFuture = playheadIsFuture();
     state.radarIdx = (i + frames.length) % frames.length;
+    const nowFuture = playheadIsFuture();
     const t = frames[state.radarIdx].time || 0;
-    if (state.satRadarLayer && state.radarFrames.length) {
-      const f = nearestFrame(state.radarFrames, t);
-      if (f && state.satRadarLayer.setUrl) state.satRadarLayer.setUrl(f.url);
+    if (wasFuture !== nowFuture) {
+      applySatOverlays();
+    } else if (!nowFuture) {
+      if (state.satRadarLayer && state.radarFrames.length) {
+        const f = nearestFrame(state.radarFrames, t);
+        if (f && state.satRadarLayer.setUrl) state.satRadarLayer.setUrl(f.url);
+      }
+      if (state.satPrecipLayer && state.precipFrames.length) {
+        const f = nearestFrame(state.precipFrames, t);
+        if (f && state.satPrecipLayer.setUrl) state.satPrecipLayer.setUrl(f.url);
+      }
     }
-    if (state.satPrecipLayer && state.precipFrames.length) {
-      const f = nearestFrame(state.precipFrames, t);
-      if (f && state.satPrecipLayer.setUrl) state.satPrecipLayer.setUrl(f.url);
-    }
-    if (!ov("radar") && !ov("precip") && state.satLayerObj && frames[state.radarIdx].url) {
-      state.satLayerObj.setUrl(frames[state.radarIdx].url);
-    }
+    if (nowFuture || wasFuture !== nowFuture) drawMetFields();
     updatePlayhead();
+  }
+  function schedulePlayTick(ms) {
+    clearPlayTimer();
+    state.radarTimer = setTimeout(playTick, ms);
+  }
+  function playTick() {
+    state.radarTimer = null;
+    if (!state.radarPlaying) return;
+    const frames = playFrames();
+    if (frames.length < 2) { stopRadarLoop(); updatePlayhead(); return; }
+    const prev = frames[state.radarIdx];
+    showRadarFrame(state.radarIdx + 1);
+    const fr = frames[state.radarIdx];
+    let delay = state.playDelay || 550;
+    if ((fr && fr.kind === "now") || (prev && prev.kind !== "forecast" && fr && fr.kind === "forecast")) {
+      delay += 600;
+    }
+    if (state.radarPlaying) schedulePlayTick(delay);
   }
   function toggleRadarPlay() {
     const frames = playFrames();
@@ -2884,7 +3208,7 @@ body.loop-still .pill.bad {
       btn.innerHTML = ICON_PAUSE;
       btn.setAttribute("aria-label", "暂停");
     }
-    state.radarTimer = setInterval(function () { showRadarFrame(state.radarIdx + 1); }, 700);
+    schedulePlayTick(state.playDelay || 550);
   }
   function destPoint(lat, lon, bearingDeg, distKm) {
     /* km along a compass bearing → lat/lon, used by the cone offset and (via degrees) radii. */
@@ -3162,7 +3486,13 @@ body.loop-still .pill.bad {
   function closeSheet(id) { $(id).classList.remove("open"); }
   async function searchCity(q) {
     const box = $("cityResults");
-    if (!q || q.length < 1) { box.innerHTML = ""; return; }
+    const title = $("cityResultsTitle");
+    if (!q || q.length < 1) {
+      if (box) box.innerHTML = "";
+      if (title) title.hidden = true;
+      return;
+    }
+    if (title) title.hidden = false;
     try {
       const data = await getJson("https://geocoding-api.open-meteo.com/v1/search?name=" + encodeURIComponent(q) + "&count=8&language=zh&format=json");
       const rows = data.results || [];
@@ -3173,8 +3503,20 @@ body.loop-still .pill.bad {
         el.addEventListener("click", () => pickCity({ name: rows[i].name, lat: rows[i].latitude, lon: rows[i].longitude, admin: rows[i].admin1 }));
       });
     } catch (e) {
-      box.innerHTML = '<div class="empty">搜索暂时不可用</div>';
+      box.innerHTML = '<div class="empty">搜索暂时不可用，可用热门城市</div>';
     }
+  }
+  function renderHotCities() {
+    const box = $("hotCities");
+    if (!box) return;
+    box.innerHTML = HOT_CITIES.map(function (c, i) {
+      return '<button class="hot-chip" type="button" data-i="' + i + '">' + c.name + "</button>";
+    }).join("");
+    box.querySelectorAll(".hot-chip").forEach(function (el) {
+      el.addEventListener("click", function () {
+        pickCity(HOT_CITIES[+el.getAttribute("data-i")]);
+      });
+    });
   }
   function renderRecents() {
     const box = $("recents");
@@ -3186,11 +3528,21 @@ body.loop-still .pill.bad {
   function pickCity(c) {
     saveCity(c);
     closeSheet("citySheet");
-    if (state.satMap) state.satMap.setView([c.lat, c.lon], 6);
-    updateWindPill();
-    refreshCityPills();
-    renderTyphoonList();
     loadWeather();
+    const go = function () {
+      if (state.satMap && c.lat != null) {
+        const z = Math.max(state.satMap.getZoom ? state.satMap.getZoom() : 6, 6);
+        state.satMap.flyTo([c.lat, c.lon], z, { duration: prefersReduced() ? 0 : 0.7 });
+      }
+      updateWindPill();
+      refreshCityPills();
+    };
+    if (state.satMap) go();
+    else {
+      updateWindPill();
+      refreshCityPills();
+    }
+    renderTyphoonList();
   }
   function tryGeo(quiet) {
     if (!navigator.geolocation) {
@@ -3212,7 +3564,13 @@ body.loop-still .pill.bad {
   }
   function bind() {
     document.querySelectorAll(".nav-item").forEach((b) => b.addEventListener("click", () => showTab(b.getAttribute("data-tab"))));
-    $("cityBtn").addEventListener("click", () => { renderRecents(); openSheet("citySheet"); $("citySearch").focus(); });
+    $("cityBtn").addEventListener("click", () => {
+      renderHotCities();
+      renderRecents();
+      openSheet("citySheet");
+      const q = $("citySearch");
+      if (q) q.focus();
+    });
     $("aboutBtn").addEventListener("click", () => openSheet("aboutSheet"));
     $("closeCity").addEventListener("click", () => closeSheet("citySheet"));
     $("closeAbout").addEventListener("click", () => closeSheet("aboutSheet"));
@@ -3251,8 +3609,8 @@ body.loop-still .pill.bad {
         if (k === "radar" || k === "precip") {
           loadRadarMeta().then(function () {
             applySatOverlays();
-            if ((ov("radar") || ov("precip")) && playFrames().length >= 2) maybeAutoplayRadar();
-            else if (!ov("radar") && !ov("precip")) { stopRadarLoop(); updatePlayhead(); }
+            drawMetFields();
+            updatePlayhead();
           });
         } else if (k === "typhoon") {
           drawSatTracks();
@@ -3274,6 +3632,23 @@ body.loop-still .pill.bad {
       if (!wrap) return;
       state.satStormsOpen = !wrap.classList.contains("open");
       wrap.classList.toggle("open", state.satStormsOpen);
+    });
+    function setLegendOpen(on) {
+      state.legendOpen = !!on;
+      const lg = $("satLegend");
+      const chip = $("satLegendChip");
+      if (lg) lg.classList.toggle("open", state.legendOpen);
+      if (chip) chip.setAttribute("aria-expanded", state.legendOpen ? "true" : "false");
+    }
+    const legendChip = $("satLegendChip");
+    if (legendChip) legendChip.addEventListener("click", function (e) {
+      e.stopPropagation();
+      setLegendOpen(!state.legendOpen);
+    });
+    const legendClose = $("satLegendClose");
+    if (legendClose) legendClose.addEventListener("click", function (e) {
+      e.stopPropagation();
+      setLegendOpen(false);
     });
     const ticks = $("satTicks");
     if (ticks) ticks.addEventListener("click", function (e) {
@@ -3297,6 +3672,7 @@ body.loop-still .pill.bad {
     const saved = loadCity();
     saveCity(saved || DEFAULT_CITY);
     bind();
+    renderHotCities();
     syncSatRail();
     syncSatLy();
     syncMotion();
