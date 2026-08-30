@@ -2,6 +2,8 @@
 
 卫星云图、台风路径和城市天气的静态网页应用。用浏览器直接打开即可；也可以加到主屏幕，像小程序一样全屏使用。不需要账号，也不需要 API 密钥。
 
+当前功能：全球城市搜索、当前位置天气、24 小时与 7 天预报、空气质量、生活指数、卫星云图、雷达回放、温度/湿度/风/气压图层、CMA 与 NHC 台风路径、台风风圈与预报锥、预警列表。天气和台风数据支持手动刷新，并在页面保持打开时每 30 分钟自动刷新。
+
 线上地址：https://syan1209david-droid.github.io/weather-forecast/
 
 ## 本地预览
@@ -44,4 +46,5 @@ Android：Chrome 打开后，菜单里选添加到主屏幕或安装应用。
 
 无需安装依赖，无需构建。
 
-若要自动刷新台风快照：把 scripts/update-typhoons.action.yml 复制为 .github/workflows/update-typhoons.yml 后即可每 30 分钟抓取。当前推送所用令牌没有 workflow 权限，所以工作流文件先放在 scripts 目录。
+台风快照工作流位于 `.github/workflows/update-typhoons.yml`，每 30 分钟抓取 CMA 与 NHC 数据并在有变化时提交 `data/typhoons.json`；也可以在 GitHub Actions 页面手动运行。
+
