@@ -250,6 +250,28 @@ button { color: inherit; }
 .pill.bad { background: rgba(255,90,95,0.16); color: var(--danger); }
 .map-wrap { position: relative; flex: 1; min-height: 0; background: #081018; }
 .map-wrap .leaflet-container { height: 100%; width: 100%; background: #081018; font-family: inherit; }
+#sat3dMap { display:none; position:absolute; inset:0; z-index:1; background:#081018; }
+#sat3dMap .maplibregl-map { font-family:inherit; }
+.map-wrap.view-3d #satMap { display:none; }
+.map-wrap.view-3d #sat3dMap { display:block; }
+.map-wrap.view-3d .sat-playbar-row { display:none; }
+.map-wrap.view-3d .sat-playbar { padding-top:9px; }
+.map-wrap.view-3d .sat-legend { display:none !important; }
+.map-wrap.view-3d .sat-credit { color:rgba(255,255,255,0.58); }
+.maplibregl-ctrl-group { background:rgba(8,14,22,0.72) !important; border:1px solid rgba(255,255,255,0.16) !important; }
+.maplibregl-ctrl-group button { filter:invert(1); }
+.maplibregl-ctrl-attrib { background:rgba(0,0,0,0.55) !important; color:rgba(255,255,255,0.7) !important; font-size:10px !important; }
+.maplibregl-ctrl-attrib a { color:#9cc9ff !important; }
+.sat-view-switch {
+  position:absolute; top:52px; left:50%; transform:translateX(-50%); z-index:525;
+  display:flex; gap:2px; padding:3px; border-radius:12px;
+}
+.sat-view-btn {
+  appearance:none; border:0; background:transparent; color:rgba(244,247,251,0.72);
+  border-radius:9px; padding:6px 9px; font-size:11px; cursor:pointer; white-space:nowrap;
+}
+.sat-view-btn.on { background:rgba(78,162,255,0.28); color:#f4f7fb; font-weight:650; }
+.sat-view-btn:active { background:rgba(78,162,255,0.4); }
 .sat-hud {
   position: absolute; inset: 0; z-index: 500;
   pointer-events: none;
@@ -1350,6 +1372,7 @@ body.loop-still .pill.bad {
     <section class="panel" id="sat">
       <div class="map-wrap">
         <div id="satMap" style="height:100%;width:100%"></div>
+        <div id="sat3dMap" aria-label="三维城市地图"></div>
         <div class="sat-hud" aria-hidden="false">
           <button class="sat-wind" id="satWind" type="button" title="定位到所选城市">
             <span><b id="satWindNum">—</b> 公里/小时</span>
@@ -1358,6 +1381,10 @@ body.loop-still .pill.bad {
               <span id="satWindDir">—</span>
             </span>
           </button>
+          <div class="sat-view-switch sat-glass" role="group" aria-label="地图模式">
+            <button class="sat-view-btn on" data-view="2d" type="button">2D 天气</button>
+            <button class="sat-view-btn" data-view="3d" type="button">3D 城市</button>
+          </div>
           <aside class="sat-rail" id="satRail">
             <button class="sat-rail-close" id="satRailClose" type="button">关闭</button>
             <div class="sat-rail-title">天气图</div>
@@ -1367,11 +1394,15 @@ body.loop-still .pill.bad {
                 <span>卫星</span>
                 <span class="ck">✓</span>
               </div>
-              <div class="sat-sat-sub">
-                <span class="sat-live">实时<i>✓</i></span>
-                <span class="sat-hd" title="需要专业数据">高清</span>
-              </div>
+            <div class="sat-sat-sub">
+              <span class="sat-live">实时<i>✓</i></span>
+              <span class="sat-hd" title="需要专业数据">高清</span>
             </div>
+            </div>
+            <button class="sat-ly on" data-labels="true" type="button">
+              <svg viewBox="0 0 24 24"><path d="M4 18h16M6 14h12M8 10h8M10 6h4"/><path d="M5 20V4M19 20V4"/></svg>
+              <span>关键道路 · 城镇名称</span><span class="ck">✓</span>
+            </button>
             <button class="sat-ly on" data-overlay="radar" type="button">
               <svg viewBox="0 0 24 24"><path d="M4 18a8 8 0 0 1 16 0"/><path d="M7 18a5 5 0 0 1 10 0"/><circle cx="12" cy="18" r="1.2" fill="currentColor" stroke="none"/></svg>
               <span>雷达</span><span class="ck">✓</span>
@@ -1495,6 +1526,7 @@ body.loop-still .pill.bad {
     <p>天气、16 天预报、历史趋势、空气质量和城市搜索来自 Open-Meteo。历史天气属于模型/再分析数据，不等同于气象站实测。真实色卫星来自 NASA GIBS 的 VIIRS / MODIS，东亚可见光与红外来自葵花 Himawari AHI。雷达来自 RainViewer。</p>
     <p>西北太平洋台风以中央气象台 CMA 为准，大西洋与东北太平洋来自美国飓风中心 NHC。底图使用 Esri 深色画布，无密钥。</p>
     <p>预警根据台风实况和气温、未来 2 小时降雨/雷暴/阵风、高温、暴雨、大风、低温、大雾阈值生成。地图会自动定位到所选城市，云图透明度、高清城市底图和图层可调。</p>
+    <p>地图新增“3D 城市”模式：道路、城镇名称和建筑由矢量底图提供，地图点选会把坐标反向解析后同步到天气主页。3D 地形属于公共 DEM，部分地区的起伏精度和覆盖范围会有差异。</p>
     <p>卫星图像不是米级实时城市影像：VIIRS 约 375 米近天底，Himawari 更高频但分辨率更低。真正 10 米级无云城市底图需要 Sentinel-2 云掩膜与后端拼接；云层无法从一张原始光学影像中凭前端彻底删除。台风“风眼”当前显示为路径资料中的中心估计，不冒充实时雷达眼墙。</p>
     <p>刷新策略：天气按模型更新节奏自动刷新，台风约 10 分钟检查，地图雷达按公开接口约 5 分钟检查；更快轮询不代表数据更快更新，也可能触发服务限流。</p>
     <p id="aboutSnap"></p>
@@ -1508,6 +1540,11 @@ body.loop-still .pill.bad {
   const WX_CACHE_KEY = "weather-forecast-wx-cache";
   const ESRI_DARK = "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}";
   const ESRI_IMAGERY = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
+  const ESRI_ROADS = "https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}";
+  const ESRI_PLACES = "https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}";
+  const MAPLIBRE_STYLE = "https://tiles.openfreemap.org/styles/liberty";
+  const MAPLIBRE_TERRAIN = "https://tiles.mapterhorn.com/tilejson.json";
+  const MAPLIBRE_VERSION = "6.6.0";
   const OSM_URL = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
   const DEFAULT_CITY = { name: "上海", lat: 31.23, lon: 121.47, admin: "上海市" };
   const GRADE_ZH = { TD: "热带低压", TS: "热带风暴", STS: "强热带风暴", TY: "台风", STY: "强台风", SuperTY: "超强台风", SUPERTY: "超强台风", PTC: "潜在热带气旋", HU: "飓风", MH: "重大飓风" };
@@ -1542,8 +1579,14 @@ body.loop-still .pill.bad {
     selected: null,
     recents: [],
     satMap: null,
+    sat3dMap: null,
+    sat3dReady: null,
+    satView: "2d",
     satLayerObj: null,
     satBase: null,
+    satRoads: null,
+    satPlaces: null,
+    labelsOn: true,
     radarMeta: null,
     radarFrames: [],
     radarPlaying: false,
@@ -1556,6 +1599,7 @@ body.loop-still .pill.bad {
     legendOpen: false,
     playDelay: 550,
     weatherRequest: 0,
+    mapPickRequest: 0,
     stormRequest: 0,
     citySearchRequest: 0,
     historyRequest: 0,
@@ -2036,6 +2080,7 @@ body.loop-still .pill.bad {
     state.recents = rec.slice(0, 8);
     try { localStorage.setItem(REC_KEY, JSON.stringify(state.recents)); } catch (e) {}
     $("cityBtn").innerHTML = c.name + " <small>选择城市</small>";
+    update3DCityMarker();
   }
   function showTab(id) {
     state.tab = id;
@@ -2049,6 +2094,7 @@ body.loop-still .pill.bad {
   }
   function invalidateMaps() {
     try { if (state.satMap) state.satMap.invalidateSize(); } catch (e) {}
+    try { if (state.sat3dMap) state.sat3dMap.resize(); } catch (e) {}
   }
   function fmtHour(iso) {
     const d = new Date(iso);
@@ -2681,6 +2727,20 @@ body.loop-still .pill.bad {
     });
     return window.__leafP;
   }
+  function loadMapLibre() {
+    if (window.maplibregl) return Promise.resolve();
+    if (window.__maplibreP) return window.__maplibreP;
+    window.__maplibreP = new Promise((resolve, reject) => {
+      const link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = "https://unpkg.com/maplibre-gl@" + MAPLIBRE_VERSION + "/dist/maplibre-gl.css";
+      document.head.appendChild(link);
+      import("https://unpkg.com/maplibre-gl@" + MAPLIBRE_VERSION + "/dist/maplibre-gl.mjs")
+        .then((mod) => { window.maplibregl = mod; resolve(mod); })
+        .catch(() => reject(new Error("3d map lib")));
+    });
+    return window.__maplibreP;
+  }
   const SAT_CITIES = [
     { name: "北京", lat: 39.90, lon: 116.41 },
     { name: "青岛", lat: 36.07, lon: 120.38 },
@@ -2933,6 +2993,10 @@ body.loop-still .pill.bad {
   function updateCaption() {
     const el = $("satCaption");
     if (!el) return;
+    if (state.satView === "3d") {
+      el.textContent = "三维城市模式 · 道路、城镇名称、建筑与地形已显示";
+      return;
+    }
     if (state.satLayer === "city") {
       el.textContent = "高清城市底图 · 非实时云图，可放大查看城市细节";
       return;
@@ -3081,6 +3145,95 @@ body.loop-still .pill.bad {
     if (elA && wx.wind_direction_10m != null) {
       elA.style.transform = "rotate(" + ((wx.wind_direction_10m + 180) % 360) + "deg)";
     }
+  }
+  function cityFeature(c) {
+    c = c || DEFAULT_CITY;
+    return {
+      type: "Feature",
+      geometry: { type: "Point", coordinates: [Number(c.lon), Number(c.lat)] },
+      properties: { name: c.name || "地图选点" }
+    };
+  }
+  function update3DCityMarker() {
+    const map = state.sat3dMap;
+    if (!map || !map.getSource || !map.getSource("selected-city")) return;
+    map.getSource("selected-city").setData({ type: "FeatureCollection", features: [cityFeature(state.city || DEFAULT_CITY)] });
+  }
+  function sync3DLabels() {
+    const map = state.sat3dMap;
+    if (!map || !map.isStyleLoaded || !map.isStyleLoaded() || !map.getStyle) return;
+    const visibility = state.labelsOn ? "visible" : "none";
+    (map.getStyle().layers || []).forEach(function (layer) {
+      if (!layer.id || !/label|highway-name|road[_-]shield|poi/i.test(layer.id)) return;
+      try { map.setLayoutProperty(layer.id, "visibility", visibility); } catch (e) {}
+    });
+  }
+  function syncSatLabels() {
+    const opacity = state.labelsOn ? 0.9 : 0;
+    [state.satRoads, state.satPlaces].forEach(function (layer) {
+      if (layer && layer.setOpacity) layer.setOpacity(opacity);
+    });
+    sync3DLabels();
+  }
+  function ensureSatLabels() {
+    if (!state.satMap || !window.L) return;
+    if (!state.satRoads) state.satRoads = L.tileLayer(ESRI_ROADS, {
+      pane: "labelPane", maxZoom: 19, maxNativeZoom: 19, tileSize: 256,
+      opacity: 0.9, attribution: "Esri World Transportation"
+    });
+    if (!state.satPlaces) state.satPlaces = L.tileLayer(ESRI_PLACES, {
+      pane: "labelPane", maxZoom: 19, maxNativeZoom: 19, tileSize: 256,
+      opacity: 0.9, attribution: "Esri World Boundaries and Places"
+    });
+    [state.satRoads, state.satPlaces].forEach(function (layer) {
+      if (!state.satMap.hasLayer(layer)) layer.addTo(state.satMap);
+    });
+    syncSatLabels();
+  }
+  async function ensure3DMap() {
+    try { await loadMapLibre(); } catch (e) { return null; }
+    if (state.sat3dMap) {
+      if (state.sat3dReady) await state.sat3dReady;
+      state.sat3dMap.resize();
+      update3DCityMarker();
+      sync3DLabels();
+      return state.sat3dMap;
+    }
+    const initialCity = state.city || DEFAULT_CITY;
+    const map = new maplibregl.Map({
+      container: "sat3dMap", style: MAPLIBRE_STYLE,
+      center: [initialCity.lon, initialCity.lat], zoom: 12,
+      pitch: 55, bearing: -12, maxZoom: 18, maxPitch: 78, antialias: true,
+      attributionControl: true
+    });
+    map.addControl(new maplibregl.NavigationControl({ visualizePitch: true, showZoom: true, showCompass: true }), "bottom-right");
+    map.getCanvas().style.cursor = "crosshair";
+    map.on("click", function (e) { selectMapLocation(e.lngLat.lat, e.lngLat.lng); });
+    state.sat3dMap = map;
+    state.sat3dReady = new Promise(function (resolve) {
+      let done = false;
+      const finish = function () { if (done) return; done = true; resolve(map); };
+      map.once("load", function () {
+        try {
+          map.addSource("terrainSource", { type: "raster-dem", url: MAPLIBRE_TERRAIN, tileSize: 512, maxzoom: 12 });
+          map.setTerrain({ source: "terrainSource", exaggeration: 1.15 });
+          const before = map.getLayer("building-3d") ? "building-3d" : undefined;
+          map.addLayer({ id: "terrain-hillshade", type: "hillshade", source: "terrainSource", paint: { "hillshade-exaggeration": 0.28 } }, before);
+        } catch (e) {}
+        try {
+          map.addSource("selected-city", { type: "geojson", data: cityFeature(state.city || DEFAULT_CITY) });
+          map.addLayer({ id: "selected-city-halo", type: "circle", source: "selected-city", paint: { "circle-radius": 14, "circle-color": "#4ea2ff", "circle-opacity": 0.18, "circle-blur": 0.55 } });
+          map.addLayer({ id: "selected-city-dot", type: "circle", source: "selected-city", paint: { "circle-radius": 5, "circle-color": "#4ea2ff", "circle-stroke-color": "#fff", "circle-stroke-width": 2 } });
+          map.addLayer({ id: "selected-city-label", type: "symbol", source: "selected-city", layout: { "text-field": ["get", "name"], "text-size": 13, "text-offset": [0, 1.35], "text-anchor": "top" }, paint: { "text-color": "#fff", "text-halo-color": "#07111f", "text-halo-width": 1.6 } });
+        } catch (e) {}
+        sync3DLabels();
+        map.resize();
+        finish();
+      });
+      setTimeout(finish, 12000);
+    });
+    await state.sat3dReady;
+    return map;
   }
   async function loadSatCityWx() {
     try {
@@ -3312,6 +3465,12 @@ body.loop-still .pill.bad {
     document.querySelectorAll("#sat [data-base]").forEach(function (b) {
       b.classList.toggle("on", b.getAttribute("data-base") === state.satLayer);
     });
+    document.querySelectorAll("#sat [data-labels]").forEach(function (b) {
+      const on = !!state.labelsOn;
+      b.classList.toggle("on", on);
+      const ck = b.querySelector(".ck");
+      if (ck) ck.textContent = on ? "✓" : "";
+    });
     syncStormHud();
   }
   async function ensureSatMap() {
@@ -3339,16 +3498,25 @@ body.loop-still .pill.bad {
     pane("windPane", 420, "none");
     pane("presPane", 430, "none");
     pane("cityPane", 440, "none");
+    pane("labelPane", 445, "none");
     pane("tyFillPane", 450, "none");
     pane("tyLinePane", 460, "none");
     pane("tyDotPane", 470, "auto");
     pane("tyMarkPane", 480, "auto");
     state.satMap = map;
+    map.getContainer().addEventListener("click", function (e) {
+      if (e.target && e.target.closest && e.target.closest(".leaflet-control,.leaflet-marker-icon,.leaflet-popup")) return;
+      const rect = map.getContainer().getBoundingClientRect();
+      const point = L.point(e.clientX - rect.left, e.clientY - rect.top);
+      const latlng = map.containerPointToLatLng(point);
+      selectMapLocation(latlng.lat, latlng.lng);
+    });
     map.on("moveend zoomend", function () {
       refreshCityPills();
       scheduleMetGrid();
     });
     await setSatBase(state.satLayer || "truecolor");
+    ensureSatLabels();
     await loadRadarMeta();
     applySatOverlays();
     drawMetFields();
@@ -3436,6 +3604,7 @@ body.loop-still .pill.bad {
       if (errN === 3) ensureSatFallback();
     });
     state.satLayerObj.addTo(state.satMap);
+    ensureSatLabels();
     updatePlayhead();
   }
   async function loadRadarMeta() {
@@ -3870,6 +4039,10 @@ body.loop-still .pill.bad {
         const z = state.satLayer === "city" ? Math.max(state.satMap.getZoom ? state.satMap.getZoom() : 12, 12) : Math.max(state.satMap.getZoom ? state.satMap.getZoom() : 6, 6);
         state.satMap.flyTo([c.lat, c.lon], z, { duration: prefersReduced() ? 0 : 0.7 });
       }
+      update3DCityMarker();
+      if (state.sat3dMap && state.satView === "3d" && c.lat != null) {
+        state.sat3dMap.flyTo({ center: [c.lon, c.lat], zoom: Math.max(12, Math.min(14, state.sat3dMap.getZoom() || 12)), pitch: 55, bearing: -12, duration: prefersReduced() ? 0 : 700 });
+      }
       updateWindPill();
       refreshCityPills();
     };
@@ -3897,6 +4070,56 @@ body.loop-still .pill.bad {
     }, () => {
       if (!quiet) $("geoHint").textContent = "没有获得定位权限，可手动搜索城市";
     }, { enableHighAccuracy: false, timeout: 8000, maximumAge: 600000 });
+  }
+  function syncSatView() {
+    const wrap = document.querySelector(".map-wrap");
+    if (wrap) wrap.classList.toggle("view-3d", state.satView === "3d");
+    document.querySelectorAll("[data-view]").forEach(function (button) {
+      button.classList.toggle("on", button.getAttribute("data-view") === state.satView);
+      button.setAttribute("aria-pressed", button.getAttribute("data-view") === state.satView ? "true" : "false");
+    });
+  }
+  async function setSatView(mode) {
+    const next = mode === "3d" ? "3d" : "2d";
+    showTab("sat");
+    if (next === "2d") {
+      state.satView = "2d";
+      syncSatView();
+      setTimeout(invalidateMaps, 80);
+      updateCaption();
+      return;
+    }
+    const map = await ensure3DMap();
+    if (!map) {
+      state.satView = "2d";
+      syncSatView();
+      const cap = $("satCaption");
+      if (cap) cap.textContent = "三维地图暂时不可用，已保留二维天气图";
+      return;
+    }
+    state.satView = "3d";
+    syncSatView();
+    map.resize();
+    update3DCityMarker();
+    sync3DLabels();
+    const c = state.city || DEFAULT_CITY;
+    map.flyTo({ center: [c.lon, c.lat], zoom: Math.max(12, Math.min(14, map.getZoom() || 12)), pitch: 55, bearing: -12, duration: prefersReduced() ? 0 : 900 });
+    updateCaption();
+  }
+  async function selectMapLocation(lat, lon) {
+    if (lat == null || lon == null) return;
+    const requestId = ++state.mapPickRequest;
+    const cap = $("satCaption");
+    if (cap) cap.textContent = "正在读取地图选点天气…";
+    let city = { name: "地图选点 · " + lat.toFixed(2) + "°, " + lon.toFixed(2) + "°", lat: Number(lat.toFixed(4)), lon: Number(lon.toFixed(4)), admin: "" };
+    try {
+      const data = await getJson("https://geocoding-api.open-meteo.com/v1/reverse?latitude=" + encodeURIComponent(lat) + "&longitude=" + encodeURIComponent(lon) + "&language=zh");
+      const r = (data.results && data.results[0]) || data;
+      if (r && r.name) city = { name: r.name, lat: city.lat, lon: city.lon, admin: r.admin1 || r.country || "" };
+    } catch (e) {}
+    if (requestId !== state.mapPickRequest) return;
+    pickCity(city);
+    showTab("weather");
   }
   async function focusCityDetail() {
     const c = state.city || DEFAULT_CITY;
@@ -3967,6 +4190,16 @@ body.loop-still .pill.bad {
     });
     document.querySelectorAll(".sat-detail-btn").forEach(function (button) {
       button.addEventListener("click", function () { focusCityDetail(); });
+    });
+    document.querySelectorAll("[data-view]").forEach(function (button) {
+      button.addEventListener("click", function () { setSatView(button.getAttribute("data-view")); });
+    });
+    document.querySelectorAll("[data-labels]").forEach(function (button) {
+      button.addEventListener("click", function () {
+        state.labelsOn = !state.labelsOn;
+        syncSatLabels();
+        syncSatLy();
+      });
     });
     const satLayers = $("satLayersBtn");
     if (satLayers) satLayers.addEventListener("click", function () {
@@ -4066,6 +4299,7 @@ body.loop-still .pill.bad {
     renderHotCities();
     syncSatRail();
     syncSatLy();
+    syncSatView();
     syncMotion();
     loadWeather();
     loadHistory();
