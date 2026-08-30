@@ -8,6 +8,7 @@
 - Make the high-detail city imagery the default map base and add usable map-based route picking.
 - Add a generated cartoon global-weather hero image with a clear typhoon eye and satellite motif.
 - Replace the home-screen and PWA icons with a high-contrast cartoon Earth, cloud, sun, typhoon and satellite emblem.
+- Add bounded network requests, city-timezone-aware history dates and cancellation for stale route requests.
 
 ## 2026-08-30 - Weather timeline and globe
 

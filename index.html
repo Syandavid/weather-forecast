@@ -1761,6 +1761,8 @@ body.loop-still .pill.bad {
     stormRequest: 0,
     citySearchRequest: 0,
     historyRequest: 0,
+    historyCityKey: "",
+    historyZone: "",
     autoRefreshTimer: 0,
     stormRefreshTimer: 0,
     radarRefreshTimer: 0
@@ -1846,13 +1848,22 @@ body.loop-still .pill.bad {
     if (!m) throw new Error("bad json");
     return JSON.parse(m[0]);
   }
+  async function fetchNoStore(url, timeoutMs) {
+    const controller = typeof AbortController === "function" ? new AbortController() : null;
+    const timer = controller ? setTimeout(function () { controller.abort(); }, timeoutMs || 15000) : null;
+    try {
+      return await fetch(url, controller ? { cache: "no-store", signal: controller.signal } : { cache: "no-store" });
+    } finally {
+      if (timer) clearTimeout(timer);
+    }
+  }
   async function getText(url) {
-    const r = await fetch(url, { cache: "no-store" });
+    const r = await fetchNoStore(url, 18000);
     if (!r.ok) throw new Error(String(r.status));
     return r.text();
   }
   async function getJson(url) {
-    const r = await fetch(url, { cache: "no-store" });
+    const r = await fetchNoStore(url, 18000);
     if (!r.ok) throw new Error(String(r.status));
     const ct = r.headers.get("content-type") || "";
     if (ct.indexOf("json") >= 0) return r.json();
@@ -2334,12 +2345,22 @@ body.loop-still .pill.bad {
     }
     if (requestId !== state.weatherRequest) return;
     if (gotWx) writeWxCache(c, state.weather, state.aqi);
+    const historyKey = wxCacheId(c);
+    const historyZone = state.weather && state.weather.timezone || "";
+    if ((state.weather || (cached && cached.weather)) && (state.historyCityKey !== historyKey || state.historyZone !== historyZone)) loadHistory();
     renderMetrics();
     renderAlerts();
   }
   function dateKeyOffset(offset) {
-    const d = new Date(Date.now() + 8 * 3600000 + offset * 86400000);
-    return d.toISOString().slice(0, 10);
+    const d = new Date(Date.now() + offset * 86400000);
+    const zone = state.weather && state.weather.timezone;
+    try {
+      const parts = new Intl.DateTimeFormat("en-US", { timeZone: zone || undefined, year: "numeric", month: "2-digit", day: "2-digit" }).formatToParts(d);
+      const values = {};
+      parts.forEach(function (part) { values[part.type] = part.value; });
+      if (values.year && values.month && values.day) return values.year + "-" + values.month + "-" + values.day;
+    } catch (e) {}
+    return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
   }
   function historyValue(arr, i, fallback) {
     return arr && arr[i] != null ? arr[i] : fallback;
@@ -2373,6 +2394,8 @@ body.loop-still .pill.bad {
   }
   function loadHistory() {
     const start = dateKeyOffset(-7), end = dateKeyOffset(-1);
+    state.historyCityKey = state.city ? wxCacheId(state.city) : "";
+    state.historyZone = state.weather && state.weather.timezone || "";
     setHistoryInputs(start, end);
     return loadHistoryRange(start, end);
   }
@@ -3661,7 +3684,8 @@ body.loop-still .pill.bad {
       state.boundaryDetailLayer = group.addTo(state.satMap);
     } catch (e) {}
   }
-  function clearRoute() {
+  function clearRoute(cancelPending) {
+    if (cancelPending) state.routeRequest++;
     if (state.routeLayer && state.satMap) state.satMap.removeLayer(state.routeLayer);
     if (state.routeWeatherLayer && state.satMap) state.satMap.removeLayer(state.routeWeatherLayer);
     state.routeLayer = null; state.routeWeatherLayer = null; state.route = null;
@@ -3748,7 +3772,7 @@ body.loop-still .pill.bad {
       const route = data && data.routes && data.routes[0];
       if (!route || !route.geometry || !route.geometry.coordinates) throw new Error("路线暂不可用");
       if (requestId !== state.routeRequest) return;
-      clearRoute();
+      clearRoute(false);
       state.route = { from: from, to: to, when: when, route: route };
       state.routeLayer = L.layerGroup();
       L.geoJSON(route.geometry, { style: { color: "#22d3ee", weight: 8, opacity: .25, lineCap: "round", lineJoin: "round" }, interactive: false }).addTo(state.routeLayer);
@@ -4752,7 +4776,7 @@ body.loop-still .pill.bad {
   function pickCity(c) {
     c = Object.assign({}, c, { isChina: c.isChina != null ? !!c.isChina : String(c.country_code || "").toLowerCase() === "cn" || c.country === "中国" || c.country === "China" || /省|市|自治区|特别行政区|台湾|香港|澳门/.test(c.admin || "") });
     saveCity(c);
-    clearRoute();
+    clearRoute(true);
     state.history = null;
     closeSheet("citySheet");
     loadWeather();
@@ -5040,7 +5064,7 @@ body.loop-still .pill.bad {
     if (routeClear) routeClear.addEventListener("click", function () {
       if ($("routeFrom")) $("routeFrom").value = "";
       if ($("routeTo")) $("routeTo").value = "";
-      clearRoute(); state.routeMode = true; state.routePick = "from"; syncRouteMode();
+      clearRoute(true); state.routeMode = true; state.routePick = "from"; syncRouteMode();
       $("routeStatus").textContent = "路线已清空，请点击地图设置起点。";
     });
     const routeSearch = $("routeSearch");
