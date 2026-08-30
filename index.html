@@ -342,6 +342,52 @@ button { color: inherit; }
 .sat-ly.dim, .sat-hd {
   color: rgba(244,247,251,0.32); cursor: not-allowed;
 }
+.sat-subtitle { padding: 7px 8px 3px; color: rgba(244,247,251,0.52); font-size:10px; letter-spacing:.04em; }
+.sat-choice-row { display:flex; flex-wrap:wrap; gap:4px; padding:2px 8px 8px; }
+.sat-choice { appearance:none; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.045); color:rgba(244,247,251,.82); border-radius:8px; padding:6px 7px; font-size:11px; cursor:pointer; }
+.sat-choice.on { background:rgba(78,162,255,.22); border-color:rgba(126,197,255,.6); color:#f4f7fb; }
+.sat-road-row { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:4px; padding:2px 8px 8px; }
+.sat-road { appearance:none; border:1px solid rgba(255,255,255,.1); background:rgba(255,255,255,.04); color:rgba(244,247,251,.78); border-radius:8px; padding:6px 5px; font-size:10px; cursor:pointer; text-align:left; }
+.sat-road.on { border-color:rgba(126,197,255,.55); color:#f4f7fb; background:rgba(78,162,255,.15); }
+.sat-road i { display:inline-block; width:16px; border-top:3px solid currentColor; margin-right:4px; vertical-align:middle; }
+.sat-road[data-road="national"] i { color:#ffca66; }
+.sat-road[data-road="provincial"] i { color:#a78bfa; }
+.sat-road[data-road="county"] i { color:#fb7185; }
+.sat-road[data-road="town"] i { color:#4ade80; }
+.sat-road[data-road="village"] i { color:#7dd3fc; }
+.sat-boundary-row { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:4px; padding:2px 8px 8px; }
+.sat-boundary { appearance:none; border:1px solid rgba(255,255,255,.1); background:rgba(255,255,255,.04); color:rgba(244,247,251,.78); border-radius:8px; padding:6px 5px; font-size:10px; cursor:pointer; text-align:left; }
+.sat-boundary.on { border-color:rgba(255,255,255,.5); color:#fff; }
+.sat-boundary i { display:inline-block; width:16px; border-top:2px solid currentColor; margin-right:4px; vertical-align:middle; }
+.sat-boundary[data-boundary="country"] i { color:#38bdf8; }
+.sat-boundary[data-boundary="state"] i { color:#a78bfa; }
+.sat-boundary[data-boundary="city"] i { color:#fbbf24; }
+.sat-boundary[data-boundary="county"] i { color:#fb7185; }
+.sat-route-fab { position:absolute; left:64px; bottom:86px; z-index:530; min-width:42px; height:42px; padding:0 9px; border-radius:14px; appearance:none; border:1px solid rgba(255,255,255,.14); background:rgba(8,14,22,.55); color:#f4f7fb; cursor:pointer; backdrop-filter:blur(18px); box-shadow:0 8px 22px rgba(0,0,0,.3); font-size:12px; }
+.sat-route-panel { display:none; position:absolute; left:12px; bottom:136px; z-index:545; width:min(310px,calc(100% - 24px)); max-height:calc(100% - 170px); overflow:auto; padding:12px; border-radius:16px; background:rgba(8,14,22,.78); border:1px solid rgba(255,255,255,.16); backdrop-filter:blur(18px); box-shadow:0 12px 40px rgba(0,0,0,.38); }
+.sat-route-panel.open { display:block; }
+.sat-route-head { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:8px; }
+.sat-route-head strong { font-size:13px; }
+.sat-route-close { appearance:none; border:0; background:transparent; color:var(--muted); font-size:18px; cursor:pointer; }
+.sat-route-form { display:grid; gap:7px; }
+.sat-route-form label { display:grid; gap:4px; color:var(--muted); font-size:10px; }
+.sat-route-form input { width:100%; box-sizing:border-box; min-height:31px; border:1px solid var(--line); border-radius:8px; background:rgba(255,255,255,.07); color:var(--text); padding:5px 8px; }
+.sat-route-actions { display:flex; gap:6px; flex-wrap:wrap; }
+.sat-route-actions button { appearance:none; border:1px solid rgba(126,197,255,.38); border-radius:8px; background:rgba(78,162,255,.14); color:var(--text); padding:7px 9px; font-size:11px; cursor:pointer; }
+.sat-route-status { margin-top:8px; color:var(--muted); font-size:11px; line-height:1.45; }
+.sat-route-status strong { color:var(--text); }
+.sat-route-status .route-weather { display:grid; gap:4px; margin-top:6px; }
+.route-weather-chip { display:flex; align-items:center; gap:6px; padding:5px 6px; border-radius:7px; background:rgba(255,255,255,.055); }
+.route-pin { display:grid; place-items:center; width:24px; height:24px; border-radius:50%; border:2px solid #fff; color:#fff; font-size:10px; font-weight:750; box-shadow:0 2px 10px rgba(0,0,0,.4); }
+.route-start { background:#16a34a; }
+.route-end { background:#dc2626; }
+.traffic-signal { width:15px; height:15px; border-radius:50%; background:#ff5264; border:2px solid #fff; box-shadow:0 0 0 3px rgba(255,82,100,.2); }
+.road-detail { stroke-linecap:round; stroke-linejoin:round; }
+.road-national { color:#ffca66; }
+.road-provincial { color:#a78bfa; }
+.road-county { color:#fb7185; }
+.road-town { color:#4ade80; }
+.road-village { color:#7dd3fc; }
 .sat-sat-sub {
   display: flex; gap: 8px; padding: 2px 8px 4px 36px;
   font-size: 12px;
@@ -1314,6 +1360,7 @@ body.loop-still .pill.bad {
 .sat-legend-body .lg-rain { display:inline-block; width:22px; height:8px; border-radius:4px; margin-right:5px; background:linear-gradient(90deg,#7dd3fc,#0ea5e9,#7c3aed); }
 .sat-legend-body .lg-city { display:inline-block; width:9px; height:9px; border-radius:50%; background:#4ea2ff; border:2px solid white; margin-right:8px; }
 @media (max-width: 480px) { .trend-head { display:block; } .trend-tabs { margin-top:10px; width:max-content; } .trend-chart svg { height:190px; } .trend-chart { min-height:190px; } .next2-grid { grid-template-columns:repeat(3, minmax(0, 1fr)); } .history-tools input, .history-tools select { max-width:118px; } }
+@media (max-width: 480px) { .sat-route-fab { left:64px; } .sat-route-panel { bottom:136px; } }
 @media (prefers-reduced-motion: reduce) { .clothing-person, .clothing-umbrella, .clothing-rain, .sat-wind-barb.wind-flow { animation:none !important; } }
 </style>
 </head>
@@ -1431,13 +1478,34 @@ body.loop-still .pill.bad {
               </div>
             <div class="sat-sat-sub">
               <span class="sat-live">实时<i>✓</i></span>
-              <span class="sat-hd" title="需要专业数据">高清</span>
+              <span class="sat-hd" title="高清城市底图可叠加卫星层">高清可叠加</span>
+            </div>
+            <div class="sat-subtitle">高清城市叠加</div>
+            <div class="sat-choice-row" role="group" aria-label="高清城市卫星叠加">
+              <button class="sat-choice" data-hd-overlay="none" type="button">关闭</button>
+              <button class="sat-choice on" data-hd-overlay="truecolor" type="button">真实色</button>
+              <button class="sat-choice" data-hd-overlay="infrared" type="button">红外</button>
             </div>
             </div>
             <button class="sat-ly on" data-labels="true" type="button">
               <svg viewBox="0 0 24 24"><path d="M4 18h16M6 14h12M8 10h8M10 6h4"/><path d="M5 20V4M19 20V4"/></svg>
               <span>关键道路 · 城镇名称</span><span class="ck">✓</span>
             </button>
+            <div class="sat-subtitle">道路级别（默认全开）</div>
+            <div class="sat-road-row" role="group" aria-label="道路级别">
+              <button class="sat-road on" data-road="national" type="button"><i></i>国道</button>
+              <button class="sat-road on" data-road="provincial" type="button"><i></i>省道</button>
+              <button class="sat-road on" data-road="county" type="button"><i></i>县道</button>
+              <button class="sat-road on" data-road="town" type="button"><i></i>乡道</button>
+              <button class="sat-road on" data-road="village" type="button"><i></i>村道</button>
+            </div>
+            <div class="sat-subtitle">行政边界（可配置）</div>
+            <div class="sat-boundary-row" role="group" aria-label="行政边界">
+              <button class="sat-boundary on" data-boundary="country" type="button"><i></i>国界</button>
+              <button class="sat-boundary on" data-boundary="state" type="button"><i></i>州/省界</button>
+              <button class="sat-boundary on" data-boundary="city" type="button"><i></i>市界</button>
+              <button class="sat-boundary on" data-boundary="county" type="button"><i></i>县界</button>
+            </div>
             <button class="sat-ly on" data-overlay="radar" type="button">
               <svg viewBox="0 0 24 24"><path d="M4 18a8 8 0 0 1 16 0"/><path d="M7 18a5 5 0 0 1 10 0"/><circle cx="12" cy="18" r="1.2" fill="currentColor" stroke="none"/></svg>
               <span>雷达</span><span class="ck">✓</span>
@@ -1466,6 +1534,10 @@ body.loop-still .pill.bad {
               <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="2"/><path d="M12 10c6-1 8-5 7-8M12 14c-6 1-8 5-7 8M10 12c-1-6-5-8-8-7M14 12c1 6 5 8 8 7"/></svg>
               <span>台风</span><span class="ck">✓</span>
             </button>
+            <button class="sat-ly on" data-overlay="traffic" type="button">
+              <svg viewBox="0 0 24 24"><rect x="8" y="3" width="8" height="18" rx="3"/><circle cx="12" cy="7" r="1.4" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="12" cy="17" r="1.4" fill="currentColor" stroke="none"/></svg>
+              <span>红绿灯点位</span><span class="ck">✓</span>
+            </button>
             <div class="sat-rail-bases">
               <button class="sat-bm on" data-base="truecolor" type="button">真实色</button>
               <button class="sat-bm" data-base="infrared" type="button">红外</button>
@@ -1490,6 +1562,17 @@ body.loop-still .pill.bad {
           <button class="sat-fab" id="satLayersBtn" type="button" title="图层" aria-label="图层">
             <svg viewBox="0 0 24 24"><rect x="4" y="9" width="11" height="11" rx="1.6"/><rect x="9" y="4" width="11" height="11" rx="1.6"/></svg>
           </button>
+          <button class="sat-route-fab" id="satRouteBtn" type="button" title="路线查询">路线</button>
+          <section class="sat-route-panel" id="satRoutePanel" aria-label="出行路线查询">
+            <div class="sat-route-head"><strong>出行路线 · 途经天气</strong><button class="sat-route-close" id="satRouteClose" type="button" aria-label="关闭路线查询">×</button></div>
+            <div class="sat-route-form">
+              <label>起点<input id="routeFrom" type="text" placeholder="例如：上海虹桥站"></label>
+              <label>终点<input id="routeTo" type="text" placeholder="例如：苏州站"></label>
+              <label>出发时间<input id="routeTime" type="datetime-local"></label>
+              <div class="sat-route-actions"><button id="routeUseCity" type="button">起点用所选城市</button><button id="routeSearch" type="button">查询路线天气</button></div>
+            </div>
+            <div class="sat-route-status" id="routeStatus">输入起点和终点后，路线及沿途天气会在地图上突出显示。</div>
+          </section>
           <div class="sat-bmap" id="satBmap">
             <button class="sat-bm on" data-base="truecolor" type="button">真实色</button>
             <button class="sat-bm" data-base="infrared" type="button">红外</button>
@@ -1562,6 +1645,8 @@ body.loop-still .pill.bad {
     <p>西北太平洋台风以中央气象台 CMA 为准，大西洋与东北太平洋来自美国飓风中心 NHC。底图使用 Esri 深色画布，无密钥。</p>
     <p>预警根据台风实况和气温、未来 2 小时降雨/雷暴/阵风、高温、暴雨、大风、低温、大雾阈值生成。地图会自动定位到所选城市，云图透明度、高清城市底图和图层可调。</p>
     <p>地图新增“3D 城市”模式：道路、城镇名称和建筑由矢量底图提供，地图点选会把坐标反向解析后同步到天气主页。3D 地形属于公共 DEM，部分地区的起伏精度和覆盖范围会有差异。</p>
+    <p>高清城市模式支持在 Esri 影像上叠加真实色或红外卫星层。道路级别、行政边界颜色、红绿灯点位和中英文/当地语言地名可在图层面板配置；中国优先显示中文，国外优先显示英文并保留当地语言。</p>
+    <p>点击“路线”输入起点、终点和出发时间，可在卫星/高清地图上突出显示路线，并用颜色标出沿途天气。路线来自公共 OSRM，红绿灯和细分道路来自 OSM；公共数据接口可能限流，且不代表实时红绿灯相位或道路拥堵。</p>
     <p>卫星图像不是米级实时城市影像：VIIRS 约 375 米近天底，Himawari 更高频但分辨率更低。真正 10 米级无云城市底图需要 Sentinel-2 云掩膜与后端拼接；云层无法从一张原始光学影像中凭前端彻底删除。台风“风眼”当前显示为路径资料中的中心估计，不冒充实时雷达眼墙。</p>
     <p>刷新策略：天气按模型更新节奏自动刷新，台风约 10 分钟检查，地图雷达按公开接口约 5 分钟检查；更快轮询不代表数据更快更新，也可能触发服务限流。</p>
     <p id="aboutSnap"></p>
@@ -1577,6 +1662,8 @@ body.loop-still .pill.bad {
   const ESRI_IMAGERY = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
   const ESRI_ROADS = "https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}";
   const ESRI_PLACES = "https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}";
+  const OVERPASS_URLS = ["https://overpass-api.de/api/interpreter?data=", "https://overpass.kumi.systems/api/interpreter?data="];
+  const OSRM_URL = "https://router.project-osrm.org/route/v1/driving/";
   const MAPLIBRE_STYLE = "https://tiles.openfreemap.org/styles/liberty";
   const MAPLIBRE_TERRAIN = "https://tiles.mapterhorn.com/tilejson.json";
   const MAPLIBRE_VERSION = "6.6.0";
@@ -1620,9 +1707,26 @@ body.loop-still .pill.bad {
     satSolarLayer: null,
     satSolarTimer: 0,
     satLayerObj: null,
+    satHdOverlay: "truecolor",
+    satHdOverlayObj: null,
     satBase: null,
     satRoads: null,
     satPlaces: null,
+    roadDetailLayer: null,
+    roadRequest: 0,
+    roadTimer: 0,
+    roadClasses: { national: true, provincial: true, county: true, town: true, village: true },
+    boundaryOptions: { country: true, state: true, city: true, county: true },
+    boundaryDetailLayer: null,
+    boundaryRequest: 0,
+    boundaryTimer: 0,
+    trafficLayer: null,
+    trafficRequest: 0,
+    trafficTimer: 0,
+    routeLayer: null,
+    routeWeatherLayer: null,
+    routeRequest: 0,
+    route: null,
     labelsOn: true,
     radarMeta: null,
     radarFrames: [],
@@ -1738,6 +1842,13 @@ body.loop-still .pill.bad {
     const ct = r.headers.get("content-type") || "";
     if (ct.indexOf("json") >= 0) return r.json();
     return unwrapJson(await r.text());
+  }
+  async function getOverpass(query) {
+    let last = null;
+    for (let i = 0; i < OVERPASS_URLS.length; i++) {
+      try { return await getJson(OVERPASS_URLS[i] + encodeURIComponent(query)); } catch (e) { last = e; }
+    }
+    throw last || new Error("overpass unavailable");
   }
   function gradeFromMs(ms) {
     if (ms == null || isNaN(ms)) return "TD";
@@ -2120,6 +2231,7 @@ body.loop-still .pill.bad {
     try { localStorage.setItem(REC_KEY, JSON.stringify(state.recents)); } catch (e) {}
     $("cityBtn").innerHTML = c.name + " <small>选择城市</small>";
     update3DCityMarker();
+    sync3DPlaceLanguage();
   }
   function showTab(id) {
     state.tab = id;
@@ -3216,6 +3328,17 @@ body.loop-still .pill.bad {
     const t = wx.temperature_2m;
     return c.name + " " + (t == null ? "—" : Math.round(t) + "°");
   }
+  function isChinaResult(r) {
+    return !!(r && (String(r.country_code || "").toLowerCase() === "cn" || r.country === "中国" || r.country === "China"));
+  }
+  function placeNameFromResult(r) {
+    if (!r) return "地图选点";
+    const china = isChinaResult(r);
+    const english = r.name_en || r.name || "地图选点";
+    const local = r.name_local || r.local_name || r.name_nonlatin || "";
+    if (china) return r.name || local || english;
+    return local && local !== english ? english + " · " + local : english;
+  }
   function refreshCityPills() {
     if (!state.satMap || !window.L) return;
     if (state.satPills) { state.satMap.removeLayer(state.satPills); state.satPills = null; }
@@ -3300,6 +3423,44 @@ body.loop-still .pill.bad {
     if (!map || !map.getSource || !map.getSource("selected-city")) return;
     map.getSource("selected-city").setData({ type: "FeatureCollection", features: [cityFeature(state.city || DEFAULT_CITY)] });
   }
+  function placeTextExpression() {
+    const local = ["coalesce", ["get", "name:nonlatin"], ["get", "name"]];
+    const english = ["coalesce", ["get", "name_en"], ["get", "name:latin"], ["get", "name"]];
+    if (state.city && state.city.isChina) return ["coalesce", ["get", "name:zh"], local];
+    return ["case", ["has", "name:nonlatin"], ["concat", english, " · ", local], english];
+  }
+  function sync3DPlaceLanguage(map) {
+    map = map || state.sat3dMap;
+    if (!map || !map.isStyleLoaded || !map.isStyleLoaded() || !map.getStyle) return;
+    const field = placeTextExpression();
+    (map.getStyle().layers || []).forEach(function (layer) {
+      if (!layer.id || !/^label_|^highway-name|^water_.*label|^poi_/.test(layer.id)) return;
+      try { map.setLayoutProperty(layer.id, "text-field", field); } catch (e) {}
+    });
+  }
+  function sync3DBoundaries(map) {
+    map = map || state.sat3dMap;
+    if (!map || !map.getLayer) return;
+    ["boundary_2", "boundary_3", "boundary_disputed"].forEach(function (id) {
+      if (map.getLayer(id)) { try { map.setLayoutProperty(id, "visibility", "none"); } catch (e) {} }
+    });
+    Object.keys(state.boundaryOptions).forEach(function (k) {
+      const layer = "admin-boundary-" + k;
+      if (map.getLayer(layer)) {
+        try { map.setLayoutProperty(layer, "visibility", state.boundaryOptions[k] ? "visible" : "none"); } catch (e) {}
+      }
+    });
+  }
+  function sync3DRoads(map) {
+    map = map || state.sat3dMap;
+    if (!map || !map.getLayer) return;
+    const ids = { national: "road-detail-national", provincial: "road-detail-provincial", county: "road-detail-county", town: "road-detail-town", village: "road-detail-village" };
+    Object.keys(ids).forEach(function (k) {
+      if (map.getLayer(ids[k])) {
+        try { map.setLayoutProperty(ids[k], "visibility", state.roadClasses[k] ? "visible" : "none"); } catch (e) {}
+      }
+    });
+  }
   function sync3DLabels() {
     const map = state.sat3dMap;
     if (!map || !map.isStyleLoaded || !map.isStyleLoaded() || !map.getStyle) return;
@@ -3308,6 +3469,9 @@ body.loop-still .pill.bad {
       if (!layer.id || !/label|highway-name|road[_-]shield|poi/i.test(layer.id)) return;
       try { map.setLayoutProperty(layer.id, "visibility", visibility); } catch (e) {}
     });
+    sync3DPlaceLanguage(map);
+    sync3DBoundaries(map);
+    sync3DRoads(map);
   }
   function syncSatLabels() {
     const opacity = state.labelsOn ? 0.9 : 0;
@@ -3330,6 +3494,250 @@ body.loop-still .pill.bad {
       if (!state.satMap.hasLayer(layer)) layer.addTo(state.satMap);
     });
     syncSatLabels();
+  }
+  function roadCategory(tags) {
+    tags = tags || {};
+    const ref = String(tags.ref || "").toUpperCase();
+    if (/\bG\s*\d/.test(ref) || /motorway|trunk|primary/.test(String(tags.highway || ""))) return "national";
+    if (/\bS\s*\d/.test(ref) || tags.highway === "secondary") return "provincial";
+    if (/\bX\s*\d|\bY\s*\d|\b县|county/i.test(ref) || tags.highway === "tertiary") return "county";
+    if (/service|track|path|bridleway|cycleway|footway/.test(String(tags.highway || ""))) return "village";
+    return "town";
+  }
+  function roadStyle(kind) {
+    const styles = {
+      national: { color: "#ffca66", weight: 3.4, opacity: .92 },
+      provincial: { color: "#a78bfa", weight: 2.9, opacity: .88 },
+      county: { color: "#fb7185", weight: 2.4, opacity: .82 },
+      town: { color: "#4ade80", weight: 1.9, opacity: .75 },
+      village: { color: "#7dd3fc", weight: 1.35, opacity: .68 }
+    };
+    return styles[kind] || styles.town;
+  }
+  function clearRoadDetails() {
+    if (state.roadDetailLayer && state.satMap) state.satMap.removeLayer(state.roadDetailLayer);
+    state.roadDetailLayer = null;
+  }
+  function scheduleRoadDetails() {
+    if (state.roadTimer) clearTimeout(state.roadTimer);
+    state.roadTimer = setTimeout(function () { loadRoadDetails(); }, 650);
+  }
+  async function loadRoadDetails() {
+    if (!state.satMap || !window.L) return;
+    const z = state.satMap.getZoom();
+    if (z < 10.5 || !Object.keys(state.roadClasses).some(function (k) { return state.roadClasses[k]; })) { clearRoadDetails(); return; }
+    const b = state.satMap.getBounds();
+    const south = Math.max(-85, b.getSouth()), west = Math.max(-180, b.getWest());
+    const north = Math.min(85, b.getNorth()), east = Math.min(180, b.getEast());
+    if (north - south > 2.2 || east - west > 3.2) { clearRoadDetails(); return; }
+    const requestId = ++state.roadRequest;
+    const q = "[out:json][timeout:12];way[highway~\"motorway|trunk|primary|secondary|tertiary|unclassified|residential|service|track|path|living_street\"](" + south.toFixed(5) + "," + west.toFixed(5) + "," + north.toFixed(5) + "," + east.toFixed(5) + ");out geom;";
+    try {
+      const data = await getOverpass(q);
+      if (requestId !== state.roadRequest || !state.satMap) return;
+      clearRoadDetails();
+      const group = L.layerGroup();
+      (data.elements || []).forEach(function (way) {
+        const kind = roadCategory(way.tags);
+        if (!state.roadClasses[kind] || !way.geometry || way.geometry.length < 2) return;
+        const points = way.geometry.map(function (p) { return [p.lat, p.lon]; });
+        L.polyline(points, Object.assign({ pane: "labelPane", className: "road-detail road-" + kind, interactive: false }, roadStyle(kind))).addTo(group);
+      });
+      state.roadDetailLayer = group.addTo(state.satMap);
+    } catch (e) {}
+  }
+  function clearTrafficSignals() {
+    if (state.trafficLayer && state.satMap) state.satMap.removeLayer(state.trafficLayer);
+    state.trafficLayer = null;
+  }
+  function scheduleTrafficSignals() {
+    if (state.trafficTimer) clearTimeout(state.trafficTimer);
+    state.trafficTimer = setTimeout(function () { loadTrafficSignals(); }, 850);
+  }
+  async function loadTrafficSignals() {
+    if (!state.satMap || !window.L || !ov("traffic")) { clearTrafficSignals(); return; }
+    const z = state.satMap.getZoom();
+    if (z < 12) { clearTrafficSignals(); return; }
+    const b = state.satMap.getBounds();
+    const south = Math.max(-85, b.getSouth()), west = Math.max(-180, b.getWest());
+    const north = Math.min(85, b.getNorth()), east = Math.min(180, b.getEast());
+    if (north - south > 0.8 || east - west > 1.2) { clearTrafficSignals(); return; }
+    const requestId = ++state.trafficRequest;
+    const q = "[out:json][timeout:10];node[highway=traffic_signals](" + south.toFixed(5) + "," + west.toFixed(5) + "," + north.toFixed(5) + "," + east.toFixed(5) + ");out;";
+    try {
+      const data = await getOverpass(q);
+      if (requestId !== state.trafficRequest || !state.satMap) return;
+      clearTrafficSignals();
+      const group = L.layerGroup();
+      (data.elements || []).slice(0, 900).forEach(function (node) {
+        if (node.lat == null || node.lon == null) return;
+        const icon = L.divIcon({ className: "traffic-icon", html: '<span class="traffic-signal"></span>', iconSize: [19, 19], iconAnchor: [9, 9] });
+        L.marker([node.lat, node.lon], { icon: icon, interactive: false, keyboard: false, pane: "tyDotPane" }).bindTooltip("红绿灯点位", { direction: "top", offset: [0, -8] }).addTo(group);
+      });
+      state.trafficLayer = group.addTo(state.satMap);
+    } catch (e) {}
+  }
+  function setRoadOption(kind, on) {
+    if (!state.roadClasses || !Object.prototype.hasOwnProperty.call(state.roadClasses, kind)) return;
+    state.roadClasses[kind] = !!on;
+    syncRoadOptions();
+    sync3DRoads();
+    scheduleRoadDetails();
+  }
+  function syncRoadOptions() {
+    document.querySelectorAll("[data-road]").forEach(function (b) {
+      const on = !!state.roadClasses[b.getAttribute("data-road")];
+      b.classList.toggle("on", on);
+      b.setAttribute("aria-pressed", on ? "true" : "false");
+    });
+  }
+  function syncBoundaryOptions() {
+    document.querySelectorAll("[data-boundary]").forEach(function (b) {
+      const on = !!state.boundaryOptions[b.getAttribute("data-boundary")];
+      b.classList.toggle("on", on);
+      b.setAttribute("aria-pressed", on ? "true" : "false");
+    });
+    sync3DBoundaries();
+    scheduleBoundaryDetails();
+  }
+  function boundaryCategory(tags) {
+    const level = Number(tags && tags.admin_level);
+    if (level === 2) return "country";
+    if (level === 3 || level === 4) return "state";
+    if (level === 5) return "city";
+    if (level === 6) return "county";
+    return "";
+  }
+  function boundaryStyle(kind) {
+    return { country: { color: "#38bdf8", weight: 3, opacity: .95 }, state: { color: "#a78bfa", weight: 2.5, opacity: .9 }, city: { color: "#fbbf24", weight: 2, opacity: .86 }, county: { color: "#fb7185", weight: 1.6, opacity: .8 } }[kind];
+  }
+  function clearBoundaryDetails() {
+    if (state.boundaryDetailLayer && state.satMap) state.satMap.removeLayer(state.boundaryDetailLayer);
+    state.boundaryDetailLayer = null;
+  }
+  function scheduleBoundaryDetails() {
+    if (state.boundaryTimer) clearTimeout(state.boundaryTimer);
+    state.boundaryTimer = setTimeout(function () { loadBoundaryDetails(); }, 900);
+  }
+  async function loadBoundaryDetails() {
+    if (!state.satMap || !window.L) return;
+    const z = state.satMap.getZoom();
+    if (z < 8 || !Object.keys(state.boundaryOptions).some(function (k) { return state.boundaryOptions[k]; })) { clearBoundaryDetails(); return; }
+    const b = state.satMap.getBounds();
+    const south = Math.max(-85, b.getSouth()), west = Math.max(-180, b.getWest());
+    const north = Math.min(85, b.getNorth()), east = Math.min(180, b.getEast());
+    if (north - south > 4.5 || east - west > 5.5) { clearBoundaryDetails(); return; }
+    const requestId = ++state.boundaryRequest;
+    const q = "[out:json][timeout:12];relation[boundary=administrative][admin_level~\"2|3|4|5|6\"](" + south.toFixed(5) + "," + west.toFixed(5) + "," + north.toFixed(5) + "," + east.toFixed(5) + ");out geom;";
+    try {
+      const data = await getOverpass(q);
+      if (requestId !== state.boundaryRequest || !state.satMap) return;
+      clearBoundaryDetails();
+      const group = L.layerGroup();
+      (data.elements || []).forEach(function (rel) {
+        const kind = boundaryCategory(rel.tags);
+        if (!kind || !state.boundaryOptions[kind]) return;
+        const style = boundaryStyle(kind);
+        (rel.members || []).forEach(function (member) {
+          if (!member.geometry || member.geometry.length < 2) return;
+          L.polyline(member.geometry.map(function (p) { return [p.lat, p.lon]; }), Object.assign({ pane: "labelPane", className: "boundary-detail boundary-" + kind, interactive: false, dashArray: kind === "country" ? "" : "5 5" }, style)).addTo(group);
+        });
+      });
+      state.boundaryDetailLayer = group.addTo(state.satMap);
+    } catch (e) {}
+  }
+  function clearRoute() {
+    if (state.routeLayer && state.satMap) state.satMap.removeLayer(state.routeLayer);
+    if (state.routeWeatherLayer && state.satMap) state.satMap.removeLayer(state.routeWeatherLayer);
+    state.routeLayer = null; state.routeWeatherLayer = null; state.route = null;
+  }
+  async function geocodeRoutePoint(text) {
+    if (!text) return null;
+    const data = await getJson("https://geocoding-api.open-meteo.com/v1/search?name=" + encodeURIComponent(text) + "&count=1&language=zh&format=json");
+    const r = data && data.results && data.results[0];
+    return r ? { lat: r.latitude, lon: r.longitude, name: r.name, admin: [r.admin1, r.country].filter(Boolean).join(" · ") } : null;
+  }
+  function routeSamples(coords, count) {
+    coords = coords || []; count = count || 8;
+    if (coords.length <= count) return coords.slice();
+    const out = [];
+    for (let i = 0; i < count; i++) out.push(coords[Math.round(i * (coords.length - 1) / (count - 1))]);
+    return out;
+  }
+  function routeWeatherColor(code, pop) {
+    if (code >= 95 || pop >= 70) return "#ef4444";
+    if (code >= 51 || pop >= 40) return "#fbbf24";
+    return "#4ade80";
+  }
+  async function loadRouteWeather(samples, when, requestId) {
+    const lats = samples.map(function (p) { return p[1]; }).join(",");
+    const lons = samples.map(function (p) { return p[0]; }).join(",");
+    const url = "https://api.open-meteo.com/v1/forecast?latitude=" + lats + "&longitude=" + lons + "&hourly=temperature_2m,apparent_temperature,precipitation_probability,precipitation,weather_code,wind_speed_10m&forecast_days=16&timezone=auto";
+    const data = await getJson(url);
+    if (requestId !== state.routeRequest) return [];
+    const arr = Array.isArray(data) ? data : [data];
+    const target = new Date(when || Date.now()).getTime();
+    return samples.map(function (p, n) {
+      const h = arr[n] && arr[n].hourly;
+      if (!h || !h.time || !h.time.length) return { point: p, name: "路线点 " + (n + 1), code: 0, temp: null, pop: null, mm: null, wind: null };
+      let idx = 0, best = Infinity;
+      h.time.forEach(function (iso, i) { const d = Math.abs(new Date(iso).getTime() - target); if (d < best) { best = d; idx = i; } });
+      return { point: p, name: "路线点 " + (n + 1), time: h.time[idx], code: (h.weather_code || [])[idx] || 0, temp: (h.temperature_2m || [])[idx], pop: (h.precipitation_probability || [])[idx] || 0, mm: (h.precipitation || [])[idx] || 0, wind: (h.wind_speed_10m || [])[idx] };
+    });
+  }
+  async function queryRoute() {
+    const status = $("routeStatus");
+    const fromText = $("routeFrom") && $("routeFrom").value.trim();
+    const toText = $("routeTo") && $("routeTo").value.trim();
+    const when = $("routeTime") && $("routeTime").value ? $("routeTime").value : new Date().toISOString();
+    if (!toText && !fromText) { if (status) status.textContent = "请至少填写起点和终点。"; return; }
+    const requestId = ++state.routeRequest;
+    if (status) status.textContent = "正在解析地点、规划路线并读取沿途天气…";
+    try {
+      const from = fromText ? await geocodeRoutePoint(fromText) : (state.city ? { lat: state.city.lat, lon: state.city.lon, name: state.city.name } : null);
+      const to = toText ? await geocodeRoutePoint(toText) : null;
+      if (requestId !== state.routeRequest) return;
+      if (!from || !to) throw new Error("地点未找到");
+      await ensureSatMap();
+      await setSatView("2d");
+      if (state.satLayer !== "city") await setSatBase("city");
+      const routeUrl = OSRM_URL + from.lon + "," + from.lat + ";" + to.lon + "," + to.lat + "?alternatives=true&overview=full&geometries=geojson&steps=true";
+      const data = await getJson(routeUrl);
+      const route = data && data.routes && data.routes[0];
+      if (!route || !route.geometry || !route.geometry.coordinates) throw new Error("路线暂不可用");
+      if (requestId !== state.routeRequest) return;
+      clearRoute();
+      state.route = { from: from, to: to, when: when, route: route };
+      state.routeLayer = L.layerGroup();
+      L.geoJSON(route.geometry, { style: { color: "#22d3ee", weight: 8, opacity: .25, lineCap: "round", lineJoin: "round" }, interactive: false }).addTo(state.routeLayer);
+      L.geoJSON(route.geometry, { style: { color: "#e0f2fe", weight: 3.2, opacity: .98, lineCap: "round", lineJoin: "round", dashArray: "1 8" }, interactive: false }).addTo(state.routeLayer);
+      const startIcon = L.divIcon({ className: "route-pin route-start", html: "起", iconSize: [24, 24], iconAnchor: [12, 12] });
+      const endIcon = L.divIcon({ className: "route-pin route-end", html: "终", iconSize: [24, 24], iconAnchor: [12, 12] });
+      L.marker([from.lat, from.lon], { icon: startIcon, interactive: false }).addTo(state.routeLayer);
+      L.marker([to.lat, to.lon], { icon: endIcon, interactive: false }).addTo(state.routeLayer);
+      state.routeLayer.addTo(state.satMap);
+      const samples = routeSamples(route.geometry.coordinates, 8);
+      const weather = await loadRouteWeather(samples, when, requestId);
+      if (requestId !== state.routeRequest) return;
+      state.routeWeatherLayer = L.layerGroup();
+      weather.forEach(function (w, i) {
+        const color = routeWeatherColor(w.code, w.pop || 0);
+        const marker = L.circleMarker([w.point[1], w.point[0]], { pane: "tyMarkPane", radius: 7, color: "#fff", weight: 2, fillColor: color, fillOpacity: .95, interactive: true });
+        marker.bindPopup("路线点 " + (i + 1) + "<br>温度 " + (w.temp == null ? "—" : Math.round(w.temp) + "°C") + " · 降雨概率 " + (w.pop == null ? "—" : Math.round(w.pop) + "%") + "<br>降水 " + (w.mm == null ? "—" : Number(w.mm).toFixed(1) + " mm") + " · 风 " + (w.wind == null ? "—" : Math.round(w.wind) + " m/s"));
+        marker.addTo(state.routeWeatherLayer);
+      });
+      state.routeWeatherLayer.addTo(state.satMap);
+      state.satMap.fitBounds(L.geoJSON(route.geometry).getBounds().pad(.16), { maxZoom: 12, duration: prefersReduced() ? 0 : .7 });
+      const km = (route.distance / 1000).toFixed(1), min = Math.round(route.duration / 60);
+      if (status) status.innerHTML = "<strong>路线已突出显示</strong><br>" + from.name + " → " + to.name + "<br>约 " + km + " km · " + min + " 分钟 · " + new Date(when).toLocaleString("zh-CN", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" }) + "<div class=\"route-weather\">" + weather.map(function (w, i) { return "<div class=\"route-weather-chip\"><i style=\"width:8px;height:8px;border-radius:50%;background:" + routeWeatherColor(w.code, w.pop || 0) + ";display:inline-block\"></i>路线点" + (i + 1) + "：" + (w.temp == null ? "—" : Math.round(w.temp) + "°C") + " · 雨 " + (w.pop == null ? "—" : Math.round(w.pop) + "%") + "</div>"; }).join("") + "</div>";
+    } catch (e) {
+      if (requestId === state.routeRequest && status) status.textContent = "路线或沿途天气暂不可用，请检查地点名称后重试。";
+    }
+  }
+  function routeTimeDefault() {
+    const d = new Date(Date.now() + 15 * 60000);
+    const p = function (n) { return String(n).padStart(2, "0"); };
+    return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate()) + "T" + p(d.getHours()) + ":" + p(d.getMinutes());
   }
   function solarGeometry(date) {
     date = date || new Date();
@@ -3418,12 +3826,38 @@ body.loop-still .pill.bad {
           map.addLayer({ id: "solar-line", type: "line", source: "solar-terminator", filter: ["==", ["geometry-type"], "LineString"], paint: { "line-color": "#ffe08a", "line-width": 2, "line-opacity": 0.9 } }, before);
         } catch (e) {}
         try {
+          const before = map.getLayer("building-3d") ? "building-3d" : undefined;
+          const roadDefs = [
+            ["national", ["motorway", "trunk", "primary"], "#ffca66", 2.8],
+            ["provincial", ["secondary"], "#a78bfa", 2.35],
+            ["county", ["tertiary"], "#fb7185", 2.0],
+            ["town", ["minor", "unclassified", "residential", "living_street"], "#4ade80", 1.55],
+            ["village", ["service", "track", "path"], "#7dd3fc", 1.2]
+          ];
+          roadDefs.forEach(function (d) {
+            map.addLayer({ id: "road-detail-" + d[0], type: "line", source: "openmaptiles", "source-layer": "transportation", filter: ["in", "class"].concat(d[1]), layout: { visibility: state.roadClasses[d[0]] ? "visible" : "none" }, paint: { "line-color": d[2], "line-opacity": .68, "line-width": ["interpolate", ["linear"], ["zoom"], 10, d[3] * .65, 15, d[3], 19, d[3] * 1.45] } }, before);
+          });
+        } catch (e) {}
+        try {
+          const before = map.getLayer("building-3d") ? "building-3d" : undefined;
+          const boundaryDefs = [
+            ["country", 2, "#38bdf8", 2.8], ["state", 4, "#a78bfa", 2.25],
+            ["city", 5, "#fbbf24", 1.85], ["county", 6, "#fb7185", 1.45]
+          ];
+          boundaryDefs.forEach(function (d) {
+            map.addLayer({ id: "admin-boundary-" + d[0], type: "line", source: "openmaptiles", "source-layer": "boundary", filter: ["all", ["==", ["get", "admin_level"], d[1]], ["!=", ["get", "maritime"], 1], ["!=", ["get", "disputed"], 1]], layout: { visibility: state.boundaryOptions[d[0]] ? "visible" : "none" }, paint: { "line-color": d[2], "line-opacity": .9, "line-width": ["interpolate", ["linear"], ["zoom"], 3, d[3] * .7, 10, d[3], 16, d[3] * 1.25] } }, before);
+          });
+        } catch (e) {}
+        try {
           map.addSource("selected-city", { type: "geojson", data: cityFeature(state.city || DEFAULT_CITY) });
           map.addLayer({ id: "selected-city-halo", type: "circle", source: "selected-city", paint: { "circle-radius": 14, "circle-color": "#4ea2ff", "circle-opacity": 0.18, "circle-blur": 0.55 } });
           map.addLayer({ id: "selected-city-dot", type: "circle", source: "selected-city", paint: { "circle-radius": 5, "circle-color": "#4ea2ff", "circle-stroke-color": "#fff", "circle-stroke-width": 2 } });
           map.addLayer({ id: "selected-city-label", type: "symbol", source: "selected-city", layout: { "text-field": ["get", "name"], "text-size": 13, "text-offset": [0, 1.35], "text-anchor": "top" }, paint: { "text-color": "#fff", "text-halo-color": "#07111f", "text-halo-width": 1.6 } });
         } catch (e) {}
         sync3DLabels();
+        sync3DPlaceLanguage(map);
+        sync3DBoundaries(map);
+        sync3DRoads(map);
         sync3DProjection(map);
         update3DSolar();
         map.resize();
@@ -3671,6 +4105,13 @@ body.loop-still .pill.bad {
       const ck = b.querySelector(".ck");
       if (ck) ck.textContent = on ? "✓" : "";
     });
+    document.querySelectorAll("#sat [data-hd-overlay]").forEach(function (b) {
+      const on = b.getAttribute("data-hd-overlay") === state.satHdOverlay;
+      b.classList.toggle("on", on);
+      b.setAttribute("aria-pressed", on ? "true" : "false");
+    });
+    syncRoadOptions();
+    syncBoundaryOptions();
     syncStormHud();
   }
   async function ensureSatMap() {
@@ -3715,6 +4156,9 @@ body.loop-still .pill.bad {
     map.on("moveend zoomend", function () {
       refreshCityPills();
       scheduleMetGrid();
+      scheduleRoadDetails();
+      scheduleTrafficSignals();
+      scheduleBoundaryDetails();
     });
     await setSatBase(state.satLayer || "truecolor");
     ensureSatLabels();
@@ -3727,6 +4171,9 @@ body.loop-still .pill.bad {
     drawSatTracks();
     loadSatCityWx();
     loadMetGrid(true);
+    scheduleRoadDetails();
+    scheduleTrafficSignals();
+    scheduleBoundaryDetails();
     maybeAutoplayRadar();
   }
   function clearPlayTimer() {
@@ -3755,11 +4202,32 @@ body.loop-still .pill.bad {
     try { layer.bringToBack(); } catch (e) {}
     state.satBase = layer;
   }
+  async function setSatHdOverlay(kind) {
+    state.satHdOverlay = kind === "infrared" ? "infrared" : kind === "none" ? "none" : "truecolor";
+    if (state.satHdOverlayObj && state.satMap) { state.satMap.removeLayer(state.satHdOverlayObj); state.satHdOverlayObj = null; }
+    syncSatLy();
+    if (!state.satMap || state.satLayer !== "city" || state.satHdOverlay === "none") return;
+    let url = "", maxNative = 9, attr = "";
+    if (state.satHdOverlay === "infrared") {
+      const tm = himawariTime();
+      url = gibsUrl("Himawari_AHI_Band13_Clean_Infrared", "GoogleMapsCompatible_Level6", "png").replace("{time}", tm);
+      maxNative = 6; attr = "NASA GIBS / Himawari";
+    } else {
+      let tm = utcDate(0);
+      const probe = "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_SNPP_CorrectedReflectance_TrueColor/default/" + tm + "/GoogleMapsCompatible_Level9/3/3/6.jpg";
+      if (!(await probeImg(probe))) tm = utcDate(-1);
+      url = gibsUrl("VIIRS_SNPP_CorrectedReflectance_TrueColor", "GoogleMapsCompatible_Level9", "jpg").replace("{time}", tm);
+      attr = "NASA GIBS / VIIRS";
+    }
+    if (!url || state.satLayer !== "city") return;
+    state.satHdOverlayObj = L.tileLayer(url, { pane: "cityPane", maxNativeZoom: maxNative, maxZoom: 19, tileSize: 256, attribution: attr, opacity: Math.min(.52, state.satOp) }).addTo(state.satMap);
+  }
   async function setSatBase(name) {
     state.satLayer = name || "truecolor";
     syncSatLy();
     if (!state.satMap) return;
     if (state.satLayerObj) { state.satMap.removeLayer(state.satLayerObj); state.satLayerObj = null; }
+    if (state.satHdOverlayObj) { state.satMap.removeLayer(state.satHdOverlayObj); state.satHdOverlayObj = null; }
     let url, maxZ, iso, attr;
     if (name === "city") {
       url = ESRI_IMAGERY;
@@ -3808,7 +4276,10 @@ body.loop-still .pill.bad {
     });
     state.satLayerObj.addTo(state.satMap);
     ensureSatLabels();
+    if (name === "city") await setSatHdOverlay(state.satHdOverlay || "truecolor");
     updatePlayhead();
+    scheduleRoadDetails();
+    scheduleTrafficSignals();
   }
   async function loadRadarMeta() {
     try {
@@ -4198,14 +4669,19 @@ body.loop-still .pill.bad {
     }
     if (title) title.hidden = false;
     try {
-      const data = await getJson("https://geocoding-api.open-meteo.com/v1/search?name=" + encodeURIComponent(q) + "&count=8&language=zh&format=json");
+      const queries = "name=" + encodeURIComponent(q) + "&count=8&format=json";
+      const pair = await Promise.all([
+        getJson("https://geocoding-api.open-meteo.com/v1/search?" + queries + "&language=zh"),
+        getJson("https://geocoding-api.open-meteo.com/v1/search?" + queries + "&language=en")
+      ]);
       if (requestId !== state.citySearchRequest) return;
-      const rows = data.results || [];
+      const rows = pair[0].results || [], englishRows = pair[1].results || [];
+      rows.forEach(function (r, i) { if (!isChinaResult(r) && englishRows[i] && englishRows[i].name) { r.name_en = englishRows[i].name; r.name_local = r.name; } });
       if (!rows.length) { box.innerHTML = '<div class="empty">没有找到这个地名</div>'; return; }
-      box.innerHTML = rows.map((r, i) => '<button class="city-row" data-i="' + i + '" type="button">' + r.name +
+      box.innerHTML = rows.map((r, i) => '<button class="city-row" data-i="' + i + '" type="button">' + placeNameFromResult(r) +
         "<small>" + [r.admin1, r.country].filter(Boolean).join(" · ") + "</small></button>").join("");
       box.querySelectorAll(".city-row").forEach((el, i) => {
-        el.addEventListener("click", () => pickCity({ name: rows[i].name, lat: rows[i].latitude, lon: rows[i].longitude, admin: rows[i].admin1 }));
+        el.addEventListener("click", () => pickCity({ name: placeNameFromResult(rows[i]), lat: rows[i].latitude, lon: rows[i].longitude, admin: rows[i].admin1, country: rows[i].country, country_code: rows[i].country_code, isChina: isChinaResult(rows[i]) }));
       });
     } catch (e) {
       if (requestId !== state.citySearchRequest) return;
@@ -4232,7 +4708,9 @@ body.loop-still .pill.bad {
     box.querySelectorAll(".recent-row").forEach((el, i) => el.addEventListener("click", () => pickCity(state.recents[i])));
   }
   function pickCity(c) {
+    c = Object.assign({}, c, { isChina: c.isChina != null ? !!c.isChina : String(c.country_code || "").toLowerCase() === "cn" || c.country === "中国" || c.country === "China" || /省|市|自治区|特别行政区|台湾|香港|澳门/.test(c.admin || "") });
     saveCity(c);
+    clearRoute();
     state.history = null;
     closeSheet("citySheet");
     loadWeather();
@@ -4264,12 +4742,13 @@ body.loop-still .pill.bad {
     navigator.geolocation.getCurrentPosition(async (pos) => {
       const lat = pos.coords.latitude, lon = pos.coords.longitude;
       let name = "当前位置", admin = "";
+      let geoResult = null;
       try {
         const data = await getJson("https://geocoding-api.open-meteo.com/v1/reverse?latitude=" + lat + "&longitude=" + lon + "&language=zh");
-        const r = (data.results && data.results[0]) || data;
-        if (r && r.name) { name = r.name; admin = r.admin1 || ""; }
+        geoResult = (data.results && data.results[0]) || data;
+        if (geoResult && geoResult.name) { name = placeNameFromResult(geoResult); admin = geoResult.admin1 || ""; }
       } catch (e) {}
-      pickCity({ name: name, lat: lat, lon: lon, admin: admin });
+      pickCity({ name: name, lat: lat, lon: lon, admin: admin, country: geoResult && geoResult.country, country_code: geoResult && geoResult.country_code, isChina: isChinaResult(geoResult) });
     }, () => {
       if (!quiet) $("geoHint").textContent = "没有获得定位权限，可手动搜索城市";
     }, { enableHighAccuracy: false, timeout: 8000, maximumAge: 600000 });
@@ -4318,7 +4797,7 @@ body.loop-still .pill.bad {
     try {
       const data = await getJson("https://geocoding-api.open-meteo.com/v1/reverse?latitude=" + encodeURIComponent(lat) + "&longitude=" + encodeURIComponent(lon) + "&language=zh");
       const r = (data.results && data.results[0]) || data;
-      if (r && r.name) city = { name: r.name, lat: city.lat, lon: city.lon, admin: r.admin1 || r.country || "" };
+      if (r && r.name) city = { name: placeNameFromResult(r), lat: city.lat, lon: city.lon, admin: r.admin1 || r.country || "", country: r.country, country_code: r.country_code, isChina: isChinaResult(r) };
     } catch (e) {}
     if (requestId !== state.mapPickRequest) return;
     pickCity(city);
@@ -4413,6 +4892,25 @@ body.loop-still .pill.bad {
         syncSatLy();
       });
     });
+    document.querySelectorAll("[data-hd-overlay]").forEach(function (button) {
+      button.addEventListener("click", function () {
+        setSatHdOverlay(button.getAttribute("data-hd-overlay"));
+      });
+    });
+    document.querySelectorAll("[data-road]").forEach(function (button) {
+      button.addEventListener("click", function () {
+        const k = button.getAttribute("data-road");
+        setRoadOption(k, !state.roadClasses[k]);
+      });
+    });
+    document.querySelectorAll("[data-boundary]").forEach(function (button) {
+      button.addEventListener("click", function () {
+        const k = button.getAttribute("data-boundary");
+        if (!Object.prototype.hasOwnProperty.call(state.boundaryOptions, k)) return;
+        state.boundaryOptions[k] = !state.boundaryOptions[k];
+        syncBoundaryOptions();
+      });
+    });
     const satLayers = $("satLayersBtn");
     if (satLayers) satLayers.addEventListener("click", function () {
       if (satWide()) {
@@ -4461,7 +4959,20 @@ body.loop-still .pill.bad {
       const out = $("satOpacityValue");
       if (out) out.textContent = Math.round(state.satOp * 100) + "%";
       if (state.satLayerObj && state.satLayerObj.setOpacity) state.satLayerObj.setOpacity(state.satOp);
+      if (state.satHdOverlayObj && state.satHdOverlayObj.setOpacity) state.satHdOverlayObj.setOpacity(Math.min(.52, state.satOp));
     });
+    const routeButton = $("satRouteBtn");
+    const routePanel = $("satRoutePanel");
+    if (routeButton && routePanel) routeButton.addEventListener("click", function () {
+      routePanel.classList.toggle("open");
+      if (routePanel.classList.contains("open") && $("routeFrom") && state.city && !$("routeFrom").value) $("routeFrom").value = state.city.name;
+    });
+    const routeClose = $("satRouteClose");
+    if (routeClose) routeClose.addEventListener("click", function () { $("satRoutePanel").classList.remove("open"); });
+    const routeUseCity = $("routeUseCity");
+    if (routeUseCity) routeUseCity.addEventListener("click", function () { if ($("routeFrom") && state.city) $("routeFrom").value = state.city.name; });
+    const routeSearch = $("routeSearch");
+    if (routeSearch) routeSearch.addEventListener("click", queryRoute);
     const stormToggle = $("satStormsToggle");
     if (stormToggle) stormToggle.addEventListener("click", function () {
       const wrap = $("satStorms");
@@ -4508,6 +5019,7 @@ body.loop-still .pill.bad {
     const saved = loadCity();
     saveCity(saved || DEFAULT_CITY);
     bind();
+    if ($("routeTime") && !$("routeTime").value) $("routeTime").value = routeTimeDefault();
     renderHotCities();
     syncSatRail();
     syncSatLy();

@@ -14,6 +14,10 @@
 - Add continuous +10/+15/+30/+60/+90/+120 minute cards using 15-minute forecast data when available.
 - Enrich the clothing animation with cloud, scarf and wind motion states.
 - Document the resolution, interpolation, globe and solar-geometry boundaries.
+- Integrate true-color or infrared satellite overlays into the high-detail city base.
+- Add Chinese/localized place-label rules, village-level map labels where the vector tiles provide them, configurable road classes and colored administrative boundary controls.
+- Add OSM traffic-signal point loading, route planning and route-weather markers for a selected departure time.
+- Add graceful fallback documentation for public Overpass limits and the lack of live traffic phase/congestion data.
 
 ## [0.1.0] - 2026-08-30
 
