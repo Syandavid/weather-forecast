@@ -1,4 +1,4 @@
-const CACHE = "weather-forecast-v8";
+const CACHE = "weather-forecast-v9";
 const ASSETS = [
   "./",
   "./index.html",
@@ -83,3 +83,4 @@ self.addEventListener("fetch", (event) => {
     })
   );
 });
+
