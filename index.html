@@ -1246,6 +1246,8 @@ body.loop-still .pill.bad {
 .sat-control input { width:100%; accent-color:var(--sky); margin:8px 0 3px; }
 .sat-control small { color:var(--muted); font-size:10px; line-height:1.4; display:block; }
 .sat-protect { color:#a9e8c9; font-size:11px; padding-top:9px; }
+.sat-detail-btn { appearance:none; border:1px solid rgba(126,197,255,.38); background:rgba(78,162,255,.16); color:#dceeff; border-radius:10px; padding:9px 10px; font-size:12px; cursor:pointer; margin-top:6px; text-align:left; }
+.sat-detail-btn:active { background:rgba(78,162,255,.3); }
 .ty-confidence { color:var(--muted); font-size:11px; margin:5px 0 8px; }
 .sat-city-icon { pointer-events:auto; }
 .sat-my-city-lab { background:rgba(8,15,26,.88); border:1px solid rgba(126,197,255,.7); color:#dceeff; padding:4px 7px; border-radius:999px; white-space:nowrap; font-size:11px; box-shadow:0 0 0 5px rgba(78,162,255,.14), 0 3px 12px rgba(0,0,0,.28); transform:translate(-50%,-30px); }
@@ -1401,8 +1403,9 @@ body.loop-still .pill.bad {
             <div class="sat-rail-bases">
               <button class="sat-bm on" data-base="truecolor" type="button">真实色</button>
               <button class="sat-bm" data-base="infrared" type="button">红外</button>
-              <button class="sat-bm" data-base="city" type="button">高清城市</button>
+              <button class="sat-bm" data-base="city" type="button" title="支持 10 级以上放大">高清城市 · 10+</button>
             </div>
+            <button class="sat-detail-btn" id="satCityDetail" type="button">⌖ 定位并放大城市细节</button>
             <div class="sat-control">
               <label for="satOpacity">云图透明度 <output id="satOpacityValue">68%</output></label>
               <input id="satOpacity" type="range" min="15" max="100" value="68" step="1">
@@ -1424,7 +1427,8 @@ body.loop-still .pill.bad {
           <div class="sat-bmap" id="satBmap">
             <button class="sat-bm on" data-base="truecolor" type="button">真实色</button>
             <button class="sat-bm" data-base="infrared" type="button">红外</button>
-            <button class="sat-bm" data-base="city" type="button">高清城市</button>
+            <button class="sat-bm" data-base="city" type="button" title="支持 10 级以上放大">高清城市 · 10+</button>
+            <button class="sat-detail-btn" id="satCityDetailQuick" type="button">⌖ 定位并放大城市细节</button>
           </div>
           <div class="sat-playbar" id="satPlaybar">
             <div class="sat-playbar-row">
@@ -3417,8 +3421,13 @@ body.loop-still .pill.bad {
       await ensureSatFallback();
       return;
     }
+    const mapMaxZoom = name === "city" ? 19 : 9;
+    if (state.satMap && state.satMap.setMaxZoom) {
+      state.satMap.setMaxZoom(mapMaxZoom);
+      if (state.satMap.getZoom && state.satMap.getZoom() > mapMaxZoom) state.satMap.setZoom(mapMaxZoom);
+    }
     state.satLayerObj = L.tileLayer(url, {
-      maxNativeZoom: maxZ || 7, maxZoom: 9, tileSize: 256,
+      maxNativeZoom: maxZ || 7, maxZoom: mapMaxZoom, tileSize: 256,
       attribution: attr, opacity: state.satOp
     });
     let errN = 0;
@@ -3858,7 +3867,7 @@ body.loop-still .pill.bad {
     loadHistory();
     const go = function () {
       if (state.satMap && c.lat != null) {
-        const z = Math.max(state.satMap.getZoom ? state.satMap.getZoom() : 6, 6);
+        const z = state.satLayer === "city" ? Math.max(state.satMap.getZoom ? state.satMap.getZoom() : 12, 12) : Math.max(state.satMap.getZoom ? state.satMap.getZoom() : 6, 6);
         state.satMap.flyTo([c.lat, c.lon], z, { duration: prefersReduced() ? 0 : 0.7 });
       }
       updateWindPill();
@@ -3888,6 +3897,16 @@ body.loop-still .pill.bad {
     }, () => {
       if (!quiet) $("geoHint").textContent = "没有获得定位权限，可手动搜索城市";
     }, { enableHighAccuracy: false, timeout: 8000, maximumAge: 600000 });
+  }
+  async function focusCityDetail() {
+    const c = state.city || DEFAULT_CITY;
+    showTab("sat");
+    await ensureSatMap();
+    if (!state.satMap) return;
+    if (state.satLayer !== "city") await setSatBase("city");
+    state.satMap.flyTo([c.lat, c.lon], Math.max(12, Math.min(15, state.satMap.getZoom() || 12)), { duration: prefersReduced() ? 0 : 0.8 });
+    const cap = $("satCaption");
+    if (cap) cap.textContent = "高清城市底图 · 已放大到城市细节，可继续放大至 19 级";
   }
   function bind() {
     document.querySelectorAll(".nav-item").forEach((b) => b.addEventListener("click", () => showTab(b.getAttribute("data-tab"))));
@@ -3944,7 +3963,10 @@ body.loop-still .pill.bad {
     if (satPlay) satPlay.addEventListener("click", function () { toggleRadarPlay(); });
     const satWind = $("satWind");
     if (satWind) satWind.addEventListener("click", function () {
-      if (state.satMap && state.city) state.satMap.flyTo([state.city.lat, state.city.lon], 6);
+      if (state.satMap && state.city) state.satMap.flyTo([state.city.lat, state.city.lon], state.satLayer === "city" ? 12 : 6);
+    });
+    document.querySelectorAll(".sat-detail-btn").forEach(function (button) {
+      button.addEventListener("click", function () { focusCityDetail(); });
     });
     const satLayers = $("satLayersBtn");
     if (satLayers) satLayers.addEventListener("click", function () {
