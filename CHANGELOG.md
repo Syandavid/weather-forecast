@@ -9,6 +9,7 @@
 - Add a generated cartoon global-weather hero image with a clear typhoon eye and satellite motif.
 - Use the selected typhoon-Earth artwork as the weather-page cover while keeping the compact app icon separate.
 - Replace the generated cover with the user-selected typhoon-Earth artwork and clean screenshot-edge artifacts before display.
+- Remove the standalone cloud badge from the selected weather cover while preserving the typhoon-Earth artwork.
 - Replace the home-screen and PWA icons with a high-contrast cartoon Earth, cloud, sun, typhoon and satellite emblem.
 - Add bounded network requests, city-timezone-aware history dates and cancellation for stale route requests.
 
