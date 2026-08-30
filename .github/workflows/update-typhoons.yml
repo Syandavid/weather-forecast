@@ -1,0 +1,32 @@
+name: Update typhoon snapshot
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: typhoon-snapshot
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch typhoon data
+        run: python3 scripts/update_typhoons.py
+      - name: Commit snapshot
+        run: |
+          git add data/typhoons.json
+          if git diff --cached --quiet; then
+            echo "No typhoon snapshot changes"
+            exit 0
+          fi
+          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit -m "Update typhoon snapshot"
+          git push
+
