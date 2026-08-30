@@ -1,12 +1,12 @@
-const CACHE = "weather-forecast-v11";
+const CACHE = "weather-forecast-v12";
 const ASSETS = [
   "./",
   "./index.html",
   "./manifest.webmanifest",
-  "./icon.svg",
   "./icon-192.png",
   "./icon-512.png",
   "./apple-touch-icon.png",
+  "./assets/weather-app-icon-v1.png",
   "./assets/weather-hero-v1.png",
   "./data/typhoons.json"
 ];
