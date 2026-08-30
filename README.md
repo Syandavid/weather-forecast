@@ -4,11 +4,15 @@
 
 当前功能：全球城市搜索、当前位置天气、24 小时与 7 天预报、空气质量、生活指数、卫星云图、雷达回放、温度/湿度/风/气压图层、CMA 与 NHC 台风路径、台风风圈与预报锥、预警列表。天气和台风数据支持手动刷新，并在页面保持打开时每 30 分钟自动刷新。
 
-线上地址：https://syan1209david-droid.github.io/weather-forecast/
+线上地址：https://syandavid.github.io/weather-forecast/
 
 ## 本地预览
 
 在仓库目录启动静态文件服务（端口 8080），再用浏览器打开本机该端口。不要用 file 协议打开，否则无法注册 Service Worker。
+
+```bash
+python -m http.server 8080
+```
 
 ## 加到主屏幕
 
@@ -20,7 +24,7 @@ Android：Chrome 打开后，菜单里选添加到主屏幕或安装应用。
 
 ## GitHub Pages
 
-按 main 分支根目录发布。仓库 Settings 的 Pages 中选择 Deploy from a branch，分支 main，目录为根目录。
+按 `main` 分支根目录发布。仓库 Settings 的 Pages 中选择 Deploy from a branch，分支 `main`，目录为根目录。
 
 ## 数据来源（全部公开、无密钥）
 
@@ -31,20 +35,34 @@ Android：Chrome 打开后，菜单里选添加到主屏幕或安装应用。
 - 东亚可见光与红外：NASA GIBS（Himawari AHI）
 - 雷达：RainViewer
 - 西北太平洋台风：中央气象台 CMA
-- 大西洋与东北太平洋：美国飓风中心 NHC
+- 大西洋与东北太平洋台风：美国飓风中心 NHC
 - 台风页底图：Esri Canvas World Dark Gray（无密钥；若不可用则 OSM 加深）
 
-预警页优先列出在编台风，再根据气温、降水、大风、低温、大雾阈值生成本地提示。没有生效项目时显示「目前没有生效预警」。
+预警页优先列出在编台风，再根据气温、降水、大风、低温、大雾阈值生成本地提示。没有生效项目时显示「目前没有生效预警」。本项目不替代官方紧急预警。
 
 ## 台风快照
 
-浏览器先请求 CMA 与 NHC 实时数据；若被网络拦截，则回退到仓库内快照文件。定时工作流每半小时抓取一次并提交。也可手动运行该工作流。
+浏览器先请求 CMA 与 NHC 实时数据；若被网络拦截，则回退到仓库内快照文件。定时工作流每半小时抓取一次并提交。也可在 GitHub Actions 页面手动运行该工作流。
 
 ## 文件
 
-页面与逻辑都在 index.html，无打包。另有 PWA 清单、Service Worker、图标、台风快照、抓取脚本，以及 .nojekyll。
+页面与逻辑都在 `index.html`，无需构建。另有 PWA 清单、Service Worker、图标、台风快照、抓取脚本和 GitHub Actions 工作流。
 
-无需安装依赖，无需构建。
+## 本地校验
 
-台风快照工作流位于 `.github/workflows/update-typhoons.yml`，每 30 分钟抓取 CMA 与 NHC 数据并在有变化时提交 `data/typhoons.json`；也可以在 GitHub Actions 页面手动运行。
+提交前运行：
 
+```bash
+python scripts/validate_project.py
+```
+
+该检查不访问外部网络，只验证关键文件、PWA 清单、台风快照结构和抓取脚本语法。GitHub Actions 会在每次推送和 Pull Request 中自动运行同一检查。
+
+## 维护约定
+
+- `main` 始终保持可部署；新功能使用 `feat/` 分支，修复使用 `fix/` 分支。
+- 有用户可见变化时更新 `CHANGELOG.md`，稳定节点使用 `v0.x.y` 标签。
+- 台风快照是降级数据，不是紧急预警；页面始终显示数据来源和更新时间。
+- 外部地图、卫星和天气服务的使用条款、访问限制与归属信息需要持续复核。
+
+更完整的发布、数据更新和故障排查说明见 [`docs/MAINTENANCE.md`](docs/MAINTENANCE.md)。

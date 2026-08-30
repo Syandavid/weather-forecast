@@ -11,7 +11,7 @@ import urllib.request
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "data", "typhoons.json")
-UA = "weather-forecast-pwa/1.0 (+https://github.com/syan1209david-droid/weather-forecast)"
+UA = "weather-forecast-pwa/1.0 (+https://github.com/Syandavid/weather-forecast)"
 
 GRADE = {
     "TD": "热带低压",
