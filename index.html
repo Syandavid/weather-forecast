@@ -80,6 +80,8 @@ button { color: inherit; }
 .icon-btn:active { opacity: 0.8; }
 .icon-btn { display: grid; place-items: center; }
 .icon-btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.icon-btn.refreshing svg { animation: spinRefresh 0.9s linear infinite; }
+@keyframes spinRefresh { to { transform: rotate(360deg); } }
 .nav-item svg { stroke-linecap: round; stroke-linejoin: round; }
 .handle { width: 36px; height: 4px; border-radius: 99px; background: rgba(255,255,255,0.22); margin: 2px auto 10px; }
 .grade.TD { background: rgba(78,162,255,0.16); color: var(--sky); }
@@ -110,7 +112,7 @@ button { color: inherit; }
   flex: 1; appearance: none; border: 0; background: transparent;
   color: var(--muted); padding: 8px 4px 6px; cursor: pointer;
   display: flex; flex-direction: column; align-items: center; gap: 2px;
-  font-size: 11px; font-weight: 500;
+  font-size: 11px; font-weight: 500; min-height: 44px;
 }
 .nav-item svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.8; }
 .nav-item.active { color: var(--sky); }
@@ -152,6 +154,11 @@ button { color: inherit; }
   background: var(--card); border: 1px solid var(--line);
   border-radius: 14px; padding: 12px 14px; margin: 8px 0 4px;
   font-size: 14px; line-height: 1.7; color: var(--text);
+}
+.wx-updated {
+  margin: 6px 2px 0; min-height: 18px;
+  color: var(--muted); font-size: 11px; line-height: 1.45;
+  font-variant-numeric: tabular-nums;
 }
 .metrics {
   display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 16px 0 8px;
@@ -1153,6 +1160,14 @@ body.loop-still .pill.bad {
   }
 }
 
+/* Keep the desktop shell, but avoid squeezing six metric cards into a narrow tablet window. */
+@media (min-width: 960px) and (max-width: 1179px) {
+  .wx-split { display: block; }
+  .wx-split > div + div { margin-top: 18px; }
+  .metrics { grid-template-columns: repeat(3, 1fr); }
+  .life { grid-template-columns: repeat(2, 1fr); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   #wxSky *, #wxSky *::before, #wxSky *::after,
   .wx-ic .wx-rays, .wx-ic .wx-drips path, .wx-ic .wx-moon-glyph,
@@ -1164,6 +1179,7 @@ body.loop-still .pill.bad {
   .panel { transition: none; }
   .nav-item::after { transition: none; }
   #wxParticles { display: none; }
+  .icon-btn.refreshing svg { animation: none; }
 }
 </style>
 </head>
@@ -1188,6 +1204,7 @@ body.loop-still .pill.bad {
     <button class="city-btn" id="cityBtn" type="button">上海 <small>选择城市</small></button>
     <div class="top-actions">
       <button class="icon-btn" id="geoBtn" type="button" title="定位" aria-label="定位"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg></button>
+      <button class="icon-btn" id="refreshBtn" type="button" title="刷新天气和台风" aria-label="刷新天气和台风"><svg viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14.8-3L3 11"/><path d="M3 5v6h6"/><path d="M4 13a8 8 0 0 0 14.8 3L21 13"/><path d="M21 19v-6h-6"/></svg></button>
       <button class="icon-btn" id="aboutBtn" type="button" title="说明" aria-label="说明"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7h.01"/></svg></button>
     </div>
   </header>
@@ -1214,17 +1231,18 @@ body.loop-still .pill.bad {
             <div class="hero" id="hero">
               <div class="hero-row">
                 <div class="hero-temp">
-                  <div class="temp sk" id="temp">--<span>°</span></div>
+                  <div class="temp sk" id="temp" aria-live="polite">--<span>°</span></div>
                   <div class="hl" id="hl"></div>
                 </div>
                 <div id="heroGlyph" aria-hidden="true"></div>
               </div>
               <div class="phrase-row">
-                <div class="phrase sk" id="phrase">正在获取天气</div>
+                <div class="phrase sk" id="phrase" aria-live="polite">正在获取天气</div>
               </div>
             </div>
             <div class="wx-note" id="wxNote"></div>
-            <div class="summary sk" id="summary">正在整理今日摘要</div>
+            <div class="summary sk" id="summary" aria-live="polite">正在整理今日摘要</div>
+            <div class="wx-updated" id="wxUpdated" aria-live="polite">天气数据准备中</div>
             <div class="metrics" id="metrics"></div>
           </div>
           <div>
@@ -1428,7 +1446,11 @@ body.loop-still .pill.bad {
     timeline: [],
     fcUnavailable: false,
     legendOpen: false,
-    playDelay: 550
+    playDelay: 550,
+    weatherRequest: 0,
+    stormRequest: 0,
+    citySearchRequest: 0,
+    autoRefreshTimer: 0
   };
   const $ = (id) => document.getElementById(id);
   function ov(k) { return !!(state.overlays && state.overlays[k]); }
@@ -1928,13 +1950,16 @@ body.loop-still .pill.bad {
     return WEEK[new Date(iso).getDay()];
   }
   async function loadWeather() {
+    const requestId = ++state.weatherRequest;
     const c = state.city;
     hideWxNote();
     const cached = readWxCache(c);
+    state.aqi = cached && cached.aqi ? cached.aqi : null;
     if (cached && cached.weather) {
       state.weather = cached.weather;
       if (cached.aqi) state.aqi = cached.aqi;
       renderWeather();
+      updateWeatherStamp(cached.weather, true);
       renderMetrics();
       renderAlerts();
     } else {
@@ -1946,7 +1971,7 @@ body.loop-still .pill.bad {
     const wurl = "https://api.open-meteo.com/v1/forecast?" + q +
       "&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,wind_gusts_10m,relative_humidity_2m,precipitation,is_day,wind_direction_10m,surface_pressure,dew_point_2m,visibility,cloud_cover" +
       "&hourly=temperature_2m,precipitation,precipitation_probability,weather_code,wind_speed_10m,uv_index,cloud_cover,apparent_temperature" +
-      "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max,uv_index_max,wind_speed_10m_max,sunrise,sunset" +
+      "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max,uv_index_max,wind_speed_10m_max,sunrise,sunset,sunshine_duration" +
       "&forecast_days=7";
     const aurl = "https://air-quality-api.open-meteo.com/v1/air-quality?" + q + "&current=us_aqi,pm2_5,pm10";
     let gotWx = false;
@@ -1958,6 +1983,7 @@ body.loop-still .pill.bad {
         await sleep(800);
         w = await getJson(wurl);
       }
+      if (requestId !== state.weatherRequest) return;
       state.weather = w;
       gotWx = true;
       hideWxNote();
@@ -1965,21 +1991,35 @@ body.loop-still .pill.bad {
     } catch (e) {
       if (cached && cached.weather) {
         showWxNote("刚才没连上，先显示上次");
+        updateWeatherStamp(cached.weather, true);
       } else {
         $("temp").classList.remove("sk");
         $("phrase").classList.remove("sk");
         if ($("summary")) $("summary").classList.remove("sk");
         $("phrase").textContent = "天气暂时无法获取，请稍后重试";
+        updateWeatherStamp(null, false);
       }
     }
     try {
-      state.aqi = await getJson(aurl);
+      const aqi = await getJson(aurl);
+      if (requestId !== state.weatherRequest) return;
+      state.aqi = aqi;
     } catch (e) {
+      if (requestId !== state.weatherRequest) return;
       if (!(cached && cached.aqi)) state.aqi = state.aqi || null;
     }
+    if (requestId !== state.weatherRequest) return;
     if (gotWx) writeWxCache(c, state.weather, state.aqi);
     renderMetrics();
     renderAlerts();
+  }
+  function updateWeatherStamp(w, cached) {
+    const el = $("wxUpdated");
+    if (!el) return;
+    const when = w && w.current && w.current.time ? fmtBjShort(w.current.time) : "";
+    el.textContent = when
+      ? (cached ? "天气数据 · 上次缓存 · " + when : "天气数据 · " + when)
+      : "天气数据暂不可用，可点击右上角刷新";
   }
   function renderWeather() {
     const w = state.weather;
@@ -2005,6 +2045,7 @@ body.loop-still .pill.bad {
     $("heroGlyph").innerHTML = wxIcon(cur.weather_code, isDay, 52);
     $("phrase").textContent = wxPhrase(cur.weather_code, isDay);
     $("summary").textContent = todaySummary(w);
+    updateWeatherStamp(w, false);
     const hours = w.hourly || {};
     const now = Date.now();
     let html = "";
@@ -2146,6 +2187,7 @@ body.loop-still .pill.bad {
     return s.lat != null && s.lon != null;
   }
   async function loadStorms() {
+    const requestId = ++state.stormRequest;
     const cmaLive = [];
     const nhcLive = [];
     let source = [];
@@ -2178,6 +2220,7 @@ body.loop-still .pill.bad {
       source = ["本地快照"];
     } else if (!cmaLive.length && snap) source.push("CMA 快照");
     else if (!nhcLive.length && snap) source.push("NHC 快照");
+    if (requestId !== state.stormRequest) return;
     state.storms = storms.filter(isShownStorm);
     state.source = source.join(" · ") || "台风数据";
     state.snapUpdated = (cmaLive.length || nhcLive.length) ? new Date().toISOString() : ((snap && snap.updated) || "");
@@ -3485,6 +3528,7 @@ body.loop-still .pill.bad {
   function openSheet(id) { $(id).classList.add("open"); }
   function closeSheet(id) { $(id).classList.remove("open"); }
   async function searchCity(q) {
+    const requestId = ++state.citySearchRequest;
     const box = $("cityResults");
     const title = $("cityResultsTitle");
     if (!q || q.length < 1) {
@@ -3495,6 +3539,7 @@ body.loop-still .pill.bad {
     if (title) title.hidden = false;
     try {
       const data = await getJson("https://geocoding-api.open-meteo.com/v1/search?name=" + encodeURIComponent(q) + "&count=8&language=zh&format=json");
+      if (requestId !== state.citySearchRequest) return;
       const rows = data.results || [];
       if (!rows.length) { box.innerHTML = '<div class="empty">没有找到这个地名</div>'; return; }
       box.innerHTML = rows.map((r, i) => '<button class="city-row" data-i="' + i + '" type="button">' + r.name +
@@ -3503,6 +3548,7 @@ body.loop-still .pill.bad {
         el.addEventListener("click", () => pickCity({ name: rows[i].name, lat: rows[i].latitude, lon: rows[i].longitude, admin: rows[i].admin1 }));
       });
     } catch (e) {
+      if (requestId !== state.citySearchRequest) return;
       box.innerHTML = '<div class="empty">搜索暂时不可用，可用热门城市</div>';
     }
   }
@@ -3576,7 +3622,23 @@ body.loop-still .pill.bad {
     $("closeAbout").addEventListener("click", () => closeSheet("aboutSheet"));
     $("citySheet").addEventListener("click", (e) => { if (e.target.id === "citySheet") closeSheet("citySheet"); });
     $("aboutSheet").addEventListener("click", (e) => { if (e.target.id === "aboutSheet") closeSheet("aboutSheet"); });
+    document.addEventListener("keydown", (e) => {
+      if (e.key !== "Escape") return;
+      closeSheet("citySheet");
+      closeSheet("aboutSheet");
+    });
     $("geoBtn").addEventListener("click", () => tryGeo(false));
+    const refreshBtn = $("refreshBtn");
+    if (refreshBtn) refreshBtn.addEventListener("click", async function () {
+      refreshBtn.classList.add("refreshing");
+      refreshBtn.disabled = true;
+      try {
+        await Promise.all([loadWeather(), loadStorms()]);
+      } finally {
+        refreshBtn.classList.remove("refreshing");
+        refreshBtn.disabled = false;
+      }
+    });
     $("sheetLocate").addEventListener("click", () => tryGeo(false));
     const satPlay = $("satPlay");
     if (satPlay) satPlay.addEventListener("click", function () { toggleRadarPlay(); });
@@ -3683,6 +3745,13 @@ body.loop-still .pill.bad {
     if (swOk && "serviceWorker" in navigator) {
       navigator.serviceWorker.register("./sw.js").catch(function () {});
     }
+    if (state.autoRefreshTimer) clearInterval(state.autoRefreshTimer);
+    state.autoRefreshTimer = setInterval(function () {
+      if (!document.hidden) {
+        loadWeather();
+        loadStorms();
+      }
+    }, 30 * 60 * 1000);
   }
   window.addEventListener("resize", function () { invalidateMaps(); resizeParticles(); syncSatRail(); });
   document.addEventListener("visibilitychange", syncMotion);
@@ -3692,3 +3761,4 @@ body.loop-still .pill.bad {
 </script>
 </body>
 </html>
+
