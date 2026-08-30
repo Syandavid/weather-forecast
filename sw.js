@@ -1,4 +1,4 @@
-const CACHE = "weather-forecast-v12";
+const CACHE = "weather-forecast-v13";
 const ASSETS = [
   "./",
   "./index.html",
@@ -7,7 +7,7 @@ const ASSETS = [
   "./icon-512.png",
   "./apple-touch-icon.png",
   "./assets/weather-app-icon-v1.png",
-  "./assets/weather-hero-v1.png",
+  "./assets/weather-cover.jpg",
   "./data/typhoons.json"
 ];
 
