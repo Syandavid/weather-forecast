@@ -1181,6 +1181,82 @@ body.loop-still .pill.bad {
   #wxParticles { display: none; }
   .icon-btn.refreshing svg { animation: none; }
 }
+
+/* —— product upgrade: alerts, clothing, trend and map controls —— */
+.next2-card, .clothing-card, .trend-card {
+  margin-top: 12px; border: 1px solid var(--line); border-radius: 16px;
+  background: rgba(14, 22, 36, 0.82); backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+.next2-card { padding: 13px 15px; display: flex; align-items: center; gap: 12px; }
+.next2-card.warn { border-color: rgba(255,176,0,.55); background: rgba(255,176,0,.11); }
+.next2-card.danger { border-color: rgba(255,90,95,.68); background: rgba(255,90,95,.13); }
+.next2-card.ok { border-color: rgba(62,207,142,.35); }
+.next2-icon { width: 34px; height: 34px; border-radius: 12px; display: grid; place-items: center; background: rgba(78,162,255,.16); color: var(--sky); font-size: 19px; flex: none; }
+.next2-card.warn .next2-icon { color: var(--warn); background: rgba(255,176,0,.15); }
+.next2-card.danger .next2-icon { color: var(--danger); background: rgba(255,90,95,.16); }
+.next2-card strong { display: block; font-size: 14px; }
+.next2-card span { display: block; margin-top: 3px; color: var(--muted); font-size: 12px; line-height: 1.45; }
+.clothing-card { padding: 13px 15px; overflow: hidden; position: relative; }
+.clothing-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.clothing-head strong { font-size: 15px; }
+.clothing-head small { color: var(--muted); }
+.clothing-body { display: flex; align-items: center; gap: 14px; margin-top: 8px; }
+.clothing-scene { position: relative; width: 86px; height: 74px; flex: none; }
+.clothing-person { position: absolute; left: 35px; bottom: 7px; width: 25px; height: 45px; border-radius: 13px 13px 7px 7px; background: linear-gradient(90deg, #4ea2ff, #7ec5ff); box-shadow: 0 8px 18px rgba(0,0,0,.22); animation: personBob 2.6s ease-in-out infinite; }
+.clothing-person::before { content:""; position: absolute; width: 19px; height: 19px; left: 3px; top: -14px; border-radius: 50%; background: #f3bd8f; box-shadow: inset -3px -2px 0 rgba(0,0,0,.08); }
+.clothing-person::after { content:""; position: absolute; width: 7px; height: 28px; left: -7px; top: 6px; border-radius: 8px; background: #f3bd8f; transform: rotate(13deg); }
+.clothing-coat { position: absolute; inset: 0; border-radius: 13px 13px 7px 7px; background: linear-gradient(90deg,#273449,#63748d); display: none; }
+.clothing-person.cold .clothing-coat, .clothing-person.rain .clothing-coat { display:block; }
+.clothing-person.cold { background: linear-gradient(90deg,#334155,#94a3b8); }
+.clothing-person.hot { background: linear-gradient(90deg,#f59e0b,#fb7185); }
+.clothing-umbrella { display: none; position: absolute; left: 10px; top: 7px; width: 45px; height: 28px; border-radius: 45px 45px 0 0; background: #4ea2ff; box-shadow: inset 0 -4px 0 rgba(0,0,0,.13); }
+.clothing-umbrella::after { content:""; position:absolute; width: 2px; height: 45px; left: 22px; top: 25px; background:#dbeafe; transform: rotate(-12deg); transform-origin:top; }
+.clothing-person.rain ~ .clothing-umbrella { display:block; animation: umbrellaSway 2.2s ease-in-out infinite; }
+.clothing-sun { position:absolute; right: 2px; top: 2px; width: 19px; height:19px; border-radius:50%; background:#ffd166; box-shadow: 0 0 0 5px rgba(255,209,102,.12); }
+.clothing-rain { display:none; position:absolute; inset:0; background: repeating-linear-gradient(105deg, transparent 0 11px, rgba(126,197,255,.65) 12px 13px, transparent 14px 22px); animation: rainSlide .8s linear infinite; }
+.clothing-person.rain ~ .clothing-rain { display:block; }
+.clothing-advice { min-width: 0; font-size: 13px; line-height: 1.55; }
+.clothing-advice b { color: var(--text); }
+@keyframes personBob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-2px); } }
+@keyframes umbrellaSway { 0%,100% { transform: rotate(-2deg); } 50% { transform: rotate(3deg); } }
+@keyframes rainSlide { to { transform: translateY(12px); } }
+.trend-card { padding: 14px 15px 12px; }
+.trend-head { display:flex; align-items:flex-start; justify-content:space-between; gap: 12px; }
+.trend-note { color: var(--muted); font-size: 11px; margin-top: -7px; }
+.trend-tabs { display:flex; gap:4px; background: rgba(255,255,255,.05); border-radius:10px; padding:3px; flex:none; }
+.trend-tab { appearance:none; border:0; background:transparent; color:var(--muted); border-radius:8px; padding:6px 8px; font-size:11px; cursor:pointer; }
+.trend-tab.on { color:var(--text); background:rgba(78,162,255,.23); }
+.trend-chart { width:100%; min-height: 210px; margin-top: 8px; overflow:hidden; }
+.trend-chart svg { width:100%; height:210px; display:block; }
+.trend-grid { stroke: rgba(255,255,255,.1); stroke-width:1; stroke-dasharray:3 4; }
+.trend-line { fill:none; stroke:#4ea2ff; stroke-width:3; stroke-linecap:round; stroke-linejoin:round; }
+.trend-area { fill:url(#trendFill); opacity:.26; }
+.trend-point { fill:#0e1624; stroke:#7ec5ff; stroke-width:2; }
+.trend-label { fill:#8e9bad; font-size:10px; }
+.trend-label.value { fill:#eaf3ff; font-weight:600; }
+.trend-divider { stroke:#ffb000; stroke-width:1.5; stroke-dasharray:4 4; }
+.trend-legend { color:var(--muted); font-size:11px; display:flex; gap:12px; flex-wrap:wrap; }
+.trend-legend i { display:inline-block; width:8px; height:8px; border-radius:50%; background:#4ea2ff; margin-right:4px; }
+.trend-legend i.past { background:#94a3b8; }
+.trend-legend i.future { background:#4ea2ff; }
+.sat-control { border-top: 1px solid var(--line); margin-top: 10px; padding-top: 10px; }
+.sat-control label { display:flex; justify-content:space-between; color:var(--text); font-size:12px; }
+.sat-control output { color:var(--sky); }
+.sat-control input { width:100%; accent-color:var(--sky); margin:8px 0 3px; }
+.sat-control small { color:var(--muted); font-size:10px; line-height:1.4; display:block; }
+.sat-protect { color:#a9e8c9; font-size:11px; padding-top:9px; }
+.ty-confidence { color:var(--muted); font-size:11px; margin:5px 0 8px; }
+.sat-city-icon { pointer-events:auto; }
+.sat-my-city-lab { background:rgba(8,15,26,.88); border:1px solid rgba(126,197,255,.7); color:#dceeff; padding:4px 7px; border-radius:999px; white-space:nowrap; font-size:11px; box-shadow:0 0 0 5px rgba(78,162,255,.14), 0 3px 12px rgba(0,0,0,.28); transform:translate(-50%,-30px); }
+.sat-city-pill { box-shadow:0 2px 10px rgba(0,0,0,.22); }
+.sat-wind-barb.wind-flow { animation: windFlow 1.7s ease-in-out infinite; }
+.wind-gust { stroke:#ffd166; stroke-dasharray:2 2; }
+@keyframes windFlow { 0%,100% { transform: translateY(2px) rotate(var(--wind-rot,0deg)); opacity:.62; } 50% { transform: translateY(-2px) rotate(var(--wind-rot,0deg)); opacity:1; } }
+.sat-legend-body .lg-rain { display:inline-block; width:22px; height:8px; border-radius:4px; margin-right:5px; background:linear-gradient(90deg,#7dd3fc,#0ea5e9,#7c3aed); }
+.sat-legend-body .lg-city { display:inline-block; width:9px; height:9px; border-radius:50%; background:#4ea2ff; border:2px solid white; margin-right:8px; }
+@media (max-width: 480px) { .trend-head { display:block; } .trend-tabs { margin-top:10px; width:max-content; } .trend-chart svg { height:190px; } .trend-chart { min-height:190px; } }
+@media (prefers-reduced-motion: reduce) { .clothing-person, .clothing-umbrella, .clothing-rain, .sat-wind-barb.wind-flow { animation:none !important; } }
 </style>
 </head>
 <body>
@@ -1243,16 +1319,28 @@ body.loop-still .pill.bad {
             <div class="wx-note" id="wxNote"></div>
             <div class="summary sk" id="summary" aria-live="polite">正在整理今日摘要</div>
             <div class="wx-updated" id="wxUpdated" aria-live="polite">天气数据准备中</div>
+            <div class="next2-card" id="next2Card" hidden aria-live="polite"></div>
+            <div class="clothing-card" id="clothingCard" hidden aria-live="polite"></div>
             <div class="metrics" id="metrics"></div>
           </div>
           <div>
             <div class="sec-title">24 小时</div>
             <div class="hours" id="hours"></div>
-            <div class="sec-title">7 天预报</div>
+            <div class="sec-title">16 天预报</div>
             <div class="days" id="days"></div>
           </div>
         </div>
         <div class="sunrow" id="sunrow"></div>
+        <section class="trend-card" aria-labelledby="trendTitle">
+          <div class="trend-head"><div><div class="sec-title" id="trendTitle">过去 1 周 · 未来 2 周</div><div class="trend-note" id="trendNote">正在整理趋势数据</div></div><div class="trend-tabs" role="tablist" aria-label="趋势指标">
+            <button class="trend-tab on" data-trend="temp" type="button">温度</button>
+            <button class="trend-tab" data-trend="rain" type="button">降雨</button>
+            <button class="trend-tab" data-trend="wind" type="button">风速</button>
+          </div></div>
+          <div class="history-tools"><label>历史查询 <input id="historyStart" type="date"></label><span>至</span><input id="historyEnd" type="date"><button id="historyQuery" type="button">查询</button><button id="historyReset" type="button">近 7 天</button></div>
+          <div class="trend-chart" id="trendChart"><div class="empty">趋势图准备中</div></div>
+          <div class="trend-legend" id="trendLegend"></div>
+        </section>
         <div class="sec-title">生活指数</div>
         <div class="life" id="life"></div>
       </div>
@@ -1314,6 +1402,12 @@ body.loop-still .pill.bad {
               <button class="sat-bm on" data-base="truecolor" type="button">真实色</button>
               <button class="sat-bm" data-base="infrared" type="button">红外</button>
             </div>
+            <div class="sat-control">
+              <label for="satOpacity">云图透明度 <output id="satOpacityValue">68%</output></label>
+              <input id="satOpacity" type="range" min="15" max="100" value="68" step="1">
+              <small>降低透明度可让城市与道路更清晰；不会篡改原始云图。</small>
+            </div>
+            <div class="sat-protect" id="satProtect">✓ 已选城市保护标记</div>
           </aside>
           <div class="sat-storms" id="satStorms">
             <button class="sat-storms-toggle" id="satStormsToggle" type="button">
@@ -1358,6 +1452,8 @@ body.loop-still .pill.bad {
             <div><i class="lg-r12"></i>风圈 12级</div>
             <div><i class="lg-dash"></i>虚线＝预报</div>
             <div><i class="lg-cone"></i>锥＝不确定范围</div>
+            <div><i class="lg-rain"></i>降雨颜色＝预报雨量 mm</div>
+            <div><i class="lg-city"></i>蓝色光圈＝所选城市（始终置顶）</div>
             </div>
           </div>
           <div class="sat-credit">© NASA · Esri · RainViewer</div>
@@ -1390,9 +1486,11 @@ body.loop-still .pill.bad {
     <div class="handle"></div>
     <h2>说明</h2>
     <p>天气预报是静态网页，也可加到主屏幕当独立应用使用。核心功能无需账号。</p>
-    <p>天气、预报、空气质量和城市搜索来自 Open-Meteo。真实色卫星来自 NASA GIBS 的 VIIRS / MODIS，东亚可见光与红外来自葵花 Himawari AHI。雷达来自 RainViewer。</p>
+    <p>天气、16 天预报、历史趋势、空气质量和城市搜索来自 Open-Meteo。历史天气属于模型/再分析数据，不等同于气象站实测。真实色卫星来自 NASA GIBS 的 VIIRS / MODIS，东亚可见光与红外来自葵花 Himawari AHI。雷达来自 RainViewer。</p>
     <p>西北太平洋台风以中央气象台 CMA 为准，大西洋与东北太平洋来自美国飓风中心 NHC。底图使用 Esri 深色画布，无密钥。</p>
-    <p>预警根据台风实况和气温、暴雨、大风、低温、大雾阈值生成。没有生效项目时显示「目前没有生效预警」。</p>
+    <p>预警根据台风实况和气温、未来 2 小时降雨/雷暴/阵风、高温、暴雨、大风、低温、大雾阈值生成。地图会自动定位到所选城市，云图透明度和图层可调。</p>
+    <p>卫星图像不是米级实时城市影像：VIIRS 约 375 米近天底，Himawari 更高频但分辨率更低。真正 10 米级无云城市底图需要 Sentinel-2 云掩膜与后端拼接；云层无法从一张原始光学影像中凭前端彻底删除。台风“风眼”当前显示为路径资料中的中心估计，不冒充实时雷达眼墙。</p>
+    <p>刷新策略：天气按模型更新节奏自动刷新，台风约 10 分钟检查，地图雷达按公开接口约 5 分钟检查；更快轮询不代表数据更快更新，也可能触发服务限流。</p>
     <p id="aboutSnap"></p>
     <button class="chip" id="closeAbout" type="button">关闭</button>
   </div>
@@ -1412,6 +1510,9 @@ body.loop-still .pill.bad {
   const state = {
     city: null,
     weather: null,
+    history: null,
+    historyRange: null,
+    trendMode: "temp",
     aqi: null,
     storms: [],
     snapUpdated: "",
@@ -1450,7 +1551,10 @@ body.loop-still .pill.bad {
     weatherRequest: 0,
     stormRequest: 0,
     citySearchRequest: 0,
-    autoRefreshTimer: 0
+    historyRequest: 0,
+    autoRefreshTimer: 0,
+    stormRefreshTimer: 0,
+    radarRefreshTimer: 0
   };
   const $ = (id) => document.getElementById(id);
   function ov(k) { return !!(state.overlays && state.overlays[k]); }
@@ -1970,9 +2074,9 @@ body.loop-still .pill.bad {
     const q = "latitude=" + c.lat + "&longitude=" + c.lon + "&timezone=auto&wind_speed_unit=ms";
     const wurl = "https://api.open-meteo.com/v1/forecast?" + q +
       "&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,wind_gusts_10m,relative_humidity_2m,precipitation,is_day,wind_direction_10m,surface_pressure,dew_point_2m,visibility,cloud_cover" +
-      "&hourly=temperature_2m,precipitation,precipitation_probability,weather_code,wind_speed_10m,uv_index,cloud_cover,apparent_temperature" +
+      "&hourly=temperature_2m,precipitation,precipitation_probability,weather_code,wind_speed_10m,wind_gusts_10m,wind_direction_10m,uv_index,cloud_cover,apparent_temperature" +
       "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max,uv_index_max,wind_speed_10m_max,sunrise,sunset,sunshine_duration" +
-      "&forecast_days=7";
+      "&forecast_days=16";
     const aurl = "https://air-quality-api.open-meteo.com/v1/air-quality?" + q + "&current=us_aqi,pm2_5,pm10";
     let gotWx = false;
     try {
@@ -2012,6 +2116,140 @@ body.loop-still .pill.bad {
     if (gotWx) writeWxCache(c, state.weather, state.aqi);
     renderMetrics();
     renderAlerts();
+  }
+  function dateKeyOffset(offset) {
+    const d = new Date(Date.now() + 8 * 3600000 + offset * 86400000);
+    return d.toISOString().slice(0, 10);
+  }
+  function historyValue(arr, i, fallback) {
+    return arr && arr[i] != null ? arr[i] : fallback;
+  }
+  async function loadHistoryRange(start, end) {
+    const requestId = ++state.historyRequest;
+    const c = state.city;
+    if (!c) return;
+    const url = "https://archive-api.open-meteo.com/v1/archive?latitude=" + c.lat + "&longitude=" + c.lon +
+      "&start_date=" + start + "&end_date=" + end +
+      "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max" +
+      "&timezone=auto&wind_speed_unit=ms";
+    try {
+      const data = await getJson(url);
+      if (requestId !== state.historyRequest) return;
+      state.history = data && data.daily ? data : null;
+      state.historyRange = { start: start, end: end };
+    } catch (e) {
+      if (requestId === state.historyRequest) state.history = null;
+    }
+    renderTrendChart();
+  }
+  function setHistoryInputs(start, end) {
+    if ($("historyStart")) $("historyStart").value = start;
+    if ($("historyEnd")) $("historyEnd").value = end;
+  }
+  function loadHistory() {
+    const start = dateKeyOffset(-7), end = dateKeyOffset(-1);
+    setHistoryInputs(start, end);
+    return loadHistoryRange(start, end);
+  }
+  function trendSeries() {
+    const out = [];
+    const h = state.history && state.history.daily;
+    if (h && h.time) {
+      h.time.forEach(function (iso, i) {
+        out.push({ date: iso, kind: "past", code: historyValue(h.weather_code, i, 0), high: historyValue(h.temperature_2m_max, i, null), low: historyValue(h.temperature_2m_min, i, null), rain: historyValue(h.precipitation_sum, i, 0), wind: historyValue(h.wind_speed_10m_max, i, null) });
+      });
+    }
+    const d = state.weather && state.weather.daily;
+    if (d && d.time) {
+      d.time.forEach(function (iso, i) {
+        if (out.some(function (x) { return x.date === iso; })) return;
+        out.push({ date: iso, kind: "future", code: historyValue(d.weather_code, i, 0), high: historyValue(d.temperature_2m_max, i, null), low: historyValue(d.temperature_2m_min, i, null), rain: historyValue(d.precipitation_sum, i, 0), wind: historyValue(d.wind_speed_10m_max, i, null) });
+      });
+    }
+    return out.slice(-23);
+  }
+  function trendLabel(iso) {
+    if (!iso) return "";
+    const p = String(iso).slice(5).replace("-", "/");
+    return p;
+  }
+  function renderTrendChart() {
+    const box = $("trendChart"), note = $("trendNote"), legend = $("trendLegend");
+    if (!box) return;
+    const series = trendSeries();
+    if (!series.length) {
+      box.innerHTML = '<div class="empty">趋势数据暂不可用，天气接口恢复后自动补齐</div>';
+      if (note) note.textContent = "历史数据加载中";
+      return;
+    }
+    const mode = state.trendMode || "temp";
+    const W = 760, H = 210, pad = { l: 34, r: 12, t: 18, b: 28 };
+    const plotW = W - pad.l - pad.r, plotH = H - pad.t - pad.b;
+    const vals = [];
+    series.forEach(function (s) { if (mode === "temp") { if (s.high != null) vals.push(s.high); if (s.low != null) vals.push(s.low); } else { const v = mode === "rain" ? s.rain : s.wind; if (v != null) vals.push(v); } });
+    if (!vals.length) { box.innerHTML = '<div class="empty">暂无该指标的趋势数据</div>'; return; }
+    let min = Math.min.apply(null, vals), max = Math.max.apply(null, vals);
+    if (mode === "rain") min = 0;
+    const gap = Math.max(1, (max - min) * 0.16);
+    min -= mode === "rain" ? 0 : gap; max += gap;
+    if (Math.abs(max - min) < 0.01) max = min + 1;
+    const x = function (i) { return pad.l + (series.length === 1 ? plotW / 2 : i * plotW / (series.length - 1)); };
+    const y = function (v) { return pad.t + (max - v) * plotH / (max - min); };
+    const pathFor = function (field) { return series.map(function (s, i) { const v = s[field]; return v == null ? null : [x(i), y(v)]; }).filter(Boolean).map(function (p, i) { return (i ? "L" : "M") + p[0].toFixed(1) + " " + p[1].toFixed(1); }).join(" "); };
+    const highPath = mode === "temp" ? pathFor("high") : pathFor(mode === "rain" ? "rain" : "wind");
+    const lowPath = mode === "temp" ? pathFor("low") : "";
+    const firstPast = series.findIndex(function (s) { return s.kind === "future"; });
+    const divider = firstPast > 0 ? '<line class="trend-divider" x1="' + x(firstPast - .5).toFixed(1) + '" x2="' + x(firstPast - .5).toFixed(1) + '" y1="' + pad.t + '" y2="' + (H - pad.b) + '"/><text class="trend-label" x="' + (x(firstPast - .5) + 5).toFixed(1) + '" y="13">未来</text>' : "";
+    let grid = "";
+    for (let j = 0; j < 4; j++) { const gy = pad.t + j * plotH / 3; const gv = max - j * (max - min) / 3; grid += '<line class="trend-grid" x1="' + pad.l + '" x2="' + (W - pad.r) + '" y1="' + gy.toFixed(1) + '" y2="' + gy.toFixed(1) + '"/><text class="trend-label" x="2" y="' + (gy + 3).toFixed(1) + '">' + (mode === "temp" ? Math.round(gv) + "°" : mode === "rain" ? gv.toFixed(1) : Math.round(gv)) + '</text>'; }
+    let labels = "", points = "";
+    series.forEach(function (s, i) {
+      if (i % 3 === 0 || i === series.length - 1) labels += '<text class="trend-label" text-anchor="middle" x="' + x(i).toFixed(1) + '" y="' + (H - 7) + '">' + trendLabel(s.date) + '</text>';
+      const fields = mode === "temp" ? ["high", "low"] : [mode === "rain" ? "rain" : "wind"];
+      fields.forEach(function (f) { if (s[f] != null && (i % 3 === 0 || i === series.length - 1)) points += '<circle class="trend-point" cx="' + x(i).toFixed(1) + '" cy="' + y(s[f]).toFixed(1) + '" r="3.4"><title>' + s.date + " " + s[f] + '</title></circle>'; });
+    });
+    const area = mode === "temp" ? "" : (highPath ? highPath + " L" + x(series.length - 1).toFixed(1) + " " + (H - pad.b) + " L" + x(0).toFixed(1) + " " + (H - pad.b) + " Z" : "");
+    const unit = mode === "temp" ? "°C" : mode === "rain" ? "mm" : "m/s";
+    box.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + (mode === "temp" ? "温度" : mode === "rain" ? "降雨" : "风速") + '趋势图"><defs><linearGradient id="trendFill" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#4ea2ff"/><stop offset="1" stop-color="#4ea2ff" stop-opacity="0"/></linearGradient></defs>' + grid + divider + (area ? '<path class="trend-area" d="' + area + '"/>' : '') + '<path class="trend-line" d="' + highPath + '"/>' + (lowPath ? '<path class="trend-line" style="stroke:#ffb000" d="' + lowPath + '"/>' : '') + points + labels + '</svg>';
+    if (note) note.textContent = (state.history ? "历史 " + ((state.historyRange && state.historyRange.start) || "") + " 至 " + ((state.historyRange && state.historyRange.end) || "") + " + 未来 16 天 · " : "历史数据加载失败，") + "曲线单位 " + unit;
+    if (legend) legend.innerHTML = mode === "temp" ? '<span><i class="future"></i>最高温</span><span><i style="background:#ffb000"></i>最低温</span><span><i class="past"></i>左侧为历史</span>' : '<span><i class="future"></i>' + (mode === "rain" ? "降雨量（mm）" : "最大风速（m/s）") + '</span><span><i class="past"></i>左侧为历史</span>';
+  }
+  function renderNext2Hours(w) {
+    const el = $("next2Card");
+    if (!el) return;
+    const h = w && w.hourly || {}, now = Date.now(), rows = [];
+    (h.time || []).forEach(function (iso, i) {
+      const tm = new Date(iso).getTime();
+      if (tm < now - 20 * 60000 || tm > now + 2 * 3600000 + 20 * 60000) return;
+      rows.push({ pop: (h.precipitation_probability && h.precipitation_probability[i]) || 0, mm: (h.precipitation && h.precipitation[i]) || 0, code: (h.weather_code && h.weather_code[i]) || 0, gust: (h.wind_gusts_10m && h.wind_gusts_10m[i]) || 0 });
+    });
+    if (!rows.length) { el.hidden = true; return; }
+    const maxPop = Math.max.apply(null, rows.map(function (r) { return r.pop; }));
+    const maxMm = Math.max.apply(null, rows.map(function (r) { return r.mm; }));
+    const maxGust = Math.max.apply(null, rows.map(function (r) { return r.gust; }));
+    const storm = rows.some(function (r) { return r.code >= 95; });
+    const danger = storm || maxMm >= 10 || maxGust >= 17.2;
+    const warn = danger || maxPop >= 60 || maxMm >= 2;
+    el.hidden = false; el.className = "next2-card " + (danger ? "danger" : warn ? "warn" : "ok");
+    const text = storm ? "可能出现雷暴，请暂缓户外活动" : maxMm > 0 ? "预计降雨 " + (maxMm < .1 ? "<0.1" : maxMm.toFixed(1)) + " mm，概率 " + Math.round(maxPop) + "%" : maxPop >= 40 ? "降雨概率 " + Math.round(maxPop) + "%，建议随身带伞" : "未来 2 小时暂无明显降雨或大风风险";
+    el.innerHTML = '<div class="next2-icon">' + (danger ? "!" : warn ? "雨" : "✓") + '</div><div><strong>未来 2 小时 · ' + (danger ? "需要注意" : warn ? "天气变化" : "暂无明显风险") + '</strong><span>' + text + (maxGust >= 10 ? " · 阵风约 " + Math.round(maxGust) + " m/s" : "") + '</span></div>';
+  }
+  function clothingGuide(w) {
+    const c = w && w.current || {}, h = w && w.hourly || {}, t = c.apparent_temperature != null ? c.apparent_temperature : c.temperature_2m;
+    let pop = 0;
+    (h.time || []).forEach(function (iso, i) { const tm = new Date(iso).getTime(); if (tm >= Date.now() && tm <= Date.now() + 6 * 3600000) pop = Math.max(pop, (h.precipitation_probability && h.precipitation_probability[i]) || 0); });
+    const rain = pop >= 45 || c.weather_code >= 51;
+    const cls = rain ? "rain" : t <= 10 ? "cold" : t >= 28 ? "hot" : "";
+    let title = t == null ? "适合按体感穿衣" : t <= 5 ? "厚外套 + 保暖层" : t <= 12 ? "外套 + 长袖" : t <= 20 ? "薄外套较舒适" : t <= 27 ? "长袖或薄衫" : "轻薄透气衣物";
+    if (rain) title += " · 记得带伞";
+    const advice = rain ? "有降雨可能，选择防水鞋面；体感 " + Math.round(t) + "°C" : "根据体感 " + (t == null ? "—" : Math.round(t) + "°C") + " 推荐，" + (c.wind_speed_10m >= 8 ? "风较明显，外层注意防风" : "户外活动舒适");
+    return { cls: cls, title: title, advice: advice, temp: t };
+  }
+  function renderClothing(w) {
+    const el = $("clothingCard");
+    if (!el || !w || !w.current) return;
+    const g = clothingGuide(w);
+    el.hidden = false; el.innerHTML = '<div class="clothing-head"><strong>穿衣指南 · 动态建议</strong><small>' + (g.temp == null ? "—" : Math.round(g.temp) + "°C 体感") + '</small></div><div class="clothing-body"><div class="clothing-scene"><div class="clothing-sun"></div><div class="clothing-person ' + g.cls + '"><div class="clothing-coat"></div></div><div class="clothing-umbrella"></div><div class="clothing-rain"></div></div><div class="clothing-advice"><b>' + g.title + '</b><br>' + g.advice + '</div></div>';
   }
   function updateWeatherStamp(w, cached) {
     const el = $("wxUpdated");
@@ -2097,6 +2335,9 @@ body.loop-still .pill.bad {
       return '<div class="life-card"><div class="k">' + it.k + '</div><div class="a">' + it.a +
         '</div><span class="pill ' + it.cls + '">' + it.lv + "</span></div>";
     }).join("");
+    renderNext2Hours(w);
+    renderClothing(w);
+    renderTrendChart();
     updateWindPill();
   }
   function renderMetrics() {
@@ -2261,7 +2502,7 @@ body.loop-still .pill.bad {
     const bear = (c && s.lat != null) ? bearingWord(c.lat, c.lon, s.lat, s.lon) : "";
     const distLine = dist != null ? ("距" + ((c && c.name) || "上海") + "约 " + dist + " 公里") : "位置待定";
     const imp = stormImpact(s, dist);
-    let html = '<div class="ty-detail"><div class="ty-dist">' + distLine + '</div><div class="ty-impact ' + imp.cls + '">' + imp.t +
+    let html = '<div class="ty-detail"><div class="ty-dist">' + distLine + '</div><div class="ty-confidence">◎ 中心位置估计 · 风眼需雷达/高分辨率卫星确认</div><div class="ty-impact ' + imp.cls + '">' + imp.t +
       '</div><div class="ty-stats"><div><div class="k">风力</div><div class="v">' +
       (s.windMs != null ? windLevel(s.windMs) + " 级 · " + s.windMs + " 米/秒" : "—") +
       '</div></div><div><div class="k">气压</div><div class="v">' + (s.pressure ? s.pressure + " 百帕" : "—") +
@@ -2352,6 +2593,19 @@ body.loop-still .pill.bad {
       const cur = w.current;
       const daily = w.daily || {};
       const hourly = w.hourly || {};
+      const near2 = [];
+      (hourly.time || []).forEach(function (iso, i) {
+        const tm = new Date(iso).getTime();
+        if (tm < Date.now() - 20 * 60000 || tm > Date.now() + 2 * 3600000 + 20 * 60000) return;
+        near2.push({ pop: (hourly.precipitation_probability && hourly.precipitation_probability[i]) || 0, mm: (hourly.precipitation && hourly.precipitation[i]) || 0, code: (hourly.weather_code && hourly.weather_code[i]) || 0, gust: (hourly.wind_gusts_10m && hourly.wind_gusts_10m[i]) || 0 });
+      });
+      if (near2.length) {
+        const nPop = Math.max.apply(null, near2.map(function (x) { return x.pop; }));
+        const nMm = Math.max.apply(null, near2.map(function (x) { return x.mm; }));
+        const nGust = Math.max.apply(null, near2.map(function (x) { return x.gust; }));
+        const nStorm = near2.some(function (x) { return x.code >= 95; });
+        if (nStorm || nMm >= 2 || nGust >= 17.2 || nPop >= 60) items.unshift({ cls: nStorm || nMm >= 10 ? "hot" : "rain", title: "未来 2 小时重点", body: nStorm ? "可能出现雷暴" : "降雨概率 " + Math.round(nPop) + "% · 预计雨量 " + nMm.toFixed(1) + " mm" + (nGust >= 10 ? " · 阵风 " + Math.round(nGust) + " m/s" : ""), level: nStorm || nMm >= 10 || nGust >= 17.2 ? "警告" : "关注", lvCls: nStorm || nMm >= 10 || nGust >= 17.2 ? "bad" : "warn", when: "未来 2 小时", advice: nStorm ? "暂缓户外活动，关注官方预警" : "随身带伞并留意雷达变化" });
+      }
       const tmax = (daily.temperature_2m_max || [])[0];
       if (tmax != null && tmax >= 35) items.push({ cls: "hot", title: "高温", body: "今天最高气温约 " + Math.round(tmax) + " 度。", level: tmax >= 37 ? "警告" : "关注", lvCls: tmax >= 37 ? "bad" : "warn", when: "今天", advice: "防暑补水，减少正午户外" });
       const rainCodes = { 65: 1, 82: 1, 95: 1, 96: 1, 99: 1 };
@@ -2658,6 +2912,7 @@ body.loop-still .pill.bad {
           t: h.temperature_2m ? h.temperature_2m[i] : pt.t,
           rh: h.relative_humidity_2m ? h.relative_humidity_2m[i] : pt.rh,
           ws: h.wind_speed_10m ? h.wind_speed_10m[i] : pt.ws,
+          gust: h.wind_gusts_10m ? h.wind_gusts_10m[i] : null,
           wd: h.wind_direction_10m ? h.wind_direction_10m[i] : pt.wd,
           p: h.surface_pressure ? h.surface_pressure[i] : pt.p,
           mm: h.precipitation ? h.precipitation[i] : 0,
@@ -2889,6 +3144,14 @@ body.loop-still .pill.bad {
     }
     return "#ef4444";
   }
+  function windColor(ms) {
+    if (ms == null) return "#e8f4ff";
+    if (ms < 3) return "#8bd5ff";
+    if (ms < 8) return "#4ea2ff";
+    if (ms < 14) return "#ffcf66";
+    if (ms < 20) return "#ff8a3d";
+    return "#ff5a5f";
+  }
   function drawMetFields() {
     if (!state.satMap || !window.L) return;
     if (state.satMet) { state.satMap.removeLayer(state.satMet); state.satMet = null; }
@@ -2944,14 +3207,17 @@ body.loop-still .pill.bad {
       pts.forEach(function (pt) {
         const m = metAt(pt, unix, future);
         if (m.ws == null) return;
-        const len = 16 + Math.min(16, m.ws * 0.7);
+        const zoomScale = Math.max(0.72, Math.min(1.55, 1 + (state.satMap.getZoom() - 5) * 0.12));
+        const len = (16 + Math.min(18, m.ws * 0.78)) * zoomScale;
         const op = 0.4 + Math.min(0.55, m.ws / 20);
         const rot = ((m.wd == null ? 0 : m.wd) + 180) % 360;
+        const stroke = windColor(m.ws);
+        const gustMark = m.gust != null && m.gust > m.ws + 3 ? '<path class="wind-gust" d="M7 16h10" fill="none" stroke-width="1.4" stroke-linecap="round"/>' : "";
         const svg = '<div style="width:' + len + "px;height:" + len + "px;transform:rotate(" + rot +
           "deg);opacity:" + op.toFixed(2) + '">' +
           '<svg viewBox="0 0 24 24" width="' + len + '" height="' + len +
           '"><path d="M12 20V4M12 4l-4.8 6M12 4l4.8 6" fill="none" stroke="#e8f4ff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>';
-        const ic = L.divIcon({ className: "sat-wind-barb", html: svg, iconSize: [len, len], iconAnchor: [len / 2, len / 2] });
+        const ic = L.divIcon({ className: "sat-wind-barb wind-flow", html: svg.replace('stroke="#e8f4ff"', 'stroke="' + stroke + '"').replace('</svg>', gustMark + '</svg>'), iconSize: [len, len], iconAnchor: [len / 2, len / 2] });
         L.marker([pt.lat, pt.lon], { icon: ic, interactive: false, keyboard: false, pane: windPane }).addTo(g);
       });
     }
@@ -2972,7 +3238,7 @@ body.loop-still .pill.bad {
       const lons = pts.map(function (p) { return p.lon.toFixed(3); }).join(",");
       const url = "https://api.open-meteo.com/v1/forecast?latitude=" + lats + "&longitude=" + lons +
         "&current=temperature_2m,relative_humidity_2m,wind_speed_10m,wind_direction_10m,surface_pressure" +
-        "&hourly=precipitation,precipitation_probability,weather_code,wind_speed_10m,temperature_2m,relative_humidity_2m,wind_direction_10m,surface_pressure" +
+        "&hourly=precipitation,precipitation_probability,weather_code,wind_speed_10m,wind_gusts_10m,temperature_2m,relative_humidity_2m,wind_direction_10m,surface_pressure" +
         "&forecast_days=3&past_days=1&wind_speed_unit=ms&timezone=Asia/Shanghai";
       const data = await getJson(url);
       const arr = Array.isArray(data) ? data : [data];
@@ -3046,7 +3312,8 @@ body.loop-still .pill.bad {
       loadMetGrid(false);
       return;
     }
-    const map = L.map("satMap", { zoomControl: false, attributionControl: true }).setView([26, 121], 5.5);
+    const initialCity = state.city || DEFAULT_CITY;
+    const map = L.map("satMap", { zoomControl: false, attributionControl: true }).setView([initialCity.lat, initialCity.lon], 6.5);
     map.attributionControl.setPrefix("");
     L.control.zoom({ position: "bottomright" }).addTo(map);
     function pane(name, z, pe) {
@@ -3140,7 +3407,7 @@ body.loop-still .pill.bad {
     }
     state.satLayerObj = L.tileLayer(url, {
       maxNativeZoom: maxZ || 7, maxZoom: 9, tileSize: 256,
-      attribution: attr, opacity: 1
+      attribution: attr, opacity: state.satOp
     });
     let errN = 0;
     state.satLayerObj.on("tileerror", function () {
@@ -3573,8 +3840,10 @@ body.loop-still .pill.bad {
   }
   function pickCity(c) {
     saveCity(c);
+    state.history = null;
     closeSheet("citySheet");
     loadWeather();
+    loadHistory();
     const go = function () {
       if (state.satMap && c.lat != null) {
         const z = Math.max(state.satMap.getZoom ? state.satMap.getZoom() : 6, 6);
@@ -3628,6 +3897,25 @@ body.loop-still .pill.bad {
       closeSheet("aboutSheet");
     });
     $("geoBtn").addEventListener("click", () => tryGeo(false));
+    document.querySelectorAll("[data-trend]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        state.trendMode = b.getAttribute("data-trend") || "temp";
+        document.querySelectorAll("[data-trend]").forEach(function (x) { x.classList.toggle("on", x === b); });
+        renderTrendChart();
+      });
+    });
+    const historyQuery = $("historyQuery");
+    if (historyQuery) historyQuery.addEventListener("click", function () {
+      const start = $("historyStart").value, end = $("historyEnd").value;
+      if (!start || !end || start > end || end >= dateKeyOffset(0)) {
+        $("trendNote").textContent = "请选择不晚于昨天的有效日期范围";
+        return;
+      }
+      $("trendNote").textContent = "正在查询历史天气…";
+      loadHistoryRange(start, end);
+    });
+    const historyReset = $("historyReset");
+    if (historyReset) historyReset.addEventListener("click", function () { loadHistory(); });
     const refreshBtn = $("refreshBtn");
     if (refreshBtn) refreshBtn.addEventListener("click", async function () {
       refreshBtn.classList.add("refreshing");
@@ -3688,6 +3976,13 @@ body.loop-still .pill.bad {
         $("satBmap").classList.remove("open");
       });
     });
+    const satOpacity = $("satOpacity");
+    if (satOpacity) satOpacity.addEventListener("input", function () {
+      state.satOp = Math.max(0.15, Math.min(1, Number(satOpacity.value) / 100));
+      const out = $("satOpacityValue");
+      if (out) out.textContent = Math.round(state.satOp * 100) + "%";
+      if (state.satLayerObj && state.satLayerObj.setOpacity) state.satLayerObj.setOpacity(state.satOp);
+    });
     const stormToggle = $("satStormsToggle");
     if (stormToggle) stormToggle.addEventListener("click", function () {
       const wrap = $("satStorms");
@@ -3739,6 +4034,7 @@ body.loop-still .pill.bad {
     syncSatLy();
     syncMotion();
     loadWeather();
+    loadHistory();
     loadStorms();
     if (!saved) tryGeo(true);
     const swOk = location.protocol === "https:" || location.hostname === "localhost" || location.hostname === "127.0.0.1";
@@ -3749,9 +4045,14 @@ body.loop-still .pill.bad {
     state.autoRefreshTimer = setInterval(function () {
       if (!document.hidden) {
         loadWeather();
-        loadStorms();
       }
-    }, 30 * 60 * 1000);
+    }, 15 * 60 * 1000);
+    if (state.stormRefreshTimer) clearInterval(state.stormRefreshTimer);
+    state.stormRefreshTimer = setInterval(function () { if (!document.hidden) loadStorms(); }, 10 * 60 * 1000);
+    if (state.radarRefreshTimer) clearInterval(state.radarRefreshTimer);
+    state.radarRefreshTimer = setInterval(function () {
+      if (!document.hidden && state.satMap) { state.radarMeta = null; loadRadarMeta().then(function () { applySatOverlays(); }); }
+    }, 5 * 60 * 1000);
   }
   window.addEventListener("resize", function () { invalidateMaps(); resizeParticles(); syncSatRail(); });
   document.addEventListener("visibilitychange", syncMotion);
