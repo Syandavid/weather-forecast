@@ -363,7 +363,8 @@ button { color: inherit; }
 .sat-boundary[data-boundary="state"] i { color:#a78bfa; }
 .sat-boundary[data-boundary="city"] i { color:#fbbf24; }
 .sat-boundary[data-boundary="county"] i { color:#fb7185; }
-.sat-route-fab { position:absolute; left:64px; bottom:86px; z-index:530; min-width:42px; height:42px; padding:0 9px; border-radius:14px; appearance:none; border:1px solid rgba(255,255,255,.14); background:rgba(8,14,22,.55); color:#f4f7fb; cursor:pointer; backdrop-filter:blur(18px); box-shadow:0 8px 22px rgba(0,0,0,.3); font-size:12px; }
+.sat-route-fab { position:absolute; left:64px; bottom:86px; z-index:550; min-width:42px; height:42px; padding:0 9px; border-radius:14px; appearance:none; border:1px solid rgba(255,255,255,.14); background:rgba(8,14,22,.55); color:#f4f7fb; cursor:pointer; backdrop-filter:blur(18px); box-shadow:0 8px 22px rgba(0,0,0,.3); font-size:12px; }
+.sat-route-fab.active { background:rgba(14,165,233,.82); border-color:rgba(186,230,253,.9); box-shadow:0 0 0 3px rgba(14,165,233,.22), 0 8px 22px rgba(0,0,0,.3); }
 .sat-route-panel { display:none; position:absolute; left:12px; bottom:136px; z-index:545; width:min(310px,calc(100% - 24px)); max-height:calc(100% - 170px); overflow:auto; padding:12px; border-radius:16px; background:rgba(8,14,22,.78); border:1px solid rgba(255,255,255,.16); backdrop-filter:blur(18px); box-shadow:0 12px 40px rgba(0,0,0,.38); }
 .sat-route-panel.open { display:block; }
 .sat-route-head { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:8px; }
@@ -373,6 +374,9 @@ button { color: inherit; }
 .sat-route-form label { display:grid; gap:4px; color:var(--muted); font-size:10px; }
 .sat-route-form input { width:100%; box-sizing:border-box; min-height:31px; border:1px solid var(--line); border-radius:8px; background:rgba(255,255,255,.07); color:var(--text); padding:5px 8px; }
 .sat-route-actions { display:flex; gap:6px; flex-wrap:wrap; }
+.sat-route-pick { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+.sat-route-pick button { appearance:none; border:1px solid rgba(126,197,255,.28); border-radius:8px; background:rgba(255,255,255,.06); color:var(--muted); padding:7px 8px; font-size:11px; cursor:pointer; }
+.sat-route-pick button.active { border-color:rgba(126,197,255,.8); background:rgba(78,162,255,.24); color:var(--text); }
 .sat-route-actions button { appearance:none; border:1px solid rgba(126,197,255,.38); border-radius:8px; background:rgba(78,162,255,.14); color:var(--text); padding:7px 9px; font-size:11px; cursor:pointer; }
 .sat-route-status { margin-top:8px; color:var(--muted); font-size:11px; line-height:1.45; }
 .sat-route-status strong { color:var(--text); }
@@ -1539,9 +1543,9 @@ body.loop-still .pill.bad {
               <span>红绿灯点位</span><span class="ck">✓</span>
             </button>
             <div class="sat-rail-bases">
-              <button class="sat-bm on" data-base="truecolor" type="button">真实色</button>
+              <button class="sat-bm" data-base="truecolor" type="button">真实色</button>
               <button class="sat-bm" data-base="infrared" type="button">红外</button>
-              <button class="sat-bm" data-base="city" type="button" title="支持 10 级以上放大">高清城市 · 10+</button>
+              <button class="sat-bm on" data-base="city" type="button" title="支持 10 级以上放大">高清城市 · 10+</button>
             </div>
             <button class="sat-detail-btn" id="satCityDetail" type="button">⌖ 定位并放大城市细节</button>
             <div class="sat-control">
@@ -1562,21 +1566,22 @@ body.loop-still .pill.bad {
           <button class="sat-fab" id="satLayersBtn" type="button" title="图层" aria-label="图层">
             <svg viewBox="0 0 24 24"><rect x="4" y="9" width="11" height="11" rx="1.6"/><rect x="9" y="4" width="11" height="11" rx="1.6"/></svg>
           </button>
-          <button class="sat-route-fab" id="satRouteBtn" type="button" title="路线查询">路线</button>
+          <button class="sat-route-fab" id="satRouteBtn" type="button" title="打开路线选择模式" aria-pressed="false">路线</button>
           <section class="sat-route-panel" id="satRoutePanel" aria-label="出行路线查询">
             <div class="sat-route-head"><strong>出行路线 · 途经天气</strong><button class="sat-route-close" id="satRouteClose" type="button" aria-label="关闭路线查询">×</button></div>
             <div class="sat-route-form">
               <label>起点<input id="routeFrom" type="text" placeholder="例如：上海虹桥站"></label>
               <label>终点<input id="routeTo" type="text" placeholder="例如：苏州站"></label>
               <label>出发时间<input id="routeTime" type="datetime-local"></label>
-              <div class="sat-route-actions"><button id="routeUseCity" type="button">起点用所选城市</button><button id="routeSearch" type="button">查询路线天气</button></div>
+              <div class="sat-route-pick"><button id="routePickFrom" type="button" aria-pressed="false">地图选起点</button><button id="routePickTo" type="button" aria-pressed="false">地图选终点</button></div>
+              <div class="sat-route-actions"><button id="routeUseCity" type="button">起点用所选城市</button><button id="routeClear" type="button">清空</button><button id="routeSearch" type="button">查询路线天气</button></div>
             </div>
-            <div class="sat-route-status" id="routeStatus">输入起点和终点后，路线及沿途天气会在地图上突出显示。</div>
+            <div class="sat-route-status" id="routeStatus">打开路线模式后，点击地图即可依次设置起点和终点；也可以直接输入地点名称。</div>
           </section>
           <div class="sat-bmap" id="satBmap">
-            <button class="sat-bm on" data-base="truecolor" type="button">真实色</button>
+            <button class="sat-bm" data-base="truecolor" type="button">真实色</button>
             <button class="sat-bm" data-base="infrared" type="button">红外</button>
-            <button class="sat-bm" data-base="city" type="button" title="支持 10 级以上放大">高清城市 · 10+</button>
+            <button class="sat-bm on" data-base="city" type="button" title="支持 10 级以上放大">高清城市 · 10+</button>
             <button class="sat-detail-btn" id="satCityDetailQuick" type="button">⌖ 定位并放大城市细节</button>
           </div>
           <div class="sat-playbar" id="satPlaybar">
@@ -1684,7 +1689,7 @@ body.loop-still .pill.bad {
     snapUpdated: "",
     source: "",
     tab: "weather",
-    satLayer: "truecolor",
+    satLayer: "city",
     overlays: { radar: true, precip: false, wind: false, temp: true, humidity: false, pressure: false, typhoon: true },
     satRadarLayer: null,
     satPrecipLayer: null,
@@ -1727,6 +1732,8 @@ body.loop-still .pill.bad {
     routeWeatherLayer: null,
     routeRequest: 0,
     route: null,
+    routeMode: false,
+    routePick: "from",
     labelsOn: true,
     radarMeta: null,
     radarFrames: [],
@@ -3651,8 +3658,35 @@ body.loop-still .pill.bad {
     if (state.routeWeatherLayer && state.satMap) state.satMap.removeLayer(state.routeWeatherLayer);
     state.routeLayer = null; state.routeWeatherLayer = null; state.route = null;
   }
+  function syncRouteMode() {
+    const open = !!state.routeMode;
+    const panel = $("satRoutePanel"), button = $("satRouteBtn");
+    if (panel) panel.classList.toggle("open", open);
+    if (button) {
+      button.classList.toggle("active", open);
+      button.textContent = open ? "退出路线" : "路线";
+      button.setAttribute("aria-pressed", open ? "true" : "false");
+    }
+    ["from", "to"].forEach(function (kind) {
+      const pick = $(kind === "from" ? "routePickFrom" : "routePickTo");
+      if (pick) {
+        const active = open && state.routePick === kind;
+        pick.classList.toggle("active", active);
+        pick.setAttribute("aria-pressed", active ? "true" : "false");
+      }
+    });
+  }
+  function routeCoordinate(text) {
+    const m = String(text || "").trim().replace(/，/g, ",").match(/^(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)$/);
+    if (!m) return null;
+    const lat = Number(m[1]), lon = Number(m[2]);
+    if (!Number.isFinite(lat) || !Number.isFinite(lon) || lat < -90 || lat > 90 || lon < -180 || lon > 180) return null;
+    return { lat: lat, lon: lon, name: "地图点 " + lat.toFixed(4) + ", " + lon.toFixed(4), admin: "" };
+  }
   async function geocodeRoutePoint(text) {
     if (!text) return null;
+    const coordinate = routeCoordinate(text);
+    if (coordinate) return coordinate;
     const data = await getJson("https://geocoding-api.open-meteo.com/v1/search?name=" + encodeURIComponent(text) + "&count=1&language=zh&format=json");
     const r = data && data.results && data.results[0];
     return r ? { lat: r.latitude, lon: r.longitude, name: r.name, admin: [r.admin1, r.country].filter(Boolean).join(" · ") } : null;
@@ -3690,7 +3724,7 @@ body.loop-still .pill.bad {
     const fromText = $("routeFrom") && $("routeFrom").value.trim();
     const toText = $("routeTo") && $("routeTo").value.trim();
     const when = $("routeTime") && $("routeTime").value ? $("routeTime").value : new Date().toISOString();
-    if (!toText && !fromText) { if (status) status.textContent = "请至少填写起点和终点。"; return; }
+    if (!fromText || !toText) { if (status) status.textContent = "请填写起点和终点，或打开路线模式在地图上依次点击两处。"; return; }
     const requestId = ++state.routeRequest;
     if (status) status.textContent = "正在解析地点、规划路线并读取沿途天气…";
     try {
@@ -4160,7 +4194,7 @@ body.loop-still .pill.bad {
       scheduleTrafficSignals();
       scheduleBoundaryDetails();
     });
-    await setSatBase(state.satLayer || "truecolor");
+    await setSatBase(state.satLayer || "city");
     ensureSatLabels();
     drawSolarTerminator();
     startSolarTimer();
@@ -4223,7 +4257,7 @@ body.loop-still .pill.bad {
     state.satHdOverlayObj = L.tileLayer(url, { pane: "cityPane", maxNativeZoom: maxNative, maxZoom: 19, tileSize: 256, attribution: attr, opacity: Math.min(.52, state.satOp) }).addTo(state.satMap);
   }
   async function setSatBase(name) {
-    state.satLayer = name || "truecolor";
+    state.satLayer = name || "city";
     syncSatLy();
     if (!state.satMap) return;
     if (state.satLayerObj) { state.satMap.removeLayer(state.satLayerObj); state.satLayerObj = null; }
@@ -4790,6 +4824,15 @@ body.loop-still .pill.bad {
   }
   async function selectMapLocation(lat, lon) {
     if (lat == null || lon == null) return;
+    if (state.routeMode) {
+      const field = state.routePick === "to" ? $("routeTo") : $("routeFrom");
+      if (field) field.value = Number(lat).toFixed(5) + ", " + Number(lon).toFixed(5);
+      state.routePick = "to";
+      syncRouteMode();
+      const status = $("routeStatus");
+      if (status) status.textContent = field && field.id === "routeFrom" ? "已设置起点。请继续点击地图设置终点。" : "已设置终点。点击“查询路线天气”开始规划，或重新选择起点/终点。";
+      return;
+    }
     const requestId = ++state.mapPickRequest;
     const cap = $("satCaption");
     if (cap) cap.textContent = "正在读取地图选点天气…";
@@ -4801,7 +4844,6 @@ body.loop-still .pill.bad {
     } catch (e) {}
     if (requestId !== state.mapPickRequest) return;
     pickCity(city);
-    showTab("weather");
   }
   async function focusCityDetail() {
     const c = state.city || DEFAULT_CITY;
@@ -4964,13 +5006,35 @@ body.loop-still .pill.bad {
     const routeButton = $("satRouteBtn");
     const routePanel = $("satRoutePanel");
     if (routeButton && routePanel) routeButton.addEventListener("click", function () {
-      routePanel.classList.toggle("open");
-      if (routePanel.classList.contains("open") && $("routeFrom") && state.city && !$("routeFrom").value) $("routeFrom").value = state.city.name;
+      state.routeMode = !state.routeMode;
+      if (state.routeMode) {
+        const from = $("routeFrom") && $("routeFrom").value.trim();
+        const to = $("routeTo") && $("routeTo").value.trim();
+        state.routePick = !from ? "from" : !to ? "to" : "to";
+        const status = $("routeStatus");
+        if (status) status.textContent = state.routePick === "from" ? "路线选择模式已开启：点击地图设置起点，再点击地图设置终点。" : "路线选择模式已开启：当前将设置终点；需要重选起点请点击“地图选起点”。";
+      }
+      syncRouteMode();
     });
     const routeClose = $("satRouteClose");
-    if (routeClose) routeClose.addEventListener("click", function () { $("satRoutePanel").classList.remove("open"); });
+    if (routeClose) routeClose.addEventListener("click", function () { state.routeMode = false; syncRouteMode(); });
+    const routePickFrom = $("routePickFrom");
+    if (routePickFrom) routePickFrom.addEventListener("click", function () { state.routeMode = true; state.routePick = "from"; syncRouteMode(); $("routeStatus").textContent = "请点击地图设置起点。"; });
+    const routePickTo = $("routePickTo");
+    if (routePickTo) routePickTo.addEventListener("click", function () { state.routeMode = true; state.routePick = "to"; syncRouteMode(); $("routeStatus").textContent = "请点击地图设置终点。"; });
     const routeUseCity = $("routeUseCity");
-    if (routeUseCity) routeUseCity.addEventListener("click", function () { if ($("routeFrom") && state.city) $("routeFrom").value = state.city.name; });
+    if (routeUseCity) routeUseCity.addEventListener("click", function () {
+      if ($("routeFrom") && state.city) $("routeFrom").value = state.city.name;
+      state.routeMode = true; state.routePick = "to"; syncRouteMode();
+      $("routeStatus").textContent = "起点已使用所选城市，请点击地图或输入地点设置终点。";
+    });
+    const routeClear = $("routeClear");
+    if (routeClear) routeClear.addEventListener("click", function () {
+      if ($("routeFrom")) $("routeFrom").value = "";
+      if ($("routeTo")) $("routeTo").value = "";
+      clearRoute(); state.routeMode = true; state.routePick = "from"; syncRouteMode();
+      $("routeStatus").textContent = "路线已清空，请点击地图设置起点。";
+    });
     const routeSearch = $("routeSearch");
     if (routeSearch) routeSearch.addEventListener("click", queryRoute);
     const stormToggle = $("satStormsToggle");

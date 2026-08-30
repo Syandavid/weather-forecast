@@ -4,6 +4,8 @@
 
 - Keep the weather PWA and scheduled typhoon snapshot workflow maintainable.
 - Add offline integrity checks for the manifest, snapshot and updater script.
+- Keep ordinary map point selection on the map page instead of switching to weather.
+- Make the high-detail city imagery the default map base and add usable map-based route picking.
 
 ## 2026-08-30 - Weather timeline and globe
 
