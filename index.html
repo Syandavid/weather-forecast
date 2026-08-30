@@ -1401,6 +1401,7 @@ body.loop-still .pill.bad {
             <div class="sat-rail-bases">
               <button class="sat-bm on" data-base="truecolor" type="button">真实色</button>
               <button class="sat-bm" data-base="infrared" type="button">红外</button>
+              <button class="sat-bm" data-base="city" type="button">高清城市</button>
             </div>
             <div class="sat-control">
               <label for="satOpacity">云图透明度 <output id="satOpacityValue">68%</output></label>
@@ -1423,6 +1424,7 @@ body.loop-still .pill.bad {
           <div class="sat-bmap" id="satBmap">
             <button class="sat-bm on" data-base="truecolor" type="button">真实色</button>
             <button class="sat-bm" data-base="infrared" type="button">红外</button>
+            <button class="sat-bm" data-base="city" type="button">高清城市</button>
           </div>
           <div class="sat-playbar" id="satPlaybar">
             <div class="sat-playbar-row">
@@ -1488,7 +1490,7 @@ body.loop-still .pill.bad {
     <p>天气预报是静态网页，也可加到主屏幕当独立应用使用。核心功能无需账号。</p>
     <p>天气、16 天预报、历史趋势、空气质量和城市搜索来自 Open-Meteo。历史天气属于模型/再分析数据，不等同于气象站实测。真实色卫星来自 NASA GIBS 的 VIIRS / MODIS，东亚可见光与红外来自葵花 Himawari AHI。雷达来自 RainViewer。</p>
     <p>西北太平洋台风以中央气象台 CMA 为准，大西洋与东北太平洋来自美国飓风中心 NHC。底图使用 Esri 深色画布，无密钥。</p>
-    <p>预警根据台风实况和气温、未来 2 小时降雨/雷暴/阵风、高温、暴雨、大风、低温、大雾阈值生成。地图会自动定位到所选城市，云图透明度和图层可调。</p>
+    <p>预警根据台风实况和气温、未来 2 小时降雨/雷暴/阵风、高温、暴雨、大风、低温、大雾阈值生成。地图会自动定位到所选城市，云图透明度、高清城市底图和图层可调。</p>
     <p>卫星图像不是米级实时城市影像：VIIRS 约 375 米近天底，Himawari 更高频但分辨率更低。真正 10 米级无云城市底图需要 Sentinel-2 云掩膜与后端拼接；云层无法从一张原始光学影像中凭前端彻底删除。台风“风眼”当前显示为路径资料中的中心估计，不冒充实时雷达眼墙。</p>
     <p>刷新策略：天气按模型更新节奏自动刷新，台风约 10 分钟检查，地图雷达按公开接口约 5 分钟检查；更快轮询不代表数据更快更新，也可能触发服务限流。</p>
     <p id="aboutSnap"></p>
@@ -1501,6 +1503,7 @@ body.loop-still .pill.bad {
   const REC_KEY = "weather-forecast-recents";
   const WX_CACHE_KEY = "weather-forecast-wx-cache";
   const ESRI_DARK = "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}";
+  const ESRI_IMAGERY = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
   const OSM_URL = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
   const DEFAULT_CITY = { name: "上海", lat: 31.23, lon: 121.47, admin: "上海市" };
   const GRADE_ZH = { TD: "热带低压", TS: "热带风暴", STS: "强热带风暴", TY: "台风", STY: "强台风", SuperTY: "超强台风", SUPERTY: "超强台风", PTC: "潜在热带气旋", HU: "飓风", MH: "重大飓风" };
@@ -2926,6 +2929,10 @@ body.loop-still .pill.bad {
   function updateCaption() {
     const el = $("satCaption");
     if (!el) return;
+    if (state.satLayer === "city") {
+      el.textContent = "高清城市底图 · 非实时云图，可放大查看城市细节";
+      return;
+    }
     const fr = playheadFrame();
     const now = Date.now() / 1000;
     if (!fr) { el.textContent = ""; return; }
@@ -3104,16 +3111,17 @@ body.loop-still .pill.bad {
     const latSpan = Math.max(0.8, north - south);
     const lonSpan = Math.max(0.8, east - west);
     let step = 1.75;
+    const maxPoints = state.satMap.getZoom() >= 8 ? 96 : state.satMap.getZoom() >= 7 ? 72 : 48;
     let nLat = Math.max(2, Math.round(latSpan / step));
     let nLon = Math.max(2, Math.round(lonSpan / step));
-    while ((nLat + 1) * (nLon + 1) > 48 && step < 14) {
+    while ((nLat + 1) * (nLon + 1) > maxPoints && step < 14) {
       step += 0.25;
       nLat = Math.max(2, Math.round(latSpan / step));
       nLon = Math.max(2, Math.round(lonSpan / step));
     }
     const pts = [];
-    for (let i = 0; i <= nLat && pts.length < 48; i++) {
-      for (let j = 0; j <= nLon && pts.length < 48; j++) {
+    for (let i = 0; i <= nLat && pts.length < maxPoints; i++) {
+      for (let j = 0; j <= nLon && pts.length < maxPoints; j++) {
         let lon = west + (j / nLon) * lonSpan;
         if (lon > 180) lon -= 360;
         pts.push({ lat: south + (i / nLat) * latSpan, lon: lon });
@@ -3378,7 +3386,11 @@ body.loop-still .pill.bad {
     if (!state.satMap) return;
     if (state.satLayerObj) { state.satMap.removeLayer(state.satLayerObj); state.satLayerObj = null; }
     let url, maxZ, iso, attr;
-    if (name === "infrared") {
+    if (name === "city") {
+      url = ESRI_IMAGERY;
+      maxZ = 18; iso = ""; attr = "Esri World Imagery";
+      state.satTimeFrames = [];
+    } else if (name === "infrared") {
       const tm = himawariTime();
       url = gibsUrl("Himawari_AHI_Band13_Clean_Infrared", "GoogleMapsCompatible_Level6", "png").replace("{time}", tm);
       maxZ = 6; iso = tm; attr = "NASA GIBS / Himawari";
@@ -3763,7 +3775,7 @@ body.loop-still .pill.bad {
       maybeAutoplayRadar();
       return;
     }
-    if (name === "infrared" || name === "truecolor" || name === "visible") {
+    if (name === "city" || name === "infrared" || name === "truecolor" || name === "visible") {
       await setSatBase(name === "visible" ? "truecolor" : name);
       return;
     }
