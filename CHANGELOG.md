@@ -6,6 +6,7 @@
 - Add offline integrity checks for the manifest, snapshot and updater script.
 - Keep ordinary map point selection on the map page instead of switching to weather.
 - Make the high-detail city imagery the default map base and add usable map-based route picking.
+- Add a generated cartoon global-weather hero image with a clear typhoon eye and satellite motif.
 
 ## 2026-08-30 - Weather timeline and globe
 

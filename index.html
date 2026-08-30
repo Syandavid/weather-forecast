@@ -131,7 +131,14 @@ button { color: inherit; }
   padding: 10px 12px 14px; margin: 0 -4px 4px; border-radius: 16px;
   background: linear-gradient(180deg, rgba(78,162,255,0.14), transparent 80%);
   transition: background 0.35s ease;
+  position: relative; overflow: hidden; isolation: isolate;
 }
+.hero::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: linear-gradient(90deg, rgba(5,12,30,.88) 0%, rgba(5,12,30,.58) 46%, rgba(5,12,30,.16) 100%), url("assets/weather-hero-v1.png") 68% center / cover no-repeat;
+  opacity: .9;
+}
+.hero > * { position: relative; z-index: 1; }
 .hero.wx-clear { background: linear-gradient(180deg, rgba(62,140,255,0.20), transparent 82%); }
 .hero.wx-night { background: linear-gradient(180deg, rgba(16,28,62,0.58), transparent 84%); }
 .hero.wx-rain { background: linear-gradient(180deg, rgba(70,90,110,0.34), transparent 84%); }
@@ -1365,6 +1372,7 @@ body.loop-still .pill.bad {
 .sat-legend-body .lg-city { display:inline-block; width:9px; height:9px; border-radius:50%; background:#4ea2ff; border:2px solid white; margin-right:8px; }
 @media (max-width: 480px) { .trend-head { display:block; } .trend-tabs { margin-top:10px; width:max-content; } .trend-chart svg { height:190px; } .trend-chart { min-height:190px; } .next2-grid { grid-template-columns:repeat(3, minmax(0, 1fr)); } .history-tools input, .history-tools select { max-width:118px; } }
 @media (max-width: 480px) { .sat-route-fab { left:64px; } .sat-route-panel { bottom:136px; } }
+@media (max-width: 480px) { .hero::before { background-position: 68% center; } }
 @media (prefers-reduced-motion: reduce) { .clothing-person, .clothing-umbrella, .clothing-rain, .sat-wind-barb.wind-flow { animation:none !important; } }
 </style>
 </head>
