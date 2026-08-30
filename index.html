@@ -1210,7 +1210,16 @@ body.loop-still .pill.bad {
   background: rgba(14, 22, 36, 0.82); backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
 }
-.next2-card { padding: 13px 15px; display: flex; align-items: center; gap: 12px; }
+.next2-card { padding: 13px 15px; display: block; }
+.next2-head { display:flex; align-items:center; gap:12px; }
+.next2-grid { display:grid; grid-template-columns:repeat(6, minmax(0, 1fr)); gap:6px; margin-top:12px; }
+.next2-slot { min-width:0; padding:8px 5px; border-radius:10px; background:rgba(255,255,255,.055); text-align:center; }
+.next2-slot .at { color:var(--muted); font-size:10px; white-space:nowrap; }
+.next2-slot .ico { margin:4px auto 2px; display:flex; justify-content:center; }
+.next2-slot .deg { font-weight:650; font-size:14px; }
+.next2-slot .rain { color:#7dd3fc; font-size:10px; margin-top:3px; }
+.next2-slot .gust { color:var(--muted); font-size:10px; margin-top:2px; }
+.next2-source { display:block; margin-top:8px; color:var(--muted); font-size:10px; }
 .next2-card.warn { border-color: rgba(255,176,0,.55); background: rgba(255,176,0,.11); }
 .next2-card.danger { border-color: rgba(255,90,95,.68); background: rgba(255,90,95,.13); }
 .next2-card.ok { border-color: rgba(62,207,142,.35); }
@@ -1238,11 +1247,26 @@ body.loop-still .pill.bad {
 .clothing-sun { position:absolute; right: 2px; top: 2px; width: 19px; height:19px; border-radius:50%; background:#ffd166; box-shadow: 0 0 0 5px rgba(255,209,102,.12); }
 .clothing-rain { display:none; position:absolute; inset:0; background: repeating-linear-gradient(105deg, transparent 0 11px, rgba(126,197,255,.65) 12px 13px, transparent 14px 22px); animation: rainSlide .8s linear infinite; }
 .clothing-person.rain ~ .clothing-rain { display:block; }
+.clothing-cloud { position:absolute; left:2px; top:13px; width:34px; height:15px; border-radius:20px; background:rgba(184,204,226,.55); opacity:.5; }
+.clothing-cloud::before, .clothing-cloud::after { content:""; position:absolute; border-radius:50%; background:inherit; }
+.clothing-cloud::before { width:17px; height:17px; left:7px; top:-8px; }
+.clothing-cloud::after { width:12px; height:12px; left:19px; top:-4px; }
+.clothing-person.hot ~ .clothing-cloud { opacity:.15; }
+.clothing-person.cold ~ .clothing-cloud { opacity:.75; }
+.clothing-scarf { display:none; position:absolute; left:45px; bottom:30px; width:25px; height:7px; border-radius:6px; background:#ef4444; transform:rotate(8deg); transform-origin:left; }
+.clothing-person.cold ~ .clothing-scarf { display:block; animation: scarfWave 1.7s ease-in-out infinite; }
+.clothing-wind { position:absolute; width:25px; height:2px; border-radius:2px; background:rgba(126,197,255,.7); opacity:0; }
+.clothing-wind.w1 { left:0; top:43px; }
+.clothing-wind.w2 { left:10px; top:53px; width:18px; }
+.clothing-person.windy ~ .clothing-wind { opacity:1; animation: windSweep 1.5s ease-in-out infinite; }
+.clothing-person.windy ~ .clothing-wind.w2 { animation-delay:.32s; }
 .clothing-advice { min-width: 0; font-size: 13px; line-height: 1.55; }
 .clothing-advice b { color: var(--text); }
 @keyframes personBob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-2px); } }
 @keyframes umbrellaSway { 0%,100% { transform: rotate(-2deg); } 50% { transform: rotate(3deg); } }
 @keyframes rainSlide { to { transform: translateY(12px); } }
+@keyframes scarfWave { 0%,100% { transform:rotate(8deg) scaleX(1); } 50% { transform:rotate(-5deg) scaleX(1.18); } }
+@keyframes windSweep { 0% { transform:translateX(-8px); opacity:0; } 35%,70% { opacity:1; } 100% { transform:translateX(25px); opacity:0; } }
 .trend-card { padding: 14px 15px 12px; }
 .trend-head { display:flex; align-items:flex-start; justify-content:space-between; gap: 12px; }
 .trend-note { color: var(--muted); font-size: 11px; margin-top: -7px; }
@@ -1251,6 +1275,7 @@ body.loop-still .pill.bad {
 .trend-tab.on { color:var(--text); background:rgba(78,162,255,.23); }
 .trend-chart { width:100%; min-height: 210px; margin-top: 8px; overflow:hidden; }
 .trend-chart svg { width:100%; height:210px; display:block; }
+.trend-chart svg { touch-action:none; }
 .trend-grid { stroke: rgba(255,255,255,.1); stroke-width:1; stroke-dasharray:3 4; }
 .trend-line { fill:none; stroke:#4ea2ff; stroke-width:3; stroke-linecap:round; stroke-linejoin:round; }
 .trend-area { fill:url(#trendFill); opacity:.26; }
@@ -1258,10 +1283,19 @@ body.loop-still .pill.bad {
 .trend-label { fill:#8e9bad; font-size:10px; }
 .trend-label.value { fill:#eaf3ff; font-weight:600; }
 .trend-divider { stroke:#ffb000; stroke-width:1.5; stroke-dasharray:4 4; }
+.trend-cursor { stroke:#fff; stroke-width:1.8; stroke-dasharray:3 3; pointer-events:none; }
+.trend-cursor-handle { fill:#fff; stroke:#4ea2ff; stroke-width:2; cursor:ew-resize; }
+.trend-selected { min-height:18px; margin:2px 0 7px; color:var(--text); font-size:11px; line-height:1.4; }
+.history-tools { display:flex; align-items:center; flex-wrap:wrap; gap:7px; margin-top:10px; color:var(--muted); font-size:11px; }
+.history-tools label { display:flex; align-items:center; gap:5px; }
+.history-tools input, .history-tools select { min-height:30px; max-width:145px; padding:4px 7px; border-radius:8px; border:1px solid var(--line); background:rgba(255,255,255,.06); color:var(--text); }
+.history-tools button { min-height:30px; padding:5px 9px; border-radius:8px; border:1px solid var(--line); background:rgba(78,162,255,.12); color:var(--text); cursor:pointer; }
 .trend-legend { color:var(--muted); font-size:11px; display:flex; gap:12px; flex-wrap:wrap; }
 .trend-legend i { display:inline-block; width:8px; height:8px; border-radius:50%; background:#4ea2ff; margin-right:4px; }
 .trend-legend i.past { background:#94a3b8; }
 .trend-legend i.future { background:#4ea2ff; }
+.solar-night { fill:rgba(3,10,25,.36); stroke:none; }
+.solar-line { stroke:#ffe08a; stroke-width:2; opacity:.9; }
 .sat-control { border-top: 1px solid var(--line); margin-top: 10px; padding-top: 10px; }
 .sat-control label { display:flex; justify-content:space-between; color:var(--text); font-size:12px; }
 .sat-control output { color:var(--sky); }
@@ -1279,7 +1313,7 @@ body.loop-still .pill.bad {
 @keyframes windFlow { 0%,100% { transform: translateY(2px) rotate(var(--wind-rot,0deg)); opacity:.62; } 50% { transform: translateY(-2px) rotate(var(--wind-rot,0deg)); opacity:1; } }
 .sat-legend-body .lg-rain { display:inline-block; width:22px; height:8px; border-radius:4px; margin-right:5px; background:linear-gradient(90deg,#7dd3fc,#0ea5e9,#7c3aed); }
 .sat-legend-body .lg-city { display:inline-block; width:9px; height:9px; border-radius:50%; background:#4ea2ff; border:2px solid white; margin-right:8px; }
-@media (max-width: 480px) { .trend-head { display:block; } .trend-tabs { margin-top:10px; width:max-content; } .trend-chart svg { height:190px; } .trend-chart { min-height:190px; } }
+@media (max-width: 480px) { .trend-head { display:block; } .trend-tabs { margin-top:10px; width:max-content; } .trend-chart svg { height:190px; } .trend-chart { min-height:190px; } .next2-grid { grid-template-columns:repeat(3, minmax(0, 1fr)); } .history-tools input, .history-tools select { max-width:118px; } }
 @media (prefers-reduced-motion: reduce) { .clothing-person, .clothing-umbrella, .clothing-rain, .sat-wind-barb.wind-flow { animation:none !important; } }
 </style>
 </head>
@@ -1361,7 +1395,8 @@ body.loop-still .pill.bad {
             <button class="trend-tab" data-trend="rain" type="button">降雨</button>
             <button class="trend-tab" data-trend="wind" type="button">风速</button>
           </div></div>
-          <div class="history-tools"><label>历史查询 <input id="historyStart" type="date"></label><span>至</span><input id="historyEnd" type="date"><button id="historyQuery" type="button">查询</button><button id="historyReset" type="button">近 7 天</button></div>
+          <div class="history-tools"><label>粒度 <select id="trendGranularity"><option value="daily">每日</option><option value="hourly">逐时</option></select></label><label>从 <input id="historyStart" type="date"><input id="historyStartTime" type="time" value="00:00"></label><span>至</span><label><input id="historyEnd" type="date"><input id="historyEndTime" type="time" value="23:00"></label><button id="historyQuery" type="button">查询时间段</button><button id="historyReset" type="button">近 7 天</button></div>
+          <div class="trend-selected" id="trendSelected" aria-live="polite">拖动图中的竖线，查看对应日期或时刻</div>
           <div class="trend-chart" id="trendChart"><div class="empty">趋势图准备中</div></div>
           <div class="trend-legend" id="trendLegend"></div>
         </section>
@@ -1582,6 +1617,8 @@ body.loop-still .pill.bad {
     sat3dMap: null,
     sat3dReady: null,
     satView: "2d",
+    satSolarLayer: null,
+    satSolarTimer: 0,
     satLayerObj: null,
     satBase: null,
     satRoads: null,
@@ -1593,6 +1630,8 @@ body.loop-still .pill.bad {
     radarTimer: null,
     radarIdx: 0,
     satOp: 0.68,
+    trendGranularity: "daily",
+    trendSelected: 0,
     tempRevealed: false,
     timeline: [],
     fcUnavailable: false,
@@ -2128,6 +2167,7 @@ body.loop-still .pill.bad {
     const wurl = "https://api.open-meteo.com/v1/forecast?" + q +
       "&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,wind_gusts_10m,relative_humidity_2m,precipitation,is_day,wind_direction_10m,surface_pressure,dew_point_2m,visibility,cloud_cover" +
       "&hourly=temperature_2m,precipitation,precipitation_probability,weather_code,wind_speed_10m,wind_gusts_10m,wind_direction_10m,uv_index,cloud_cover,apparent_temperature" +
+      "&minutely_15=temperature_2m,precipitation,weather_code,wind_speed_10m,wind_gusts_10m" +
       "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max,uv_index_max,wind_speed_10m_max,sunrise,sunset,sunshine_duration" +
       "&forecast_days=16";
     const aurl = "https://air-quality-api.open-meteo.com/v1/air-quality?" + q + "&current=us_aqi,pm2_5,pm10";
@@ -2177,19 +2217,22 @@ body.loop-still .pill.bad {
   function historyValue(arr, i, fallback) {
     return arr && arr[i] != null ? arr[i] : fallback;
   }
-  async function loadHistoryRange(start, end) {
+  async function loadHistoryRange(start, end, startTime, endTime) {
     const requestId = ++state.historyRequest;
     const c = state.city;
     if (!c) return;
+    startTime = startTime || "00:00";
+    endTime = endTime || "23:00";
     const url = "https://archive-api.open-meteo.com/v1/archive?latitude=" + c.lat + "&longitude=" + c.lon +
       "&start_date=" + start + "&end_date=" + end +
+      "&hourly=temperature_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m,wind_gusts_10m" +
       "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max" +
       "&timezone=auto&wind_speed_unit=ms";
     try {
       const data = await getJson(url);
       if (requestId !== state.historyRequest) return;
       state.history = data && data.daily ? data : null;
-      state.historyRange = { start: start, end: end };
+      state.historyRange = { start: start, end: end, startTime: startTime, endTime: endTime };
     } catch (e) {
       if (requestId === state.historyRequest) state.history = null;
     }
@@ -2198,6 +2241,8 @@ body.loop-still .pill.bad {
   function setHistoryInputs(start, end) {
     if ($("historyStart")) $("historyStart").value = start;
     if ($("historyEnd")) $("historyEnd").value = end;
+    if ($("historyStartTime")) $("historyStartTime").value = "00:00";
+    if ($("historyEndTime")) $("historyEndTime").value = "23:00";
   }
   function loadHistory() {
     const start = dateKeyOffset(-7), end = dateKeyOffset(-1);
@@ -2206,6 +2251,31 @@ body.loop-still .pill.bad {
   }
   function trendSeries() {
     const out = [];
+    const range = state.historyRange || {};
+    if (state.trendGranularity === "hourly") {
+      const begin = range.start ? range.start + " " + (range.startTime || "00:00") : "";
+      const finish = range.end ? range.end + " " + (range.endTime || "23:00") : "";
+      const inRange = function (iso) {
+        const key = String(iso || "").replace("T", " ").slice(0, 16);
+        return (!begin || key >= begin) && (!finish || key <= finish);
+      };
+      const h = state.history && state.history.hourly;
+      if (h && h.time) {
+        h.time.forEach(function (iso, i) {
+          if (!inRange(iso)) return;
+          out.push({ date: iso, kind: "past", code: historyValue(h.weather_code, i, 0), high: historyValue(h.temperature_2m, i, null), low: null, rain: historyValue(h.precipitation, i, 0), wind: historyValue(h.wind_speed_10m, i, null), gust: historyValue(h.wind_gusts_10m, i, null) });
+        });
+      }
+      const fw = state.weather && state.weather.hourly;
+      if (fw && fw.time) {
+        fw.time.forEach(function (iso, i) {
+          if (new Date(iso).getTime() < Date.now() - 30 * 60000) return;
+          if (out.some(function (x) { return x.date === iso; })) return;
+          out.push({ date: iso, kind: "future", code: historyValue(fw.weather_code, i, 0), high: historyValue(fw.temperature_2m, i, null), low: null, rain: historyValue(fw.precipitation, i, 0), wind: historyValue(fw.wind_speed_10m, i, null), gust: historyValue(fw.wind_gusts_10m, i, null) });
+        });
+      }
+      return out.slice(0, 720);
+    }
     const h = state.history && state.history.daily;
     if (h && h.time) {
       h.time.forEach(function (iso, i) {
@@ -2219,12 +2289,51 @@ body.loop-still .pill.bad {
         out.push({ date: iso, kind: "future", code: historyValue(d.weather_code, i, 0), high: historyValue(d.temperature_2m_max, i, null), low: historyValue(d.temperature_2m_min, i, null), rain: historyValue(d.precipitation_sum, i, 0), wind: historyValue(d.wind_speed_10m_max, i, null) });
       });
     }
-    return out.slice(-23);
+    return out.slice(-40);
   }
   function trendLabel(iso) {
     if (!iso) return "";
-    const p = String(iso).slice(5).replace("-", "/");
-    return p;
+    if (state.trendGranularity === "hourly") return String(iso).slice(5, 10).replace("-", "/") + " " + fmtHM(iso);
+    return String(iso).slice(5).replace("-", "/");
+  }
+  function trendSelectionText(s, mode) {
+    if (!s) return "拖动图中的竖线，查看对应日期或时刻";
+    const when = state.trendGranularity === "hourly" ? trendLabel(s.date) : s.date;
+    const vals = mode === "temp"
+      ? (s.high == null ? "—" : Math.round(s.high) + "°C")
+      : mode === "rain" ? ((s.rain == null ? "—" : s.rain.toFixed(1) + " mm"))
+      : (s.wind == null ? "—" : s.wind.toFixed(1) + " m/s");
+    return (s.kind === "past" ? "历史" : "预报") + " · " + when + " · " + vals;
+  }
+  function bindTrendCursor(svg, series, x, W, pad, mode) {
+    if (!svg || !series.length) return;
+    const line = svg.querySelector("[data-trend-cursor]");
+    const handle = svg.querySelector("[data-trend-cursor-handle]");
+    const selectedEl = $("trendSelected");
+    const setIndex = function (idx) {
+      idx = Math.max(0, Math.min(series.length - 1, Math.round(idx)));
+      state.trendSelected = idx;
+      const px = x(idx);
+      if (line) { line.setAttribute("x1", px.toFixed(1)); line.setAttribute("x2", px.toFixed(1)); }
+      if (handle) { handle.setAttribute("cx", px.toFixed(1)); handle.setAttribute("cy", String(pad.t + 2)); }
+      if (selectedEl) selectedEl.textContent = trendSelectionText(series[idx], mode);
+    };
+    const fromEvent = function (e) {
+      const rect = svg.getBoundingClientRect();
+      const sx = (e.clientX - rect.left) * W / Math.max(1, rect.width);
+      return (sx - pad.l) / Math.max(1, W - pad.l - pad.r) * Math.max(1, series.length - 1);
+    };
+    let dragging = false;
+    svg.addEventListener("pointerdown", function (e) {
+      dragging = true;
+      try { svg.setPointerCapture(e.pointerId); } catch (err) {}
+      setIndex(fromEvent(e));
+      e.preventDefault();
+    });
+    svg.addEventListener("pointermove", function (e) { if (dragging) setIndex(fromEvent(e)); });
+    svg.addEventListener("pointerup", function () { dragging = false; });
+    svg.addEventListener("pointercancel", function () { dragging = false; });
+    setIndex(state.trendSelected || 0);
   }
   function renderTrendChart() {
     const box = $("trendChart"), note = $("trendNote"), legend = $("trendLegend");
@@ -2250,31 +2359,58 @@ body.loop-still .pill.bad {
     const y = function (v) { return pad.t + (max - v) * plotH / (max - min); };
     const pathFor = function (field) { return series.map(function (s, i) { const v = s[field]; return v == null ? null : [x(i), y(v)]; }).filter(Boolean).map(function (p, i) { return (i ? "L" : "M") + p[0].toFixed(1) + " " + p[1].toFixed(1); }).join(" "); };
     const highPath = mode === "temp" ? pathFor("high") : pathFor(mode === "rain" ? "rain" : "wind");
-    const lowPath = mode === "temp" ? pathFor("low") : "";
+    const lowPath = mode === "temp" && state.trendGranularity === "daily" ? pathFor("low") : "";
     const firstPast = series.findIndex(function (s) { return s.kind === "future"; });
     const divider = firstPast > 0 ? '<line class="trend-divider" x1="' + x(firstPast - .5).toFixed(1) + '" x2="' + x(firstPast - .5).toFixed(1) + '" y1="' + pad.t + '" y2="' + (H - pad.b) + '"/><text class="trend-label" x="' + (x(firstPast - .5) + 5).toFixed(1) + '" y="13">未来</text>' : "";
+    const labelEvery = state.trendGranularity === "hourly" ? Math.max(1, Math.ceil(series.length / 8)) : 3;
     let grid = "";
     for (let j = 0; j < 4; j++) { const gy = pad.t + j * plotH / 3; const gv = max - j * (max - min) / 3; grid += '<line class="trend-grid" x1="' + pad.l + '" x2="' + (W - pad.r) + '" y1="' + gy.toFixed(1) + '" y2="' + gy.toFixed(1) + '"/><text class="trend-label" x="2" y="' + (gy + 3).toFixed(1) + '">' + (mode === "temp" ? Math.round(gv) + "°" : mode === "rain" ? gv.toFixed(1) : Math.round(gv)) + '</text>'; }
     let labels = "", points = "";
     series.forEach(function (s, i) {
-      if (i % 3 === 0 || i === series.length - 1) labels += '<text class="trend-label" text-anchor="middle" x="' + x(i).toFixed(1) + '" y="' + (H - 7) + '">' + trendLabel(s.date) + '</text>';
+      if (i % labelEvery === 0 || i === series.length - 1) labels += '<text class="trend-label" text-anchor="middle" x="' + x(i).toFixed(1) + '" y="' + (H - 7) + '">' + trendLabel(s.date) + '</text>';
       const fields = mode === "temp" ? ["high", "low"] : [mode === "rain" ? "rain" : "wind"];
-      fields.forEach(function (f) { if (s[f] != null && (i % 3 === 0 || i === series.length - 1)) points += '<circle class="trend-point" cx="' + x(i).toFixed(1) + '" cy="' + y(s[f]).toFixed(1) + '" r="3.4"><title>' + s.date + " " + s[f] + '</title></circle>'; });
+      fields.forEach(function (f) { if (s[f] != null && (i % labelEvery === 0 || i === series.length - 1)) points += '<circle class="trend-point" cx="' + x(i).toFixed(1) + '" cy="' + y(s[f]).toFixed(1) + '" r="3.4"><title>' + s.date + " " + s[f] + '</title></circle>'; });
     });
     const area = mode === "temp" ? "" : (highPath ? highPath + " L" + x(series.length - 1).toFixed(1) + " " + (H - pad.b) + " L" + x(0).toFixed(1) + " " + (H - pad.b) + " Z" : "");
     const unit = mode === "temp" ? "°C" : mode === "rain" ? "mm" : "m/s";
-    box.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + (mode === "temp" ? "温度" : mode === "rain" ? "降雨" : "风速") + '趋势图"><defs><linearGradient id="trendFill" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#4ea2ff"/><stop offset="1" stop-color="#4ea2ff" stop-opacity="0"/></linearGradient></defs>' + grid + divider + (area ? '<path class="trend-area" d="' + area + '"/>' : '') + '<path class="trend-line" d="' + highPath + '"/>' + (lowPath ? '<path class="trend-line" style="stroke:#ffb000" d="' + lowPath + '"/>' : '') + points + labels + '</svg>';
-    if (note) note.textContent = (state.history ? "历史 " + ((state.historyRange && state.historyRange.start) || "") + " 至 " + ((state.historyRange && state.historyRange.end) || "") + " + 未来 16 天 · " : "历史数据加载失败，") + "曲线单位 " + unit;
-    if (legend) legend.innerHTML = mode === "temp" ? '<span><i class="future"></i>最高温</span><span><i style="background:#ffb000"></i>最低温</span><span><i class="past"></i>左侧为历史</span>' : '<span><i class="future"></i>' + (mode === "rain" ? "降雨量（mm）" : "最大风速（m/s）") + '</span><span><i class="past"></i>左侧为历史</span>';
+    const selected = series[Math.max(0, Math.min(series.length - 1, state.trendSelected || 0))];
+    const cursorX = x(Math.max(0, Math.min(series.length - 1, state.trendSelected || 0)));
+    box.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + (mode === "temp" ? "温度" : mode === "rain" ? "降雨" : "风速") + '趋势图，可拖动竖线选择时间"><defs><linearGradient id="trendFill" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#4ea2ff"/><stop offset="1" stop-color="#4ea2ff" stop-opacity="0"/></linearGradient></defs>' + grid + divider + (area ? '<path class="trend-area" d="' + area + '"/>' : '') + '<path class="trend-line" d="' + highPath + '"/>' + (lowPath ? '<path class="trend-line" style="stroke:#ffb000" d="' + lowPath + '"/>' : '') + points + labels + '<line class="trend-cursor" data-trend-cursor x1="' + cursorX.toFixed(1) + '" x2="' + cursorX.toFixed(1) + '" y1="' + pad.t + '" y2="' + (H - pad.b) + '"/><circle class="trend-cursor-handle" data-trend-cursor-handle cx="' + cursorX.toFixed(1) + '" cy="' + (pad.t + 2) + '" r="6"/></svg>';
+    if (note) note.textContent = (state.history ? "历史 " + ((state.historyRange && state.historyRange.start) || "") + " 至 " + ((state.historyRange && state.historyRange.end) || "") + " + 未来 16 天 · " : "历史数据加载失败，") + (state.trendGranularity === "hourly" ? "逐时曲线 · " : "每日曲线 · ") + "单位 " + unit;
+    if (legend) legend.innerHTML = mode === "temp" ? (state.trendGranularity === "hourly" ? '<span><i class="future"></i>温度</span><span class="past">历史/预报</span>' : '<span><i class="future"></i>最高温</span><span><i style="background:#ffb000"></i>最低温</span><span><i class="past"></i>左侧为历史</span>') : '<span><i class="future"></i>' + (mode === "rain" ? "降雨量（mm）" : "最大风速（m/s）") + '</span><span><i class="past"></i>左侧为历史</span>';
+    const selectedBox = $("trendSelected");
+    if (selectedBox) selectedBox.textContent = trendSelectionText(selected, mode);
+    bindTrendCursor(box.querySelector("svg"), series, x, W, pad, mode);
   }
   function renderNext2Hours(w) {
     const el = $("next2Card");
     if (!el) return;
-    const h = w && w.hourly || {}, now = Date.now(), rows = [];
-    (h.time || []).forEach(function (iso, i) {
-      const tm = new Date(iso).getTime();
-      if (tm < now - 20 * 60000 || tm > now + 2 * 3600000 + 20 * 60000) return;
-      rows.push({ pop: (h.precipitation_probability && h.precipitation_probability[i]) || 0, mm: (h.precipitation && h.precipitation[i]) || 0, code: (h.weather_code && h.weather_code[i]) || 0, gust: (h.wind_gusts_10m && h.wind_gusts_10m[i]) || 0 });
+    const current = w && w.current || {}, hourly = w && w.hourly || {}, minute = w && w.minutely_15 || {};
+    const source = (minute.time && minute.time.length) ? minute : hourly;
+    const now = Date.now(), offsets = [10, 15, 30, 60, 90, 120], rows = [];
+    const valueAt = function (obj, field, target, fallback) {
+      const times = obj.time || [], vals = obj[field] || [];
+      if (!times.length || !vals.length) return fallback;
+      let left = -1, right = -1;
+      for (let i = 0; i < times.length; i++) {
+        const tm = new Date(times[i]).getTime();
+        if (tm <= target) left = i;
+        if (tm >= target) { right = i; break; }
+      }
+      if (left < 0) left = right;
+      if (right < 0) right = left;
+      if (left < 0 || right < 0 || vals[left] == null && vals[right] == null) return fallback;
+      const a = vals[left] == null ? vals[right] : vals[left], b = vals[right] == null ? vals[left] : vals[right];
+      if (field === "weather_code") return (target - new Date(times[left]).getTime()) < (new Date(times[right]).getTime() - target) ? a : b;
+      if (left === right || !isFinite(a) || !isFinite(b)) return a;
+      const span = new Date(times[right]).getTime() - new Date(times[left]).getTime();
+      const ratio = span ? Math.max(0, Math.min(1, (target - new Date(times[left]).getTime()) / span)) : 0;
+      return a + (b - a) * ratio;
+    };
+    const hourlyPop = function (target) { return valueAt(hourly, "precipitation_probability", target, 0) || 0; };
+    offsets.forEach(function (offset) {
+      const target = now + offset * 60000;
+      rows.push({ offset: offset, temp: valueAt(source, "temperature_2m", target, current.temperature_2m), pop: hourlyPop(target), mm: valueAt(source, "precipitation", target, 0) || 0, code: valueAt(source, "weather_code", target, current.weather_code || 0), wind: valueAt(source, "wind_speed_10m", target, current.wind_speed_10m || 0), gust: valueAt(source, "wind_gusts_10m", target, current.wind_gusts_10m || 0) });
     });
     if (!rows.length) { el.hidden = true; return; }
     const maxPop = Math.max.apply(null, rows.map(function (r) { return r.pop; }));
@@ -2285,14 +2421,18 @@ body.loop-still .pill.bad {
     const warn = danger || maxPop >= 60 || maxMm >= 2;
     el.hidden = false; el.className = "next2-card " + (danger ? "danger" : warn ? "warn" : "ok");
     const text = storm ? "可能出现雷暴，请暂缓户外活动" : maxMm > 0 ? "预计降雨 " + (maxMm < .1 ? "<0.1" : maxMm.toFixed(1)) + " mm，概率 " + Math.round(maxPop) + "%" : maxPop >= 40 ? "降雨概率 " + Math.round(maxPop) + "%，建议随身带伞" : "未来 2 小时暂无明显降雨或大风风险";
-    el.innerHTML = '<div class="next2-icon">' + (danger ? "!" : warn ? "雨" : "✓") + '</div><div><strong>未来 2 小时 · ' + (danger ? "需要注意" : warn ? "天气变化" : "暂无明显风险") + '</strong><span>' + text + (maxGust >= 10 ? " · 阵风约 " + Math.round(maxGust) + " m/s" : "") + '</span></div>';
+    const slots = rows.map(function (r) {
+      const rain = r.mm > 0 ? (r.mm < .1 ? "<0.1" : r.mm.toFixed(1)) + "mm" : (r.pop >= 1 ? Math.round(r.pop) + "%" : "无雨");
+      return '<div class="next2-slot"><div class="at">+' + r.offset + '分钟</div><div class="ico">' + wxIcon(r.code, true, 18) + '</div><div class="deg">' + (r.temp == null ? "—" : Math.round(r.temp) + "°") + '</div><div class="rain">' + rain + '</div><div class="gust">阵风 ' + (r.gust == null ? "—" : Math.round(r.gust) + "m/s") + '</div></div>';
+    }).join("");
+    el.innerHTML = '<div class="next2-head"><div class="next2-icon">' + (danger ? "!" : warn ? "雨" : "✓") + '</div><div><strong>未来 2 小时 · ' + (danger ? "需要注意" : warn ? "天气变化" : "暂无明显风险") + '</strong><span>' + text + (maxGust >= 10 ? " · 阵风约 " + Math.round(maxGust) + " m/s" : "") + '</span></div></div><div class="next2-grid">' + slots + '</div><small class="next2-source">按 10 / 15 / 30 / 60 / 90 / 120 分钟连续提示 · ' + (minute.time && minute.time.length ? "15 分钟预报数据" : "小时数据插值") + '</small>';
   }
   function clothingGuide(w) {
     const c = w && w.current || {}, h = w && w.hourly || {}, t = c.apparent_temperature != null ? c.apparent_temperature : c.temperature_2m;
     let pop = 0;
     (h.time || []).forEach(function (iso, i) { const tm = new Date(iso).getTime(); if (tm >= Date.now() && tm <= Date.now() + 6 * 3600000) pop = Math.max(pop, (h.precipitation_probability && h.precipitation_probability[i]) || 0); });
     const rain = pop >= 45 || c.weather_code >= 51;
-    const cls = rain ? "rain" : t <= 10 ? "cold" : t >= 28 ? "hot" : "";
+    const cls = (rain ? "rain" : t <= 10 ? "cold" : t >= 28 ? "hot" : "") + (c.wind_speed_10m >= 8 ? " windy" : "");
     let title = t == null ? "适合按体感穿衣" : t <= 5 ? "厚外套 + 保暖层" : t <= 12 ? "外套 + 长袖" : t <= 20 ? "薄外套较舒适" : t <= 27 ? "长袖或薄衫" : "轻薄透气衣物";
     if (rain) title += " · 记得带伞";
     const advice = rain ? "有降雨可能，选择防水鞋面；体感 " + Math.round(t) + "°C" : "根据体感 " + (t == null ? "—" : Math.round(t) + "°C") + " 推荐，" + (c.wind_speed_10m >= 8 ? "风较明显，外层注意防风" : "户外活动舒适");
@@ -2302,7 +2442,7 @@ body.loop-still .pill.bad {
     const el = $("clothingCard");
     if (!el || !w || !w.current) return;
     const g = clothingGuide(w);
-    el.hidden = false; el.innerHTML = '<div class="clothing-head"><strong>穿衣指南 · 动态建议</strong><small>' + (g.temp == null ? "—" : Math.round(g.temp) + "°C 体感") + '</small></div><div class="clothing-body"><div class="clothing-scene"><div class="clothing-sun"></div><div class="clothing-person ' + g.cls + '"><div class="clothing-coat"></div></div><div class="clothing-umbrella"></div><div class="clothing-rain"></div></div><div class="clothing-advice"><b>' + g.title + '</b><br>' + g.advice + '</div></div>';
+    el.hidden = false; el.innerHTML = '<div class="clothing-head"><strong>穿衣指南 · 动态建议</strong><small>' + (g.temp == null ? "—" : Math.round(g.temp) + "°C 体感") + '</small></div><div class="clothing-body"><div class="clothing-scene"><div class="clothing-sun"></div><div class="clothing-cloud"></div><div class="clothing-person ' + g.cls + '"><div class="clothing-coat"></div></div><div class="clothing-scarf"></div><div class="clothing-umbrella"></div><div class="clothing-rain"></div><div class="clothing-wind w1"></div><div class="clothing-wind w2"></div></div><div class="clothing-advice"><b>' + g.title + '</b><br>' + g.advice + '</div></div>';
   }
   function updateWeatherStamp(w, cached) {
     const el = $("wxUpdated");
@@ -2382,7 +2522,7 @@ body.loop-still .pill.bad {
     });
     $("days").innerHTML = dh;
     const rise = (daily.sunrise || [])[0], sunset = (daily.sunset || [])[0], shine = (daily.sunshine_duration || [])[0];
-    $("sunrow").innerHTML = "<span>日出 <b>" + fmtHM(rise) + "</b></span><span>日落 <b>" + fmtHM(sunset) +
+    $("sunrow").innerHTML = "<span>☀ 今日</span><span>日出 <b>" + fmtHM(rise) + "</b></span><span>日落 <b>" + fmtHM(sunset) +
       "</b></span>" + (shine != null ? "<span>日照 <b>" + (shine / 3600).toFixed(1) + " 小时</b></span>" : "");
     $("life").innerHTML = lifeIndices(w).map(function (it) {
       return '<div class="life-card"><div class="k">' + it.k + '</div><div class="a">' + it.a +
@@ -2994,23 +3134,24 @@ body.loop-still .pill.bad {
     const el = $("satCaption");
     if (!el) return;
     if (state.satView === "3d") {
-      el.textContent = "三维城市模式 · 道路、城镇名称、建筑与地形已显示";
+      el.textContent = "三维城市模式 · 道路、城镇名称、建筑与地形已显示 · 缩小至约 2.5 级进入球体地球";
       return;
     }
+    const solarHint = " · 晨昏线已显示";
     if (state.satLayer === "city") {
-      el.textContent = "高清城市底图 · 非实时云图，可放大查看城市细节";
+      el.textContent = "高清城市底图" + solarHint + " · 非实时云图，可放大查看城市细节";
       return;
     }
     const fr = playheadFrame();
     const now = Date.now() / 1000;
-    if (!fr) { el.textContent = ""; return; }
+    if (!fr) { el.textContent = "晨昏线已显示"; return; }
     if (fr.kind === "forecast" && state.fcUnavailable) {
-      el.textContent = "预报场暂不可用";
+      el.textContent = "预报场暂不可用" + solarHint;
       return;
     }
     const leadH = Math.round(((fr.time || now) - now) / 3600);
     if (fr.kind !== "forecast" || leadH <= 0) {
-      el.textContent = Math.abs((fr.time || now) - now) < 20 * 60 ? "现在：雷达实况" : "雷达实况";
+      el.textContent = (Math.abs((fr.time || now) - now) < 20 * 60 ? "现在：雷达实况" : "雷达实况") + solarHint;
       return;
     }
     let rainPts = 0, maxMm = 0, maxPop = 0, n = 0;
@@ -3037,9 +3178,9 @@ body.loop-still .pill.bad {
       }
     }
     const prefix = "+" + Math.max(1, leadH) + "小时：";
-    if (maxMm >= 2 || (n && rainPts >= Math.max(2, n * 0.22))) el.textContent = prefix + "华东有雨";
-    else if (maxPop >= 50 || maxMm >= 0.2) el.textContent = prefix + "局部有雨";
-    else el.textContent = prefix + "降水不多";
+    if (maxMm >= 2 || (n && rainPts >= Math.max(2, n * 0.22))) el.textContent = prefix + "华东有雨" + solarHint;
+    else if (maxPop >= 50 || maxMm >= 0.2) el.textContent = prefix + "局部有雨" + solarHint;
+    else el.textContent = prefix + "降水不多" + solarHint;
   }
   function fmtBjShort(iso) {
     if (!iso) return "—";
@@ -3190,6 +3331,56 @@ body.loop-still .pill.bad {
     });
     syncSatLabels();
   }
+  function solarGeometry(date) {
+    date = date || new Date();
+    const start = Date.UTC(date.getUTCFullYear(), 0, 0);
+    const day = Math.floor((date.getTime() - start) / 86400000);
+    const decl = 23.44 * Math.sin(2 * Math.PI * (day - 80) / 365.2422);
+    const hours = date.getUTCHours() + date.getUTCMinutes() / 60 + date.getUTCSeconds() / 3600;
+    let subLon = (12 - hours) * 15;
+    while (subLon > 180) subLon -= 360;
+    while (subLon < -180) subLon += 360;
+    const line = [];
+    for (let lon = -180; lon <= 180; lon += 3) {
+      const delta = (lon - subLon) * Math.PI / 180;
+      const lat = Math.atan(-Math.cos(delta) / Math.tan(decl * Math.PI / 180)) * 180 / Math.PI;
+      line.push([Math.max(-89.8, Math.min(89.8, lat)), lon]);
+    }
+    const cap = decl >= 0 ? [[-89.8, 180], [-89.8, -180]] : [[89.8, 180], [89.8, -180]];
+    return { line: line, night: line.concat(cap) };
+  }
+  function drawSolarTerminator() {
+    if (!state.satMap || !window.L) return;
+    const geo = solarGeometry(new Date());
+    if (state.satSolarLayer) { state.satMap.removeLayer(state.satSolarLayer); state.satSolarLayer = null; }
+    state.satSolarLayer = L.layerGroup();
+    L.polygon(geo.night, { pane: "solarPane", className: "solar-night", fillColor: "#02091a", fillOpacity: 0.32, stroke: false, interactive: false }).addTo(state.satSolarLayer);
+    L.polyline(geo.line, { pane: "solarPane", className: "solar-line", color: "#ffe08a", weight: 2, opacity: 0.9, interactive: false }).addTo(state.satSolarLayer);
+    state.satSolarLayer.addTo(state.satMap);
+  }
+  function solarGeoJson() {
+    const geo = solarGeometry(new Date());
+    return { type: "FeatureCollection", features: [
+      { type: "Feature", properties: {}, geometry: { type: "Polygon", coordinates: [geo.night.map(function (p) { return [p[1], p[0]]; })] } },
+      { type: "Feature", properties: {}, geometry: { type: "LineString", coordinates: geo.line.map(function (p) { return [p[1], p[0]]; }) } }
+    ] };
+  }
+  function update3DSolar() {
+    const map = state.sat3dMap;
+    if (!map || !map.getSource || !map.getSource("solar-terminator")) return;
+    map.getSource("solar-terminator").setData(solarGeoJson());
+  }
+  function sync3DProjection(map) {
+    if (!map || !map.setProjection || !map.getZoom) return;
+    try { map.setProjection({ type: map.getZoom() <= 2.5 ? "globe" : "mercator" }); } catch (e) {}
+  }
+  function startSolarTimer() {
+    if (state.satSolarTimer) clearInterval(state.satSolarTimer);
+    state.satSolarTimer = setInterval(function () {
+      drawSolarTerminator();
+      update3DSolar();
+    }, 60000);
+  }
   async function ensure3DMap() {
     try { await loadMapLibre(); } catch (e) { return null; }
     if (state.sat3dMap) {
@@ -3221,17 +3412,26 @@ body.loop-still .pill.bad {
           map.addLayer({ id: "terrain-hillshade", type: "hillshade", source: "terrainSource", paint: { "hillshade-exaggeration": 0.28 } }, before);
         } catch (e) {}
         try {
+          const before = map.getLayer("building-3d") ? "building-3d" : undefined;
+          map.addSource("solar-terminator", { type: "geojson", data: solarGeoJson() });
+          map.addLayer({ id: "solar-night", type: "fill", source: "solar-terminator", filter: ["==", ["geometry-type"], "Polygon"], paint: { "fill-color": "#02091a", "fill-opacity": 0.32 } }, before);
+          map.addLayer({ id: "solar-line", type: "line", source: "solar-terminator", filter: ["==", ["geometry-type"], "LineString"], paint: { "line-color": "#ffe08a", "line-width": 2, "line-opacity": 0.9 } }, before);
+        } catch (e) {}
+        try {
           map.addSource("selected-city", { type: "geojson", data: cityFeature(state.city || DEFAULT_CITY) });
           map.addLayer({ id: "selected-city-halo", type: "circle", source: "selected-city", paint: { "circle-radius": 14, "circle-color": "#4ea2ff", "circle-opacity": 0.18, "circle-blur": 0.55 } });
           map.addLayer({ id: "selected-city-dot", type: "circle", source: "selected-city", paint: { "circle-radius": 5, "circle-color": "#4ea2ff", "circle-stroke-color": "#fff", "circle-stroke-width": 2 } });
           map.addLayer({ id: "selected-city-label", type: "symbol", source: "selected-city", layout: { "text-field": ["get", "name"], "text-size": 13, "text-offset": [0, 1.35], "text-anchor": "top" }, paint: { "text-color": "#fff", "text-halo-color": "#07111f", "text-halo-width": 1.6 } });
         } catch (e) {}
         sync3DLabels();
+        sync3DProjection(map);
+        update3DSolar();
         map.resize();
         finish();
       });
       setTimeout(finish, 12000);
     });
+    map.on("zoomend", function () { sync3DProjection(map); });
     await state.sat3dReady;
     return map;
   }
@@ -3497,6 +3697,7 @@ body.loop-still .pill.bad {
     pane("metPane", 410, "none");
     pane("windPane", 420, "none");
     pane("presPane", 430, "none");
+    pane("solarPane", 405, "none");
     pane("cityPane", 440, "none");
     pane("labelPane", 445, "none");
     pane("tyFillPane", 450, "none");
@@ -3517,6 +3718,8 @@ body.loop-still .pill.bad {
     });
     await setSatBase(state.satLayer || "truecolor");
     ensureSatLabels();
+    drawSolarTerminator();
+    startSolarTimer();
     await loadRadarMeta();
     applySatOverlays();
     drawMetFields();
@@ -4161,15 +4364,24 @@ body.loop-still .pill.bad {
     const historyQuery = $("historyQuery");
     if (historyQuery) historyQuery.addEventListener("click", function () {
       const start = $("historyStart").value, end = $("historyEnd").value;
-      if (!start || !end || start > end || end >= dateKeyOffset(0)) {
-        $("trendNote").textContent = "请选择不晚于昨天的有效日期范围";
+      const startTime = $("historyStartTime") ? $("historyStartTime").value || "00:00" : "00:00";
+      const endTime = $("historyEndTime") ? $("historyEndTime").value || "23:00" : "23:00";
+      if (!start || !end || start > end || (start === end && startTime > endTime) || end >= dateKeyOffset(0)) {
+        $("trendNote").textContent = "请选择不晚于昨天的有效日期和时间段";
         return;
       }
       $("trendNote").textContent = "正在查询历史天气…";
-      loadHistoryRange(start, end);
+      state.trendSelected = 0;
+      loadHistoryRange(start, end, startTime, endTime);
     });
     const historyReset = $("historyReset");
     if (historyReset) historyReset.addEventListener("click", function () { loadHistory(); });
+    const trendGranularity = $("trendGranularity");
+    if (trendGranularity) trendGranularity.addEventListener("change", function () {
+      state.trendGranularity = trendGranularity.value === "hourly" ? "hourly" : "daily";
+      state.trendSelected = 0;
+      renderTrendChart();
+    });
     const refreshBtn = $("refreshBtn");
     if (refreshBtn) refreshBtn.addEventListener("click", async function () {
       refreshBtn.classList.add("refreshing");

@@ -5,6 +5,16 @@
 - Keep the weather PWA and scheduled typhoon snapshot workflow maintainable.
 - Add offline integrity checks for the manifest, snapshot and updater script.
 
+## 2026-08-30 - Weather timeline and globe
+
+- Add the live solar terminator and night-side shading to 2D and 3D maps.
+- Switch the 3D map to globe projection when zoomed out to about level 2.5.
+- Show today's sunrise, sunset and daylight duration on the weather page.
+- Redesign the trend area with daily/hourly modes, date-time range queries and a draggable time cursor.
+- Add continuous +10/+15/+30/+60/+90/+120 minute cards using 15-minute forecast data when available.
+- Enrich the clothing animation with cloud, scarf and wind motion states.
+- Document the resolution, interpolation, globe and solar-geometry boundaries.
+
 ## [0.1.0] - 2026-08-30
 
 - Initial public PWA with city weather, forecast, air quality, satellite,
