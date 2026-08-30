@@ -1,5 +1,5 @@
 {
-  "updated": "2026-08-30T21:25:09Z",
+  "updated": "2026-08-30T23:44:04Z",
   "sources": [
     "CMA",
     "NHC"
@@ -16,21 +16,21 @@
       "status": "start",
       "grade": "TS",
       "gradeZh": "热带风暴",
-      "lat": 35.7,
+      "lat": 36.2,
       "lon": 165.4,
       "windMs": 20,
       "pressure": 995,
       "moveDir": "N",
-      "moveSpeedKmh": 25,
-      "time": "2026-08-30T18:00:00Z",
-      "issuedZh": "2026年08月31日02时00分",
+      "moveSpeedKmh": 28,
+      "time": "2026-08-30T21:00:00Z",
+      "issuedZh": "2026年08月31日05时00分",
       "radii": [
         {
           "kt": 30,
           "ne": 200,
-          "se": 200,
-          "sw": 100,
-          "nw": 120
+          "se": 180,
+          "sw": 50,
+          "nw": 80
         }
       ],
       "track": [
@@ -537,14 +537,36 @@
               "nw": 120
             }
           ]
+        },
+        {
+          "time": "2026-08-30T21:00:00Z",
+          "timeRaw": "202608302100",
+          "lon": 165.4,
+          "lat": 36.2,
+          "pressure": 995,
+          "windMs": 20,
+          "grade": "TS",
+          "gradeZh": "热带风暴",
+          "moveDir": "N",
+          "moveSpeedKmh": 28,
+          "kind": "analysis",
+          "radii": [
+            {
+              "kt": 30,
+              "ne": 200,
+              "se": 180,
+              "sw": 50,
+              "nw": 80
+            }
+          ]
         }
       ],
       "forecast": [
         {
           "leadH": 12,
-          "baseTime": "2026-08-30T18:00:00Z",
-          "lon": 165.9,
-          "lat": 38.3,
+          "baseTime": "2026-08-30T21:00:00Z",
+          "lon": 166,
+          "lat": 39.1,
           "pressure": 998,
           "windMs": 18,
           "agency": "BABJ",
@@ -554,9 +576,9 @@
         },
         {
           "leadH": 24,
-          "baseTime": "2026-08-30T18:00:00Z",
-          "lon": 167.5,
-          "lat": 41.7,
+          "baseTime": "2026-08-30T21:00:00Z",
+          "lon": 167.6,
+          "lat": 42.5,
           "pressure": 998,
           "windMs": 18,
           "agency": "BABJ",
@@ -1273,21 +1295,21 @@
       "grade": "HU",
       "gradeZh": "飓风",
       "lat": 17.2,
-      "lon": -123.2,
-      "windMs": 41.2,
-      "windKt": 80.0,
-      "pressure": 978,
+      "lon": -123.4,
+      "windMs": 56.6,
+      "windKt": 110.0,
+      "pressure": 955,
       "moveDir": 270,
       "moveSpeedKmh": 16.7,
-      "time": "2026-08-30T21:00:00.000Z",
+      "time": "2026-08-31T00:00:00.000Z",
       "classification": "HU",
       "radii": [],
       "track": [
         {
           "lat": 17.2,
-          "lon": -123.2,
-          "time": "2026-08-30T21:00:00.000Z",
-          "windMs": 41.2,
+          "lon": -123.4,
+          "time": "2026-08-31T00:00:00.000Z",
+          "windMs": 56.6,
           "grade": "HU",
           "kind": "analysis"
         }
