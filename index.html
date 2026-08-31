@@ -390,6 +390,14 @@ button { color: inherit; }
 .sat-boundary[data-boundary="state"] i { color:#a78bfa; }
 .sat-boundary[data-boundary="city"] i { color:#fbbf24; }
 .sat-boundary[data-boundary="county"] i { color:#fb7185; }
+.china-range-label {
+  background: rgba(8,14,22,.82); border: 1px solid rgba(255,90,95,.68);
+  border-radius: 7px; color: #ffd6d8; padding: 3px 6px;
+  box-shadow: 0 3px 12px rgba(0,0,0,.35); white-space: nowrap;
+  font: 650 11px/1.2 inherit;
+}
+.china-range-label.dash { border-color: rgba(255,176,0,.7); color: #ffe4a3; }
+.china-range-note { margin: 2px 8px 7px; color: rgba(244,247,251,.48); font-size: 10px; line-height: 1.4; }
 .sat-route-fab { position:absolute; left:64px; bottom:86px; z-index:550; min-width:42px; height:42px; padding:0 9px; border-radius:14px; appearance:none; border:1px solid rgba(255,255,255,.14); background:rgba(8,14,22,.55); color:#f4f7fb; cursor:pointer; backdrop-filter:blur(18px); box-shadow:0 8px 22px rgba(0,0,0,.3); font-size:12px; }
 .sat-route-fab.active { background:rgba(14,165,233,.82); border-color:rgba(186,230,253,.9); box-shadow:0 0 0 3px rgba(14,165,233,.22), 0 8px 22px rgba(0,0,0,.3); }
 .sat-route-panel { display:none; position:absolute; left:12px; bottom:136px; z-index:545; width:min(310px,calc(100% - 24px)); max-height:calc(100% - 170px); overflow:auto; padding:12px; border-radius:16px; background:rgba(8,14,22,.78); border:1px solid rgba(255,255,255,.16); backdrop-filter:blur(18px); box-shadow:0 12px 40px rgba(0,0,0,.38); }
@@ -1539,6 +1547,11 @@ body.loop-still .pill.bad {
               <button class="sat-boundary on" data-boundary="city" type="button"><i></i>市界</button>
               <button class="sat-boundary on" data-boundary="county" type="button"><i></i>县界</button>
             </div>
+            <button class="sat-ly on" data-china-range="true" type="button">
+              <svg viewBox="0 0 24 24"><path d="M4 18c4-5 7-8 16-12M5 6h.01M9 5h.01M14 4h.01M18 8h.01M20 13h.01M18 18h.01M12 20h.01M7 19h.01"/></svg>
+              <span>中国官方口径重点标注</span><span class="ck">✓</span>
+            </button>
+            <div class="china-range-note">南海断续线、台湾省、西藏自治区 · 预览示意</div>
             <button class="sat-ly on" data-overlay="radar" type="button">
               <svg viewBox="0 0 24 24"><path d="M4 18a8 8 0 0 1 16 0"/><path d="M7 18a5 5 0 0 1 10 0"/><circle cx="12" cy="18" r="1.2" fill="currentColor" stroke="none"/></svg>
               <span>雷达</span><span class="ck">✓</span>
@@ -1680,6 +1693,7 @@ body.loop-still .pill.bad {
     <p>预警根据台风实况和气温、未来 2 小时降雨/雷暴/阵风、高温、暴雨、大风、低温、大雾阈值生成。地图会自动定位到所选城市，云图透明度、高清城市底图和图层可调。</p>
     <p>地图新增“3D 城市”模式：道路、城镇名称和建筑由矢量底图提供，地图点选会把坐标反向解析后同步到天气主页。3D 地形属于公共 DEM，部分地区的起伏精度和覆盖范围会有差异。</p>
     <p>高清城市模式支持在 Esri 影像上叠加真实色或红外卫星层。道路级别、行政边界颜色、红绿灯点位和中英文/当地语言地名可在图层面板配置；中国优先显示中文，国外优先显示英文并保留当地语言。</p>
+    <p>“中国官方口径重点标注”默认开启，用于突出显示南海断续线、台湾省和西藏自治区。正式对外发布地图时，应采用自然资源部标准地图服务或已取得审图号/授权的官方电子地图；<a href="https://bzdt.tianditu.gov.cn/" target="_blank" rel="noopener">打开标准地图服务</a>。</p>
     <p>点击“路线”输入起点、终点和出发时间，可在卫星/高清地图上突出显示路线，并用颜色标出沿途天气。路线来自公共 OSRM，红绿灯和细分道路来自 OSM；公共数据接口可能限流，且不代表实时红绿灯相位或道路拥堵。</p>
     <p>卫星图像不是米级实时城市影像：VIIRS 约 375 米近天底，Himawari 更高频但分辨率更低。真正 10 米级无云城市底图需要 Sentinel-2 云掩膜与后端拼接；云层无法从一张原始光学影像中凭前端彻底删除。台风“风眼”当前显示为路径资料中的中心估计，不冒充实时雷达眼墙。</p>
     <p>刷新策略：天气按模型更新节奏自动刷新，台风约 10 分钟检查，地图雷达按公开接口约 5 分钟检查；更快轮询不代表数据更快更新，也可能触发服务限流。</p>
@@ -1702,6 +1716,19 @@ body.loop-still .pill.bad {
   const MAPLIBRE_TERRAIN = "https://tiles.mapterhorn.com/tilejson.json";
   const MAPLIBRE_VERSION = "6.6.0";
   const OSM_URL = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
+  const CHINA_OFFICIAL_RANGE = {
+    type: "FeatureCollection",
+    features: [
+      { type: "Feature", properties: { kind: "nine-dash" }, geometry: { type: "MultiLineString", coordinates: [
+        [[110.2,11.6],[111.8,12.4]], [[113.2,9.6],[114.7,10.3]], [[115.6,8.5],[117.1,9.0]],
+        [[118.2,7.9],[119.6,8.4]], [[120.7,9.0],[122.0,10.2]], [[123.3,11.4],[124.5,13.0]],
+        [[125.1,15.3],[125.7,17.0]], [[125.7,18.9],[125.4,20.5]], [[124.1,21.7],[122.9,22.4]]
+      ] } },
+      { type: "Feature", properties: { kind: "label", label: "南海断续线" }, geometry: { type: "Point", coordinates: [117.8,14.0] } },
+      { type: "Feature", properties: { kind: "label", label: "台湾省" }, geometry: { type: "Point", coordinates: [121.0,23.7] } },
+      { type: "Feature", properties: { kind: "label", label: "西藏自治区" }, geometry: { type: "Point", coordinates: [89.2,31.2] } }
+    ]
+  };
   const DEFAULT_CITY = { name: "上海", lat: 31.23, lon: 121.47, admin: "上海市" };
   const GRADE_ZH = { TD: "热带低压", TS: "热带风暴", STS: "强热带风暴", TY: "台风", STY: "强台风", SuperTY: "超强台风", SUPERTY: "超强台风", PTC: "潜在热带气旋", HU: "飓风", MH: "重大飓风" };
   const CMA_DIR = { N: "北", NNE: "东北偏北", NE: "东北", ENE: "东北偏东", E: "东", ESE: "东南偏东", SE: "东南", SSE: "东南偏南", S: "南", SSW: "西南偏南", SW: "西南", WSW: "西南偏西", W: "西", WNW: "西北偏西", NW: "西北", NNW: "西北偏北" };
@@ -1752,6 +1779,8 @@ body.loop-still .pill.bad {
     roadClasses: { national: true, provincial: true, county: true, town: true, village: true },
     boundaryOptions: { country: true, state: true, city: true, county: true },
     boundaryDetailLayer: null,
+    chinaRangeLayer: null,
+    chinaRangeOn: true,
     boundaryRequest: 0,
     boundaryTimer: 0,
     trafficLayer: null,
@@ -3560,6 +3589,12 @@ body.loop-still .pill.bad {
         try { map.setLayoutProperty(layer, "visibility", state.boundaryOptions[k] ? "visible" : "none"); } catch (e) {}
       }
     });
+    if (map.getLayer("china-official-range")) {
+      try { map.setLayoutProperty("china-official-range", "visibility", state.chinaRangeOn ? "visible" : "none"); } catch (e) {}
+    }
+    if (map.getLayer("china-official-labels")) {
+      try { map.setLayoutProperty("china-official-labels", "visibility", state.chinaRangeOn ? "visible" : "none"); } catch (e) {}
+    }
   }
   function sync3DRoads(map) {
     map = map || state.sat3dMap;
@@ -3718,7 +3753,12 @@ body.loop-still .pill.bad {
     if (level === 6) return "county";
     return "";
   }
-  function boundaryStyle(kind) {
+  function isChinaSpecialBoundary(tags) {
+    const name = String((tags && (tags["name:zh"] || tags.name || tags["official_name:zh"])) || "");
+    return /台湾|臺灣|西藏|Tibet|Xizang/i.test(name);
+  }
+  function boundaryStyle(kind, tags) {
+    if (state.chinaRangeOn && isChinaSpecialBoundary(tags)) return { color: "#ff5a5f", weight: 3.4, opacity: .98 };
     return { country: { color: "#38bdf8", weight: 3, opacity: .95 }, state: { color: "#a78bfa", weight: 2.5, opacity: .9 }, city: { color: "#fbbf24", weight: 2, opacity: .86 }, county: { color: "#fb7185", weight: 1.6, opacity: .8 } }[kind];
   }
   function clearBoundaryDetails() {
@@ -3747,7 +3787,7 @@ body.loop-still .pill.bad {
       (data.elements || []).forEach(function (rel) {
         const kind = boundaryCategory(rel.tags);
         if (!kind || !state.boundaryOptions[kind]) return;
-        const style = boundaryStyle(kind);
+        const style = boundaryStyle(kind, rel.tags);
         (rel.members || []).forEach(function (member) {
           if (!member.geometry || member.geometry.length < 2) return;
           L.polyline(member.geometry.map(function (p) { return [p.lat, p.lon]; }), Object.assign({ pane: "labelPane", className: "boundary-detail boundary-" + kind, interactive: false, dashArray: kind === "country" ? "" : "5 5" }, style)).addTo(group);
@@ -3962,6 +4002,12 @@ body.loop-still .pill.bad {
           map.addSource("solar-terminator", { type: "geojson", data: solarGeoJson() });
           map.addLayer({ id: "solar-night", type: "fill", source: "solar-terminator", filter: ["==", ["geometry-type"], "Polygon"], paint: { "fill-color": "#02091a", "fill-opacity": 0.32 } }, before);
           map.addLayer({ id: "solar-line", type: "line", source: "solar-terminator", filter: ["==", ["geometry-type"], "LineString"], paint: { "line-color": "#ffe08a", "line-width": 2, "line-opacity": 0.9 } }, before);
+        } catch (e) {}
+        try {
+          const before = map.getLayer("building-3d") ? "building-3d" : undefined;
+          map.addSource("china-official-range", { type: "geojson", data: CHINA_OFFICIAL_RANGE });
+          map.addLayer({ id: "china-official-range", type: "line", source: "china-official-range", filter: ["==", ["get", "kind"], "nine-dash"], layout: { visibility: state.chinaRangeOn ? "visible" : "none" }, paint: { "line-color": "#ffb000", "line-width": 2.2, "line-opacity": 0.95, "line-dasharray": [2.5, 1.8] } }, before);
+          map.addLayer({ id: "china-official-labels", type: "symbol", source: "china-official-range", filter: ["==", ["get", "kind"], "label"], layout: { visibility: state.chinaRangeOn ? "visible" : "none", "text-field": ["get", "label"], "text-size": 12, "text-offset": [0, 0.7], "text-anchor": "top" }, paint: { "text-color": "#ffd6d8", "text-halo-color": "#07111f", "text-halo-width": 1.8 } }, before);
         } catch (e) {}
         try {
           const before = map.getLayer("building-3d") ? "building-3d" : undefined;
@@ -4243,6 +4289,13 @@ body.loop-still .pill.bad {
       const ck = b.querySelector(".ck");
       if (ck) ck.textContent = on ? "✓" : "";
     });
+    document.querySelectorAll("#sat [data-china-range]").forEach(function (b) {
+      const on = !!state.chinaRangeOn;
+      b.classList.toggle("on", on);
+      b.setAttribute("aria-pressed", on ? "true" : "false");
+      const ck = b.querySelector(".ck");
+      if (ck) ck.textContent = on ? "✓" : "";
+    });
     document.querySelectorAll("#sat [data-hd-overlay]").forEach(function (b) {
       const on = b.getAttribute("data-hd-overlay") === state.satHdOverlay;
       b.classList.toggle("on", on);
@@ -4251,6 +4304,29 @@ body.loop-still .pill.bad {
     syncRoadOptions();
     syncBoundaryOptions();
     syncStormHud();
+  }
+  function drawChinaOfficialRange() {
+    if (!state.satMap || !window.L) return;
+    if (state.chinaRangeLayer) { state.satMap.removeLayer(state.chinaRangeLayer); state.chinaRangeLayer = null; }
+    if (!state.chinaRangeOn) return;
+    const group = L.layerGroup();
+    (CHINA_OFFICIAL_RANGE.features || []).forEach(function (feature) {
+      const kind = feature.properties && feature.properties.kind;
+      if (kind === "nine-dash") {
+        (feature.geometry.coordinates || []).forEach(function (line) {
+          L.polyline(line.map(function (p) { return [p[1], p[0]]; }), {
+            pane: "chinaRangePane", color: "#ffb000", weight: 2.6, opacity: .95,
+            dashArray: "9 7", interactive: false, className: "china-official-range"
+          }).addTo(group);
+        });
+      } else if (kind === "label") {
+        const p = feature.geometry.coordinates;
+        const isDash = feature.properties.label === "南海断续线";
+        const icon = L.divIcon({ className: "china-range-label" + (isDash ? " dash" : ""), html: feature.properties.label, iconSize: [0, 0], iconAnchor: [0, 0] });
+        L.marker([p[1], p[0]], { pane: "chinaRangePane", icon: icon, interactive: false, keyboard: false }).addTo(group);
+      }
+    });
+    state.chinaRangeLayer = group.addTo(state.satMap);
   }
   async function ensureSatMap() {
     try { await loadLeaflet(); } catch (e) { return; }
@@ -4279,6 +4355,7 @@ body.loop-still .pill.bad {
     pane("solarPane", 405, "none");
     pane("cityPane", 440, "none");
     pane("labelPane", 445, "none");
+    pane("chinaRangePane", 456, "none");
     pane("tyFillPane", 450, "none");
     pane("tyLinePane", 460, "none");
     pane("tyDotPane", 470, "auto");
@@ -4301,6 +4378,7 @@ body.loop-still .pill.bad {
     await setSatBase(state.satLayer || "city");
     ensureSatLabels();
     drawSolarTerminator();
+    drawChinaOfficialRange();
     startSolarTimer();
     await loadRadarMeta();
     applySatOverlays();
@@ -5035,6 +5113,14 @@ body.loop-still .pill.bad {
       button.addEventListener("click", function () {
         state.labelsOn = !state.labelsOn;
         syncSatLabels();
+        syncSatLy();
+      });
+    });
+    document.querySelectorAll("[data-china-range]").forEach(function (button) {
+      button.addEventListener("click", function () {
+        state.chinaRangeOn = !state.chinaRangeOn;
+        drawChinaOfficialRange();
+        sync3DBoundaries();
         syncSatLy();
       });
     });
