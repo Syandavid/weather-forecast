@@ -14,6 +14,7 @@
 - Add the default China official-position preview layer for the South China Sea discontinuous line and highlighted Taiwan Province/Tibet Autonomous Region labels.
 - Replace the hand-drawn China official-position preview with separated standard-map boundary segments and remove the misleading extra dash pattern.
 - Bump the PWA cache after the boundary-data correction so deployed phones can receive the new map layer.
+- Use the selected typhoon-Earth artwork as the favicon, iOS home-screen icon, and PWA icon with versioned filenames to bypass stale iPhone shortcut metadata.
 - Replace the home-screen and PWA icon with the supplied solar, smiling-Earth, typhoon and satellite artwork.
 - Replace the home-screen and PWA icons with a high-contrast cartoon Earth, cloud, sun, typhoon and satellite emblem.
 - Add bounded network requests, city-timezone-aware history dates and cancellation for stale route requests.
