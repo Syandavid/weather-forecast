@@ -1716,21 +1716,25 @@ body.loop-still .pill.bad {
   const MAPLIBRE_TERRAIN = "https://tiles.mapterhorn.com/tilejson.json";
   const MAPLIBRE_VERSION = "6.6.0";
   const OSM_URL = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
+  // Preview geometry derived from the published Tianditu-based China boundary
+  // dataset. Keep the segments separate: the standard map line is not one
+  // continuous U-shaped polyline and must not be re-created with dashArray.
   const CHINA_OFFICIAL_RANGE = {
     type: "FeatureCollection",
     features: [
       { type: "Feature", properties: { kind: "nine-dash" }, geometry: { type: "MultiLineString", coordinates: [
-        [[109.7,11.9],[110.5,12.2],[111.4,12.6]],
-        [[112.7,10.3],[113.5,10.6],[114.4,10.8]],
-        [[115.4,8.9],[116.2,9.1],[117.1,9.3]],
-        [[118.0,8.1],[118.8,8.3],[119.6,8.7]],
-        [[120.3,8.9],[121.0,9.5],[121.7,10.2]],
-        [[122.2,10.8],[122.7,11.6],[123.1,12.5]],
-        [[123.5,13.2],[123.8,14.1],[124.0,15.0]],
-        [[124.0,15.8],[123.9,16.7],[123.7,17.6]],
-        [[123.4,18.5],[123.0,19.4],[122.4,20.2]]
+        [[108.302017,6.010893],[108.207924,6.522497],[108.234314,7.073835]],
+        [[109.301506,16.199545],[109.592995,15.815694],[109.855095,15.158954]],
+        [[110.32325,12.2405],[110.306892,11.872135],[110.065414,11.251521]],
+        [[111.794563,3.408477],[112.31736,3.526618],[112.84948,3.744957]],
+        [[115.544106,7.158346],[115.896019,7.573803],[116.242157,7.98245]],
+        [[118.538605,10.906545],[118.809418,11.457198],[118.978142,11.979657]],
+        [[119.06131,16.028913],[119.060394,15.615799],[119.059052,15.008851]],
+        [[119.998688,18.990286],[119.716179,18.52128],[119.473083,18.015577]],
+        [[121.91169,21.697515],[121.461227,21.165651],[121.174026,20.826548]],
+        [[122.816588,24.658202],[122.659745,23.668602]]
       ] } },
-      { type: "Feature", properties: { kind: "label", label: "南海断续线" }, geometry: { type: "Point", coordinates: [117.2,13.0] } },
+      { type: "Feature", properties: { kind: "label", label: "南海断续线" }, geometry: { type: "Point", coordinates: [117.7,14.0] } },
       { type: "Feature", properties: { kind: "label", label: "台湾省" }, geometry: { type: "Point", coordinates: [121.0,23.7] } },
       { type: "Feature", properties: { kind: "label", label: "西藏自治区" }, geometry: { type: "Point", coordinates: [89.2,31.2] } }
     ]
