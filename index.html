@@ -1693,7 +1693,7 @@ body.loop-still .pill.bad {
     <p>预警根据台风实况和气温、未来 2 小时降雨/雷暴/阵风、高温、暴雨、大风、低温、大雾阈值生成。地图会自动定位到所选城市，云图透明度、高清城市底图和图层可调。</p>
     <p>地图新增“3D 城市”模式：道路、城镇名称和建筑由矢量底图提供，地图点选会把坐标反向解析后同步到天气主页。3D 地形属于公共 DEM，部分地区的起伏精度和覆盖范围会有差异。</p>
     <p>高清城市模式支持在 Esri 影像上叠加真实色或红外卫星层。道路级别、行政边界颜色、红绿灯点位和中英文/当地语言地名可在图层面板配置；中国优先显示中文，国外优先显示英文并保留当地语言。</p>
-    <p>“中国官方口径重点标注”默认开启，用于突出显示南海断续线、台湾省和西藏自治区。正式对外发布地图时，应采用自然资源部标准地图服务或已取得审图号/授权的官方电子地图；<a href="https://bzdt.tianditu.gov.cn/" target="_blank" rel="noopener">打开标准地图服务</a>。</p>
+    <p>“中国官方口径重点标注”默认开启，用于突出显示南海传统九段线、台湾省和西藏自治区；台湾以东的第十段不并入本图层。该覆盖层是天气地图中的九段线预览，不等同于审图电子地图；正式对外发布时，应采用自然资源部标准地图服务或已取得审图号/授权的官方电子地图；<a href="https://bzdt.tianditu.gov.cn/" target="_blank" rel="noopener">打开标准地图服务</a>。</p>
     <p>点击“路线”输入起点、终点和出发时间，可在卫星/高清地图上突出显示路线，并用颜色标出沿途天气。路线来自公共 OSRM，红绿灯和细分道路来自 OSM；公共数据接口可能限流，且不代表实时红绿灯相位或道路拥堵。</p>
     <p>卫星图像不是米级实时城市影像：VIIRS 约 375 米近天底，Himawari 更高频但分辨率更低。真正 10 米级无云城市底图需要 Sentinel-2 云掩膜与后端拼接；云层无法从一张原始光学影像中凭前端彻底删除。台风“风眼”当前显示为路径资料中的中心估计，不冒充实时雷达眼墙。</p>
     <p>刷新策略：天气按模型更新节奏自动刷新，台风约 10 分钟检查，地图雷达按公开接口约 5 分钟检查；更快轮询不代表数据更快更新，也可能触发服务限流。</p>
@@ -1716,9 +1716,12 @@ body.loop-still .pill.bad {
   const MAPLIBRE_TERRAIN = "https://tiles.mapterhorn.com/tilejson.json";
   const MAPLIBRE_VERSION = "6.6.0";
   const OSM_URL = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
-  // Preview geometry derived from the published Tianditu-based China boundary
-  // dataset. Keep the segments separate: the standard map line is not one
-  // continuous U-shaped polyline and must not be re-created with dashArray.
+  // Nine-segment South China Sea discontinuous-line preview. The separate
+  // segment geometry is intentionally used instead of dashArray: the line is
+  // not one continuous U-shaped polyline. The additional segment sometimes
+  // shown east of Taiwan belongs to a ten-segment map presentation and is not
+  // included here because this layer is explicitly the South China Sea
+  // nine-segment line.
   const CHINA_OFFICIAL_RANGE = {
     type: "FeatureCollection",
     features: [
@@ -1732,7 +1735,6 @@ body.loop-still .pill.bad {
         [[119.06131,16.028913],[119.060394,15.615799],[119.059052,15.008851]],
         [[119.998688,18.990286],[119.716179,18.52128],[119.473083,18.015577]],
         [[121.91169,21.697515],[121.461227,21.165651],[121.174026,20.826548]],
-        [[122.816588,24.658202],[122.659745,23.668602]]
       ] } },
       { type: "Feature", properties: { kind: "label", label: "南海断续线" }, geometry: { type: "Point", coordinates: [117.7,14.0] } },
       { type: "Feature", properties: { kind: "label", label: "台湾省" }, geometry: { type: "Point", coordinates: [121.0,23.7] } },

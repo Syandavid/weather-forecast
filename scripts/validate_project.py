@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -67,6 +68,20 @@ def check_snapshot() -> int:
     return len(snapshot["storms"])
 
 
+def check_south_china_sea_line(html: str) -> None:
+    match = re.search(
+        r"const CHINA_OFFICIAL_RANGE = ([\s\S]*?)\n  const DEFAULT_CITY",
+        html,
+    )
+    if not match:
+        fail("index.html is missing the China range preview data")
+    segment_count = len(re.findall(r"\[\[[0-9]", match.group(1)))
+    if segment_count != 9:
+        fail(f"South China Sea preview must contain exactly 9 segments, found {segment_count}")
+    if "122.816588" in match.group(1):
+        fail("South China Sea preview must not include the Taiwan-east tenth segment")
+
+
 def main() -> int:
     missing = [path for path in REQUIRED_FILES if not (ROOT / path).is_file()]
     if missing:
@@ -77,6 +92,7 @@ def main() -> int:
         fail("index.html must reference the manifest and register the service worker")
 
     check_manifest()
+    check_south_china_sea_line(html)
     storm_count = check_snapshot()
 
     try:
