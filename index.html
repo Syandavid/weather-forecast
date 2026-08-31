@@ -241,6 +241,26 @@ button { color: inherit; }
 }
 .sunrow span { color: var(--muted); }
 .sunrow b { color: var(--text); font-weight: 650; font-variant-numeric: tabular-nums; }
+.extreme-card {
+  display: flex; align-items: center; gap: 11px;
+  margin: 8px 0 4px; padding: 11px 13px;
+  border: 1px solid rgba(255,176,0,.42); border-radius: 14px;
+  background: rgba(255,176,0,.10);
+}
+.extreme-card.danger { border-color: rgba(255,90,95,.62); background: rgba(255,90,95,.12); }
+.extreme-card.ok { border-color: rgba(62,207,142,.32); background: rgba(62,207,142,.08); }
+.extreme-icon {
+  display: grid; place-items: center; flex: none;
+  width: 34px; height: 34px; border-radius: 11px;
+  color: var(--warn); background: rgba(255,176,0,.16); font-size: 18px;
+}
+.extreme-card.danger .extreme-icon { color: var(--danger); background: rgba(255,90,95,.16); }
+.extreme-card.ok .extreme-icon { color: var(--ok); background: rgba(62,207,142,.14); }
+.extreme-copy { min-width: 0; line-height: 1.4; }
+.extreme-copy strong { display: block; font-size: 13px; }
+.extreme-copy span { display: block; margin-top: 2px; color: var(--muted); font-size: 11px; }
+.extreme-time { margin-left: auto; flex: none; text-align: right; color: var(--text); font-size: 12px; font-weight: 650; font-variant-numeric: tabular-nums; }
+.extreme-time small { display: block; margin-top: 2px; color: var(--muted); font-size: 10px; font-weight: 500; }
 .life { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
 .life-card {
   background: var(--card); border: 1px solid var(--line);
@@ -1435,6 +1455,8 @@ body.loop-still .pill.bad {
             </div>
             <div class="wx-note" id="wxNote"></div>
             <div class="summary sk" id="summary" aria-live="polite">正在整理今日摘要</div>
+            <div class="sunrow" id="sunrow" aria-label="今日日照信息"></div>
+            <div class="extreme-card" id="extremeCard" aria-live="polite"></div>
             <div class="wx-updated" id="wxUpdated" aria-live="polite">天气数据准备中</div>
             <div class="next2-card" id="next2Card" hidden aria-live="polite"></div>
             <div class="clothing-card" id="clothingCard" hidden aria-live="polite"></div>
@@ -1447,7 +1469,6 @@ body.loop-still .pill.bad {
             <div class="days" id="days"></div>
           </div>
         </div>
-        <div class="sunrow" id="sunrow"></div>
         <section class="trend-card" aria-labelledby="trendTitle">
           <div class="trend-head"><div><div class="sec-title" id="trendTitle">过去 1 周 · 未来 2 周</div><div class="trend-note" id="trendNote">正在整理趋势数据</div></div><div class="trend-tabs" role="tablist" aria-label="趋势指标">
             <button class="trend-tab on" data-trend="temp" type="button">温度</button>
@@ -2594,6 +2615,56 @@ body.loop-still .pill.bad {
     const g = clothingGuide(w);
     el.hidden = false; el.innerHTML = '<div class="clothing-head"><strong>穿衣指南 · 动态建议</strong><small>' + (g.temp == null ? "—" : Math.round(g.temp) + "°C 体感") + '</small></div><div class="clothing-body"><div class="clothing-scene"><div class="clothing-sun"></div><div class="clothing-cloud"></div><div class="clothing-person ' + g.cls + '"><div class="clothing-coat"></div></div><div class="clothing-scarf"></div><div class="clothing-umbrella"></div><div class="clothing-rain"></div><div class="clothing-wind w1"></div><div class="clothing-wind w2"></div></div><div class="clothing-advice"><b>' + g.title + '</b><br>' + g.advice + '</div></div>';
   }
+  function forecastTimeLabel(iso) {
+    const m = String(iso || "").match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);
+    if (!m) return "时间待定";
+    const date = m[1] + "-" + m[2] + "-" + m[3];
+    const today = dateKeyOffset(0), tomorrow = dateKeyOffset(1);
+    const hm = m[4] + ":" + m[5];
+    if (date === today) return "今天 " + hm;
+    if (date === tomorrow) return "明天 " + hm;
+    return Number(m[2]) + "月" + Number(m[3]) + "日 " + hm;
+  }
+  function nearestExtremeWeather(w) {
+    const h = w && w.hourly || {};
+    const times = h.time || [];
+    const now = Date.now();
+    const hits = [];
+    for (let i = 0; i < times.length; i++) {
+      const tm = new Date(times[i]).getTime();
+      if (isNaN(tm) || tm < now - 30 * 60000 || tm > now + 16 * 86400000) continue;
+      const code = Number((h.weather_code || [])[i]);
+      const temp = Number((h.temperature_2m || [])[i]);
+      const rain = Number((h.precipitation || [])[i]) || 0;
+      const wind = Number((h.wind_speed_10m || [])[i]) || 0;
+      const gust = Number((h.wind_gusts_10m || [])[i]) || 0;
+      let hit = null;
+      if (code >= 95) hit = { icon: "⚡", title: code >= 96 ? "雷暴伴冰雹" : "雷暴", detail: "预报显示可能出现雷电活动", level: "danger", rank: 5 };
+      else if (code === 82 || rain >= 10) hit = { icon: "雨", title: "强降雨", detail: "短时降雨强度可能较大，留意积水", level: "danger", rank: 4 };
+      else if (code === 75 || code === 86) hit = { icon: "❄", title: "强降雪", detail: "预报显示可能出现大雪或强阵雪", level: "danger", rank: 4 };
+      else if (code === 66 || code === 67) hit = { icon: "冰", title: "冻雨", detail: "可能出现结冰影响，注意道路安全", level: "danger", rank: 4 };
+      else if (gust >= 24.5 || wind >= 20.8) hit = { icon: "风", title: "强风", detail: "阵风可能达到大风等级，注意高空坠物", level: "danger", rank: 4 };
+      else if (gust >= 17.2 || wind >= 17.2) hit = { icon: "风", title: "大风", detail: "风力增强，户外活动和交通需留意", level: "warn", rank: 3 };
+      else if (temp >= 37) hit = { icon: "热", title: "极端高温", detail: "体感炎热，减少正午时段户外停留", level: "danger", rank: 4 };
+      else if (temp <= -10) hit = { icon: "冷", title: "极端低温", detail: "注意防寒、防冻和道路结冰", level: "danger", rank: 4 };
+      if (hit) hits.push({ time: tm, iso: times[i], icon: hit.icon, title: hit.title, detail: hit.detail, level: hit.level, rank: hit.rank });
+    }
+    hits.sort(function (a, b) { return a.time - b.time || b.rank - a.rank; });
+    return hits[0] || null;
+  }
+  function renderExtremeAlert(w) {
+    const el = $("extremeCard");
+    if (!el) return;
+    const event = nearestExtremeWeather(w);
+    if (!event) {
+      el.className = "extreme-card ok";
+      el.innerHTML = '<div class="extreme-icon">✓</div><div class="extreme-copy"><strong>极端天气提醒</strong><span>未来 16 天暂未发现明显雷暴、强降雨、强风或极端温度</span></div>';
+      return;
+    }
+    el.className = "extreme-card " + event.level;
+    const status = event.time <= Date.now() + 30 * 60000 ? "正在发生或即将发生" : "预计出现时间";
+    el.innerHTML = '<div class="extreme-icon">' + event.icon + '</div><div class="extreme-copy"><strong>最近一次极端天气 · ' + event.title + '</strong><span>' + event.detail + '</span></div><div class="extreme-time">' + forecastTimeLabel(event.iso) + '<small>' + status + '</small></div>';
+  }
   function updateWeatherStamp(w, cached) {
     const el = $("wxUpdated");
     if (!el) return;
@@ -2673,7 +2744,8 @@ body.loop-still .pill.bad {
     $("days").innerHTML = dh;
     const rise = (daily.sunrise || [])[0], sunset = (daily.sunset || [])[0], shine = (daily.sunshine_duration || [])[0];
     $("sunrow").innerHTML = "<span>☀ 今日</span><span>日出 <b>" + fmtHM(rise) + "</b></span><span>日落 <b>" + fmtHM(sunset) +
-      "</b></span>" + (shine != null ? "<span>日照 <b>" + (shine / 3600).toFixed(1) + " 小时</b></span>" : "");
+      "</b></span>" + (shine != null ? "<span>日照 <b>" + (shine / 3600).toFixed(1) + " 小时</b></span>" : "<span>日照 <b>—</b></span>");
+    renderExtremeAlert(w);
     $("life").innerHTML = lifeIndices(w).map(function (it) {
       return '<div class="life-card"><div class="k">' + it.k + '</div><div class="a">' + it.a +
         '</div><span class="pill ' + it.cls + '">' + it.lv + "</span></div>";
