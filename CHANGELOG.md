@@ -19,6 +19,7 @@
 - Replace the home-screen and PWA icons with a high-contrast cartoon Earth, cloud, sun, typhoon and satellite emblem.
 - Remove the Taiwan-east extension from the map preview so the South China Sea layer contains exactly nine separate segments; verify the count in the browser-rendered Leaflet layer before release.
 - Permanently hide the temperature-grid dot layer and remove its map-panel switch at the user's request.
+- Make the city basemap render without waiting for the satellite probe, load radar metadata in parallel, and keep cloud/rain tiles available through zoom 19 by overzooming from their native resolution.
 - Add bounded network requests, city-timezone-aware history dates and cancellation for stale route requests.
 
 ## 2026-08-30 - Weather timeline and globe

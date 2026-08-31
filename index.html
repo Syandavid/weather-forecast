@@ -4376,13 +4376,12 @@ body.loop-still .pill.bad {
       scheduleTrafficSignals();
       scheduleBoundaryDetails();
     });
+    const radarMetaPromise = loadRadarMeta();
     await setSatBase(state.satLayer || "city");
     ensureSatLabels();
     drawSolarTerminator();
     drawChinaOfficialRange();
     startSolarTimer();
-    await loadRadarMeta();
-    applySatOverlays();
     drawMetFields();
     updatePlayhead();
     drawSatTracks();
@@ -4391,7 +4390,12 @@ body.loop-still .pill.bad {
     scheduleRoadDetails();
     scheduleTrafficSignals();
     scheduleBoundaryDetails();
-    maybeAutoplayRadar();
+    radarMetaPromise.then(function () {
+      if (!state.satMap) return;
+      applySatOverlays();
+      updatePlayhead();
+      maybeAutoplayRadar();
+    });
   }
   function clearPlayTimer() {
     if (state.radarTimer) {
@@ -4493,7 +4497,7 @@ body.loop-still .pill.bad {
     });
     state.satLayerObj.addTo(state.satMap);
     ensureSatLabels();
-    if (name === "city") await setSatHdOverlay(state.satHdOverlay || "truecolor");
+    if (name === "city") setSatHdOverlay(state.satHdOverlay || "truecolor").catch(function () {});
     updatePlayhead();
     scheduleRoadDetails();
     scheduleTrafficSignals();
@@ -4536,14 +4540,16 @@ body.loop-still .pill.bad {
     if (!future && ov("radar") && state.radarFrames.length) {
       const f = nearestFrame(state.radarFrames, t) || state.radarFrames[state.radarFrames.length - 1];
       state.satRadarLayer = L.tileLayer(f.url, {
-        pane: "radarPane", opacity: 0.65, maxZoom: 9, maxNativeZoom: 7,
+        pane: "radarPane", opacity: 0.65, maxZoom: 19, maxNativeZoom: 7,
+        keepBuffer: 2, updateWhenZooming: false,
         attribution: "RainViewer", tileSize: 256
       }).addTo(state.satMap);
     }
     if (!future && ov("precip") && state.precipFrames.length) {
       const f = nearestFrame(state.precipFrames, t) || state.precipFrames[state.precipFrames.length - 1];
       state.satPrecipLayer = L.tileLayer(f.url, {
-        pane: "precipPane", opacity: 0.55, maxZoom: 9, maxNativeZoom: 7,
+        pane: "precipPane", opacity: 0.55, maxZoom: 19, maxNativeZoom: 7,
+        keepBuffer: 2, updateWhenZooming: false,
         attribution: "RainViewer", tileSize: 256
       }).addTo(state.satMap);
     }
