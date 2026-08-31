@@ -82,6 +82,11 @@ def check_south_china_sea_line(html: str) -> None:
         fail("South China Sea preview must not include the Taiwan-east tenth segment")
 
 
+def check_temperature_grid_hidden(html: str) -> None:
+    if 'data-overlay="temp"' in html or 'if (ov("temp")' in html:
+        fail("temperature-grid dot overlay must remain hidden")
+
+
 def main() -> int:
     missing = [path for path in REQUIRED_FILES if not (ROOT / path).is_file()]
     if missing:
@@ -93,6 +98,7 @@ def main() -> int:
 
     check_manifest()
     check_south_china_sea_line(html)
+    check_temperature_grid_hidden(html)
     storm_count = check_snapshot()
 
     try:

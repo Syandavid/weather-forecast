@@ -18,7 +18,7 @@
 - Replace the home-screen and PWA icon with the supplied solar, smiling-Earth, typhoon and satellite artwork.
 - Replace the home-screen and PWA icons with a high-contrast cartoon Earth, cloud, sun, typhoon and satellite emblem.
 - Remove the Taiwan-east extension from the map preview so the South China Sea layer contains exactly nine separate segments; verify the count in the browser-rendered Leaflet layer before release.
-- Hide the meteorological temperature-grid dots by default; keep them available as the optional “气温色块” map layer.
+- Permanently hide the temperature-grid dot layer and remove its map-panel switch at the user's request.
 - Add bounded network requests, city-timezone-aware history dates and cancellation for stale route requests.
 
 ## 2026-08-30 - Weather timeline and globe
