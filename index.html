@@ -1720,11 +1720,17 @@ body.loop-still .pill.bad {
     type: "FeatureCollection",
     features: [
       { type: "Feature", properties: { kind: "nine-dash" }, geometry: { type: "MultiLineString", coordinates: [
-        [[110.2,11.6],[111.8,12.4]], [[113.2,9.6],[114.7,10.3]], [[115.6,8.5],[117.1,9.0]],
-        [[118.2,7.9],[119.6,8.4]], [[120.7,9.0],[122.0,10.2]], [[123.3,11.4],[124.5,13.0]],
-        [[125.1,15.3],[125.7,17.0]], [[125.7,18.9],[125.4,20.5]], [[124.1,21.7],[122.9,22.4]]
+        [[109.7,11.9],[110.5,12.2],[111.4,12.6]],
+        [[112.7,10.3],[113.5,10.6],[114.4,10.8]],
+        [[115.4,8.9],[116.2,9.1],[117.1,9.3]],
+        [[118.0,8.1],[118.8,8.3],[119.6,8.7]],
+        [[120.3,8.9],[121.0,9.5],[121.7,10.2]],
+        [[122.2,10.8],[122.7,11.6],[123.1,12.5]],
+        [[123.5,13.2],[123.8,14.1],[124.0,15.0]],
+        [[124.0,15.8],[123.9,16.7],[123.7,17.6]],
+        [[123.4,18.5],[123.0,19.4],[122.4,20.2]]
       ] } },
-      { type: "Feature", properties: { kind: "label", label: "南海断续线" }, geometry: { type: "Point", coordinates: [117.8,14.0] } },
+      { type: "Feature", properties: { kind: "label", label: "南海断续线" }, geometry: { type: "Point", coordinates: [117.2,13.0] } },
       { type: "Feature", properties: { kind: "label", label: "台湾省" }, geometry: { type: "Point", coordinates: [121.0,23.7] } },
       { type: "Feature", properties: { kind: "label", label: "西藏自治区" }, geometry: { type: "Point", coordinates: [89.2,31.2] } }
     ]
@@ -4006,7 +4012,7 @@ body.loop-still .pill.bad {
         try {
           const before = map.getLayer("building-3d") ? "building-3d" : undefined;
           map.addSource("china-official-range", { type: "geojson", data: CHINA_OFFICIAL_RANGE });
-          map.addLayer({ id: "china-official-range", type: "line", source: "china-official-range", filter: ["==", ["get", "kind"], "nine-dash"], layout: { visibility: state.chinaRangeOn ? "visible" : "none" }, paint: { "line-color": "#ffb000", "line-width": 2.2, "line-opacity": 0.95, "line-dasharray": [2.5, 1.8] } }, before);
+          map.addLayer({ id: "china-official-range", type: "line", source: "china-official-range", filter: ["==", ["get", "kind"], "nine-dash"], layout: { visibility: state.chinaRangeOn ? "visible" : "none", "line-cap": "round", "line-join": "round" }, paint: { "line-color": "#ffb000", "line-width": 2.2, "line-opacity": 0.95 } }, before);
           map.addLayer({ id: "china-official-labels", type: "symbol", source: "china-official-range", filter: ["==", ["get", "kind"], "label"], layout: { visibility: state.chinaRangeOn ? "visible" : "none", "text-field": ["get", "label"], "text-size": 12, "text-offset": [0, 0.7], "text-anchor": "top" }, paint: { "text-color": "#ffd6d8", "text-halo-color": "#07111f", "text-halo-width": 1.8 } }, before);
         } catch (e) {}
         try {
@@ -4316,13 +4322,13 @@ body.loop-still .pill.bad {
         (feature.geometry.coordinates || []).forEach(function (line) {
           L.polyline(line.map(function (p) { return [p[1], p[0]]; }), {
             pane: "chinaRangePane", color: "#ffb000", weight: 2.6, opacity: .95,
-            dashArray: "9 7", interactive: false, className: "china-official-range"
+            lineCap: "round", lineJoin: "round", interactive: false, className: "china-official-range"
           }).addTo(group);
         });
       } else if (kind === "label") {
         const p = feature.geometry.coordinates;
         const isDash = feature.properties.label === "南海断续线";
-        const icon = L.divIcon({ className: "china-range-label" + (isDash ? " dash" : ""), html: feature.properties.label, iconSize: [0, 0], iconAnchor: [0, 0] });
+        const icon = L.divIcon({ className: "china-range-label" + (isDash ? " dash" : ""), html: feature.properties.label, iconSize: [86, 22], iconAnchor: [43, 11] });
         L.marker([p[1], p[0]], { pane: "chinaRangePane", icon: icon, interactive: false, keyboard: false }).addTo(group);
       }
     });
