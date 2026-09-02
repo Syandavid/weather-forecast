@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-02T21:39:12Z",
+  "updated": "2026-09-02T23:55:39Z",
   "sources": [
     "CMA",
     "NHC"
@@ -459,25 +459,17 @@
       "nameEn": "SAUDEL",
       "code": "2618",
       "status": "start",
-      "grade": "STS",
-      "gradeZh": "强热带风暴",
-      "lat": 23.7,
-      "lon": 117.8,
-      "windMs": 25,
-      "pressure": 985,
+      "grade": "TS",
+      "gradeZh": "热带风暴",
+      "lat": 23.9,
+      "lon": 117.6,
+      "windMs": 20,
+      "pressure": 987,
       "moveDir": "W",
-      "moveSpeedKmh": 21,
-      "time": "2026-09-02T21:00:00Z",
-      "issuedZh": "2026年09月03日05时00分",
-      "radii": [
-        {
-          "kt": 30,
-          "ne": 100,
-          "se": 300,
-          "sw": 300,
-          "nw": 60
-        }
-      ],
+      "moveSpeedKmh": 20,
+      "time": "2026-09-02T23:00:00Z",
+      "issuedZh": "2026年09月03日07时00分",
+      "radii": [],
       "track": [
         {
           "time": "2026-08-19T03:00:00Z",
@@ -5385,6 +5377,28 @@
           "grade": "STS",
           "gradeZh": "强热带风暴",
           "moveDir": "W",
+          "moveSpeedKmh": 22,
+          "kind": "analysis",
+          "radii": [
+            {
+              "kt": 30,
+              "ne": 100,
+              "se": 300,
+              "sw": 300,
+              "nw": 60
+            }
+          ]
+        },
+        {
+          "time": "2026-09-02T22:00:00Z",
+          "timeRaw": "202609022200",
+          "lon": 117.7,
+          "lat": 23.8,
+          "pressure": 985,
+          "windMs": 25,
+          "grade": "STS",
+          "gradeZh": "强热带风暴",
+          "moveDir": "W",
           "moveSpeedKmh": 21,
           "kind": "analysis",
           "radii": [
@@ -5396,16 +5410,29 @@
               "nw": 60
             }
           ]
+        },
+        {
+          "time": "2026-09-02T23:00:00Z",
+          "timeRaw": "202609022300",
+          "lon": 117.6,
+          "lat": 23.9,
+          "pressure": 987,
+          "windMs": 20,
+          "grade": "TS",
+          "gradeZh": "热带风暴",
+          "moveDir": "W",
+          "moveSpeedKmh": 20,
+          "kind": "analysis"
         }
       ],
       "forecast": [
         {
           "leadH": 6,
-          "baseTime": "2026-09-02T20:00:00Z",
-          "lon": 117.7333,
-          "lat": 23.4667,
+          "baseTime": "2026-09-02T23:00:00Z",
+          "lon": 116.0333,
+          "lat": 24.0333,
           "pressure": 995,
-          "windMs": 23,
+          "windMs": 20,
           "agency": "BABJ",
           "grade": "TS",
           "gradeZh": "热带风暴",
@@ -5413,10 +5440,10 @@
         },
         {
           "leadH": 12,
-          "baseTime": "2026-09-02T20:00:00Z",
-          "lon": 116.9,
-          "lat": 23.6,
-          "pressure": 995,
+          "baseTime": "2026-09-02T23:00:00Z",
+          "lon": 115,
+          "lat": 23.8,
+          "pressure": 998,
           "windMs": 18,
           "agency": "BABJ",
           "grade": "TS",
@@ -5425,11 +5452,11 @@
         },
         {
           "leadH": 18,
-          "baseTime": "2026-09-02T20:00:00Z",
-          "lon": 115.9667,
-          "lat": 23.5667,
-          "pressure": 998,
-          "windMs": 16,
+          "baseTime": "2026-09-02T23:00:00Z",
+          "lon": 114.1333,
+          "lat": 23.4333,
+          "pressure": 1000,
+          "windMs": 13,
           "agency": "BABJ",
           "grade": "TD",
           "gradeZh": "热带低压",
@@ -5437,23 +5464,11 @@
         },
         {
           "leadH": 24,
-          "baseTime": "2026-09-02T20:00:00Z",
-          "lon": 115.1333,
-          "lat": 23.4333,
-          "pressure": 998,
-          "windMs": 15,
-          "agency": "BABJ",
-          "grade": "TD",
-          "gradeZh": "热带低压",
-          "kind": "forecast"
-        },
-        {
-          "leadH": 36,
-          "baseTime": "2026-09-02T20:00:00Z",
-          "lon": 114.1333,
-          "lat": 23.0333,
-          "pressure": 998,
-          "windMs": 15,
+          "baseTime": "2026-09-02T23:00:00Z",
+          "lon": 113.3333,
+          "lat": 22.9333,
+          "pressure": 1000,
+          "windMs": 11,
           "agency": "BABJ",
           "grade": "TD",
           "gradeZh": "热带低压",
