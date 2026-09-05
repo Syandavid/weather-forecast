@@ -27,4 +27,4 @@ jobs:
         with:
           node-version: '22'
       - name: Check forecast time, rain totals and map requests
-        run: node --test scripts/test_insights.cjs
+        run: node --test scripts/test_insights.cjs scripts/test_map_timeline.cjs

@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+- v26: Wire satellite observations and forecast cloud/rain overlays to the map playhead. Default radar selection now requests future precipitation; replace sparse rain dots with a georeferenced interpolated field and separately configurable forecast cloud cover.
+- Hide observations in future mode, restore on return, report real infrared/true-color time granularity, and stop using infrared brightness as precipitation. Preserve map overzoom and missing-data states.
+
 - v25: Add daylight outdoor windows for walking/running/cycling and lazy three-day ECMWF/GFS/ICON comparison with partial-failure states.
 - Correct city time-zone parsing, two-hour precipitation totals, missing/stale forecast states, and multilingual search matching by city ID.
 - Keep the map at the selected time, add a Now control, stop playback on timeline selection, coalesce meteorological requests and discard stale replies.

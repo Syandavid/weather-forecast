@@ -1597,7 +1597,7 @@ body.loop-still .pill.bad {
             <div class="china-range-note">南海断续线、台湾省、西藏自治区 · 预览示意</div>
             <button class="sat-ly on" data-overlay="radar" type="button">
               <svg viewBox="0 0 24 24"><path d="M4 18a8 8 0 0 1 16 0"/><path d="M7 18a5 5 0 0 1 10 0"/><circle cx="12" cy="18" r="1.2" fill="currentColor" stroke="none"/></svg>
-              <span>雷达</span><span class="ck">✓</span>
+              <span>雷达 / 预报降水</span><span class="ck">✓</span>
             </button>
             <button class="sat-ly" data-overlay="precip" type="button">
               <svg viewBox="0 0 24 24"><path d="M8 15h9a3.5 3.5 0 0 0 .2-7 6 6 0 0 0-11.4 1.6A3.6 3.6 0 0 0 8 15z"/><path d="M9 18v2M12 17.5v2.5M15 18v2"/></svg>
@@ -1606,6 +1606,10 @@ body.loop-still .pill.bad {
             <button class="sat-ly" data-overlay="wind" type="button">
               <svg viewBox="0 0 24 24"><path d="M4 8h11a3 3 0 1 0-3-3"/><path d="M4 12h14a3 3 0 1 1-3 3"/><path d="M4 16h7"/></svg>
               <span>风</span><span class="ck"></span>
+            </button>
+            <button class="sat-ly on" data-overlay="cloud" type="button">
+              <svg viewBox="0 0 24 24"><path d="M8 17h9a4 4 0 0 0 0-8 6 6 0 0 0-11 2 3 3 0 0 0 2 6z"/></svg>
+              <span>预报云量（未来时段）</span><span class="ck">✓</span>
             </button>
             <button class="sat-ly" data-overlay="humidity" type="button">
               <svg viewBox="0 0 24 24"><path d="M12 4s6 7 6 11a6 6 0 1 1-12 0c0-4 6-11 6-11z"/></svg>
@@ -1745,6 +1749,7 @@ body.loop-still .pill.bad {
   </div>
 </div>
 <script src="assets/weather-insights.js?v=25"></script>
+<script src="assets/map-weather.js?v=26"></script>
 <script>
 (function () {
   const insights = window.WeatherInsights;
@@ -1805,7 +1810,7 @@ body.loop-still .pill.bad {
     source: "",
     tab: "weather",
     satLayer: "city",
-    overlays: { radar: true, precip: false, wind: false, humidity: false, pressure: false, typhoon: true },
+    overlays: { radar: true, precip: false, cloud: true, wind: false, humidity: false, pressure: false, typhoon: true },
     satRadarLayer: null,
     satPrecipLayer: null,
     precipFrames: [],
@@ -3543,13 +3548,15 @@ body.loop-still .pill.bad {
           gust: h.wind_gusts_10m ? h.wind_gusts_10m[i] : null,
           wd: h.wind_direction_10m ? h.wind_direction_10m[i] : pt.wd,
           p: h.surface_pressure ? h.surface_pressure[i] : pt.p,
-          mm: h.precipitation ? h.precipitation[i] : 0,
-          pop: h.precipitation_probability ? h.precipitation_probability[i] : 0,
-          code: h.weather_code ? h.weather_code[i] : 0
+          mm: h.precipitation ? h.precipitation[i] : null,
+          pop: h.precipitation_probability ? h.precipitation_probability[i] : null,
+          cloud: h.cloud_cover ? h.cloud_cover[i] : null,
+          code: h.weather_code ? h.weather_code[i] : null
         };
       }
     }
-    return { t: pt.t, rh: pt.rh, ws: pt.ws, wd: pt.wd, p: pt.p, mm: pt.mm || 0, pop: pt.pop || 0, code: 0 };
+    if (future) return {t:null,rh:null,ws:null,wd:null,p:null,mm:null,pop:null,cloud:null,code:null};
+    return { t: pt.t, rh: pt.rh, ws: pt.ws, wd: pt.wd, p: pt.p, mm: pt.mm, pop: pt.pop, cloud:pt.cloud, code:null };
   }
   function updateCaption() {
     const el = $("satCaption");
@@ -3559,10 +3566,18 @@ body.loop-still .pill.bad {
       return;
     }
     const solarHint = " · 晨昏线已显示";
-    if (state.satLayer === "city") {
+    if (state.satLayer === "city" || state.satLayer === "infrared" || state.satLayer === "truecolor") {
       const future = playheadIsFuture();
-      const rain = future ? (ov('precip') ? (state.metLoadingKey ? '预报降水加载中' : state.fcUnavailable ? '预报降水暂不可用' : '预报降水') : '开启“降水”查看预报') : (state.radarFrames.length ? '雷达历史/实况' : '雷达暂不可用');
-      el.textContent = '高清影像 · ' + rain + ' · 卫星云图为独立观测，不随预报时间变化';
+      if (future) {
+        const active=ov('radar')||ov('precip')||ov('cloud');
+        const fields=[ov('cloud')?'白灰：云量':'',ov('radar')||ov('precip')?'蓝紫：降水 mm/h':''].filter(Boolean).join('；');
+        const status=!active?'云量和降水图层已关闭':state.metLoadingKey?'云雨预报加载中':state.fcUnavailable||!state.forecastRasterKnown?'当前时段/视野预报数据暂缺':'逐小时预报 · '+fields;
+        el.textContent=status+' · 模型采样插值，非未来卫星实拍';
+      } else {
+        const fr=playheadFrame(), radar=nearestFrame(state.radarFrames,fr&&fr.time||Date.now()/1000);
+        const rain=(ov('radar')||ov('precip'))?(radar?'雷达帧 '+fmtPlayZh(new Date(radar.time*1000),false):'雷达暂不可用'):'雷达已关闭';
+        el.textContent=rain+(state.satelliteLabel?' · '+state.satelliteLabel:' · 卫星叠加关闭');
+      }
       return;
     }
     const fr = playheadFrame();
@@ -4256,11 +4271,12 @@ body.loop-still .pill.bad {
     // Keep the first map paint light: only request the grid when a vector
     // weather field is actually visible.
     return ov("wind") || ov("humidity") || ov("pressure") ||
-      (ov("precip") && playheadIsFuture());
+      ((ov("precip") || ov("radar") || ov("cloud")) && playheadIsFuture());
   }
   function metBoundsKey() {
     const b = state.satMap.getBounds();
-    const r = function (x) { return Math.round(x * 2.5) / 2.5; };
+    const scale=Math.pow(2,Math.max(1,state.satMap.getZoom()))*4;
+    const r = function (x) { return Math.round(x * scale) / scale; };
     return [r(b.getSouth()), r(b.getWest()), r(b.getNorth()), r(b.getEast())].join(",");
   }
   function sampleMetGrid() {
@@ -4269,13 +4285,14 @@ body.loop-still .pill.bad {
     let west = b.getWest(), east = b.getEast();
     if (north < south) { const t = north; north = south; south = t; }
     if (east < west) east += 360;
-    const latSpan = Math.max(0.8, north - south);
-    const lonSpan = Math.max(0.8, east - west);
+    south=Math.max(-85,south); north=Math.min(85,north);
+    const latSpan = Math.max(0.0001, north - south);
+    const lonSpan = Math.max(0.0001, east - west);
     let step = 1.75;
     const maxPoints = state.satMap.getZoom() >= 8 ? 96 : state.satMap.getZoom() >= 7 ? 72 : 48;
     let nLat = Math.max(2, Math.round(latSpan / step));
     let nLon = Math.max(2, Math.round(lonSpan / step));
-    while ((nLat + 1) * (nLon + 1) > maxPoints && step < 14) {
+    while ((nLat + 1) * (nLon + 1) > maxPoints && step < 360) {
       step += 0.25;
       nLat = Math.max(2, Math.round(latSpan / step));
       nLon = Math.max(2, Math.round(lonSpan / step));
@@ -4285,7 +4302,7 @@ body.loop-still .pill.bad {
       for (let j = 0; j <= nLon && pts.length < maxPoints; j++) {
         let lon = west + (j / nLon) * lonSpan;
         if (lon > 180) lon -= 360;
-        pts.push({ lat: south + (i / nLat) * latSpan, lon: lon });
+        pts.push({ lat: south + (i / nLat) * latSpan, lon: lon, row:i, col:j, unwrappedLon:west+(j/nLon)*lonSpan });
       }
     }
     return pts;
@@ -4321,8 +4338,32 @@ body.loop-still .pill.bad {
     if (ms < 20) return "#ff8a3d";
     return "#ff5a5f";
   }
+  function drawForecastRaster() {
+    state.forecastRasterKnown=0;
+    const clear=function(){if(state.forecastRaster){state.satMap.removeLayer(state.forecastRaster);state.forecastRaster=null;}};
+    const pts=state.metGrid&&state.metGrid.points||[];
+    // Keep the previous georeferenced field while zooming/loading a denser
+    // viewport. It stays in its original bounds, never moves to a new city.
+    if(!playheadIsFuture()||!(ov('radar')||ov('precip')||ov('cloud'))||state.fcUnavailable||!pts.length) {clear();return;}
+    const rows=1+Math.max(...pts.map(p=>p.row)), cols=1+Math.max(...pts.map(p=>p.col));
+    if(!Number.isFinite(rows)||rows<2||cols<2||rows*cols!==pts.length){clear();return;}
+    const bounds={south:pts[0].lat,north:pts[pts.length-1].lat,west:pts[0].unwrappedLon,east:pts[pts.length-1].unwrappedLon};
+    const fr=playheadFrame(), grid=Array.from({length:rows},()=>[]);
+    pts.forEach(p=>{grid[p.row][p.col]=metAt(p,fr.time,true);});
+    const size=96, result=window.MapWeather.raster(grid,size,size,bounds,ov('cloud'),ov('radar')||ov('precip'));
+    if(!result.known){clear();return;}
+    const canvas=document.createElement('canvas');canvas.width=size;canvas.height=size;
+    const ctx=canvas.getContext('2d'), img=ctx.createImageData(size,size);img.data.set(result.pixels);ctx.putImageData(img,0,0);
+    const area=[[bounds.south,bounds.west],[bounds.north,bounds.east]], url=canvas.toDataURL();
+    if(state.forecastRaster)state.forecastRaster.setBounds(area).setUrl(url);
+    else state.forecastRaster=L.imageOverlay(url,area,{pane:'precipPane',interactive:false,opacity:1,alt:'逐小时云量与降水模型预报'}).addTo(state.satMap);
+    state.forecastRasterKnown=result.known;
+    const el=state.forecastRaster.getElement();
+    if(el){el.dataset.forecastTime=String(fr.time);el.dataset.clouds=String(ov('cloud'));el.dataset.rain=String(ov('radar')||ov('precip'));}
+  }
   function drawMetFields() {
     if (!state.satMap || !window.L) return;
+    drawForecastRaster();
     if (state.satMet) { state.satMap.removeLayer(state.satMet); state.satMet = null; }
     const pts = (state.metGrid && state.metGrid.points) || [];
     if (!pts.length) return;
@@ -4333,18 +4374,8 @@ body.loop-still .pill.bad {
     const precipPane = state.satMap.getPane("precipPane") ? "precipPane" : "overlayPane";
     const future = playheadIsFuture();
     const unix = (playheadFrame() && playheadFrame().time) || (Date.now() / 1000);
-    const showFcPrecip = future && ov("precip") && !state.fcUnavailable;
     pts.forEach(function (pt) {
       const m = metAt(pt, unix, future);
-      if (showFcPrecip) {
-        const col = precipColor(m.mm, m.pop);
-        if (col) {
-          L.circleMarker([pt.lat, pt.lon], {
-            pane: precipPane, radius: col.r, color: col.c, weight: 0,
-            fillColor: col.c, fillOpacity: col.o, interactive: false
-          }).addTo(g);
-        }
-      }
       if (ov("humidity") && m.rh != null) {
         const op = 0.12 + 0.4 * Math.max(0, Math.min(1, m.rh / 100));
         L.circleMarker([pt.lat, pt.lon], {
@@ -4389,7 +4420,7 @@ body.loop-still .pill.bad {
     if (!state.satMap || !window.L) return;
     if (!needsMet()) { drawMetFields(); return; }
     const key = metBoundsKey();
-    if (state.metLoadingKey === key || (!force && Date.now() < state.metRetryAt)) return;
+    if (state.metLoadingKey === key || (!force && Date.now() < state.metRetryAt)) { drawMetFields(); return; }
     if (!force && state.metGrid && state.metGrid.key === key && state.metGrid.points && state.metGrid.points.length) {
       drawMetFields();
       updateCaption();
@@ -4397,13 +4428,15 @@ body.loop-still .pill.bad {
     }
     const request = ++state.metRequest;
     state.metLoadingKey = key;
+    drawMetFields();
+    updateCaption();
     const pts = sampleMetGrid();
     try {
       const lats = pts.map(function (p) { return p.lat.toFixed(3); }).join(",");
       const lons = pts.map(function (p) { return p.lon.toFixed(3); }).join(",");
       const url = "https://api.open-meteo.com/v1/forecast?latitude=" + lats + "&longitude=" + lons +
         "&current=temperature_2m,relative_humidity_2m,wind_speed_10m,wind_direction_10m,surface_pressure" +
-        "&hourly=precipitation,precipitation_probability,weather_code,wind_speed_10m,wind_gusts_10m,temperature_2m,relative_humidity_2m,wind_direction_10m,surface_pressure" +
+        "&hourly=precipitation,precipitation_probability,cloud_cover,weather_code,wind_speed_10m,wind_gusts_10m,temperature_2m,relative_humidity_2m,wind_direction_10m,surface_pressure" +
         "&forecast_days=3&past_days=1&wind_speed_unit=ms&timezone=Asia/Shanghai";
       const data = await getJson(url);
       if (request !== state.metRequest || key !== metBoundsKey()) return;
@@ -4614,12 +4647,27 @@ body.loop-still .pill.bad {
     try { layer.bringToBack(); } catch (e) {}
     state.satBase = layer;
   }
+  function syncSatelliteTime() {
+    const fr=playheadFrame(); if(!fr)return;
+    const future=playheadIsFuture();state.satelliteLabel='';
+    const layers=[state.satLayer!=='city'?state.satLayerObj:null,state.satHdOverlayObj].filter(Boolean);
+    layers.forEach(function(layer){
+      layer.setOpacity(future?0:layer===state.satHdOverlayObj?Math.min(.52,state.satOp):state.satOp);
+      if(future||!layer.weatherKind)return;
+      let stamp=window.MapWeather.satelliteStamp(layer.weatherKind,fr.time);
+      if(!stamp)return;
+      if(layer.weatherKind==='truecolor'&&layer.weatherMaxDate&&stamp>layer.weatherMaxDate)stamp=layer.weatherMaxDate;
+      if(layer.weatherStamp!==stamp){layer.weatherStamp=stamp;layer.setUrl(layer.weatherTemplate.replace('{time}',stamp));}
+      state.satelliteLabel=layer.weatherKind==='infrared'?'红外观测 '+stamp.replace('T',' ').replace('Z',' UTC')+'（有延迟）':'真实色日合成 '+stamp+'（UTC，同日不变）';
+    });
+    if(future&&state.satLayer!=='city')ensureSatFallback();
+  }
   async function setSatHdOverlay(kind) {
     const request = state.hdRequest = (state.hdRequest || 0) + 1;
     state.satHdOverlay = kind === "infrared" ? "infrared" : kind === "none" ? "none" : "truecolor";
     if (state.satHdOverlayObj && state.satMap) { state.satMap.removeLayer(state.satHdOverlayObj); state.satHdOverlayObj = null; }
     syncSatLy();
-    if (!state.satMap || state.satLayer !== "city" || state.satHdOverlay === "none") return;
+    if (!state.satMap || state.satLayer !== "city" || state.satHdOverlay === "none") {syncSatelliteTime();updateCaption();return;}
     let url = "", maxNative = 9, attr = "";
     if (state.satHdOverlay === "infrared") {
       const tm = himawariTime();
@@ -4638,6 +4686,10 @@ body.loop-still .pill.bad {
       keepBuffer: 3, updateWhenZooming: false, updateWhenIdle: true,
       attribution: attr, opacity: Math.min(.52, state.satOp)
     }).addTo(state.satMap);
+    state.satHdOverlayObj.weatherKind=state.satHdOverlay;
+    state.satHdOverlayObj.weatherTemplate=url.replace(/\/default\/[^/]+\//,'/default/{time}/');
+    state.satHdOverlayObj.weatherMaxDate=url.split('/default/')[1].split('/')[0];
+    syncSatelliteTime();updateCaption();
   }
   async function setSatBase(name) {
     const request = state.baseRequest = (state.baseRequest || 0) + 1;
@@ -4697,6 +4749,12 @@ body.loop-still .pill.bad {
       if (errN === 3) { setMapStatus('部分底图加载失败，可切换底图或重试', false); ensureSatFallback(); }
     });
     state.satLayerObj.addTo(state.satMap);
+    if(name!=='city') {
+      state.satLayerObj.weatherKind=name==='infrared'?'infrared':'truecolor';
+      state.satLayerObj.weatherTemplate=url.replace(/\/default\/[^/]+\//,'/default/{time}/');
+      state.satLayerObj.weatherMaxDate=iso.slice(0,10);
+    }
+    syncSatelliteTime();
     ensureSatLabels();
     if (name === "city") setSatHdOverlay(state.satHdOverlay || "truecolor").catch(function () {});
     updatePlayhead();
@@ -4713,14 +4771,9 @@ body.loop-still .pill.bad {
       state.radarFrames = frames.map(function (f) {
         return { time: f.time, url: host + f.path + "/256/{z}/{x}/{y}/2/1_1.png" };
       });
-      const ir = ((state.radarMeta.satellite || {}).infrared || []).slice(-12);
-      if (ir.length) {
-        state.precipFrames = ir.map(function (f) {
-          return { time: f.time, url: host + f.path + "/256/{z}/{x}/{y}/0/0_0.png" };
-        });
-      } else {
-        state.precipFrames = state.radarFrames.slice();
-      }
+      // Infrared cloud brightness is not precipitation. Both rain controls
+      // use radar observations in the past and model precipitation in future.
+      state.precipFrames = state.radarFrames.slice();
     } catch (e) {
       state.radarFrames = state.radarFrames || [];
       state.precipFrames = state.precipFrames || [];
@@ -4735,24 +4788,17 @@ body.loop-still .pill.bad {
   }
   function applySatOverlays() {
     if (!state.satMap) return;
+    syncSatelliteTime();
     if (state.satRadarLayer) { state.satMap.removeLayer(state.satRadarLayer); state.satRadarLayer = null; }
     if (state.satPrecipLayer) { state.satMap.removeLayer(state.satPrecipLayer); state.satPrecipLayer = null; }
     const frames = playFrames();
     if (frames.length) state.radarIdx = Math.max(0, Math.min(frames.length - 1, state.radarIdx));
     const t = frames.length ? (frames[state.radarIdx].time || 0) : 0;
     const future = playheadIsFuture();
-    if (!future && ov("radar") && state.radarFrames.length) {
+    if (!future && (ov("radar") || ov("precip")) && state.radarFrames.length) {
       const f = nearestFrame(state.radarFrames, t) || state.radarFrames[state.radarFrames.length - 1];
       state.satRadarLayer = L.tileLayer(f.url, {
         pane: "radarPane", opacity: 0.65, maxZoom: 19, maxNativeZoom: 7,
-        keepBuffer: 3, updateWhenZooming: false, updateWhenIdle: true,
-        attribution: "RainViewer", tileSize: 256
-      }).addTo(state.satMap);
-    }
-    if (!future && ov("precip") && state.precipFrames.length) {
-      const f = nearestFrame(state.precipFrames, t) || state.precipFrames[state.precipFrames.length - 1];
-      state.satPrecipLayer = L.tileLayer(f.url, {
-        pane: "precipPane", opacity: 0.55, maxZoom: 19, maxNativeZoom: 7,
         keepBuffer: 3, updateWhenZooming: false, updateWhenIdle: true,
         attribution: "RainViewer", tileSize: 256
       }).addTo(state.satMap);
@@ -4766,6 +4812,7 @@ body.loop-still .pill.bad {
     state.radarIdx = (i + frames.length) % frames.length;
     const nowFuture = playheadIsFuture();
     const t = frames[state.radarIdx].time || 0;
+    syncSatelliteTime();
     if (wasFuture !== nowFuture) {
       applySatOverlays();
     } else if (!nowFuture) {
@@ -4778,7 +4825,8 @@ body.loop-still .pill.bad {
         if (f && state.satPrecipLayer.setUrl) state.satPrecipLayer.setUrl(f.url);
       }
     }
-      if (nowFuture || wasFuture !== nowFuture) {
+    drawMetFields();
+    if (nowFuture || wasFuture !== nowFuture) {
       // Forecast precipitation is a vector field, so fetch it at the moment
       // the timeline enters the future instead of leaving an empty map.
       loadMetGrid(false);
@@ -5430,6 +5478,7 @@ body.loop-still .pill.bad {
       if (out) out.textContent = Math.round(state.satOp * 100) + "%";
       if (state.satLayerObj && state.satLayerObj.setOpacity) state.satLayerObj.setOpacity(state.satOp);
       if (state.satHdOverlayObj && state.satHdOverlayObj.setOpacity) state.satHdOverlayObj.setOpacity(Math.min(.52, state.satOp));
+      syncSatelliteTime();
     });
     const routeButton = $("satRouteBtn");
     const routePanel = $("satRoutePanel");
