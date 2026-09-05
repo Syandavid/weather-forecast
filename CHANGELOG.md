@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+- v25: Add daylight outdoor windows for walking/running/cycling and lazy three-day ECMWF/GFS/ICON comparison with partial-failure states.
+- Correct city time-zone parsing, two-hour precipitation totals, missing/stale forecast states, and multilingual search matching by city ID.
+- Keep the map at the selected time, add a Now control, stop playback on timeline selection, coalesce meteorological requests and discard stale replies.
+- Label model risk advice separately from official warnings; disclose short-term interpolation and long-range forecast limits.
+- Add forecast and concurrent-map regression tests to CI and record the product review in docs/PRODUCT_REVIEW_2026-09-05.md.
+
 - Keep the weather PWA and scheduled typhoon snapshot workflow maintainable.
 - Add offline integrity checks for the manifest, snapshot and updater script.
 - Keep ordinary map point selection on the map page instead of switching to weather.

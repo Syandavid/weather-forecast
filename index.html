@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <title>天气预报</title>
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#000000">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -14,8 +14,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192-v3.png" type="image/png">
 <link rel="apple-touch-icon" href="apple-touch-icon-v3.png">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+<link rel="preconnect" href="https://api.open-meteo.com">
 <style>
 :root {
   --bg: #070b12;
@@ -1395,6 +1394,23 @@ body.loop-still .pill.bad {
 .sat-city-pill { box-shadow:0 2px 10px rgba(0,0,0,.22); }
 .sat-wind-barb.wind-flow { animation: windFlow 1.7s ease-in-out infinite; }
 .wind-gust { stroke:#ffd166; stroke-dasharray:2 2; }
+.insight-card { margin:14px 0; padding:16px; border:1px solid var(--line); border-radius:18px; background:rgba(14,24,39,.88); }
+.insight-card h3 { margin:0 0 10px; font-size:15px; }
+.insight-card p, .insight-note { color:var(--muted); font-size:12px; line-height:1.65; }
+.activity-tabs { display:flex; gap:8px; margin:10px 0; }
+.activity-tabs button,.insight-card button,.sat-now-btn { border:1px solid var(--line); border-radius:10px; background:#182536; color:var(--text); padding:9px 12px; min-height:40px; cursor:pointer; }
+.activity-tabs button[aria-pressed="true"] { border-color:var(--sky); background:#21415b; }
+.outdoor-window { display:flex; justify-content:space-between; flex-wrap:wrap; gap:6px; padding:10px 0; border-top:1px solid var(--line); font-size:13px; }
+.outdoor-window span { color:#a8d9ec; font-size:12px; }
+.model-table-wrap { overflow:auto; }
+.model-table { width:100%; border-collapse:collapse; font-size:12px; text-align:left; }
+.model-table th,.model-table td { padding:10px 6px; border-bottom:1px solid var(--line); white-space:nowrap; }
+.model-table caption { text-align:left; padding:10px 0; color:#a8d9ec; }
+.insight-card summary { cursor:pointer; min-height:40px; font-size:15px; }
+.forecast-note { font-size:11px; line-height:1.5; color:var(--muted); margin:4px 0 12px; }
+.wx-updated.stale { color:#ffd166; }
+.alert-source { padding:14px; font-size:12px; line-height:1.6; color:var(--muted); border:1px solid var(--line); border-radius:14px; margin-bottom:12px; }
+.sat-now-btn { padding:5px 8px; min-height:36px; font-size:11px; flex:none; }
 .sat-map-status { position:absolute; left:50%; top:50%; z-index:700; transform:translate(-50%,-50%); pointer-events:none; padding:9px 13px; border:1px solid rgba(126,197,255,.35); border-radius:999px; background:rgba(7,17,31,.82); color:#eaf3ff; font-size:12px; box-shadow:0 8px 24px rgba(0,0,0,.25); opacity:0; transition:opacity .2s ease; white-space:nowrap; }
 .sat-map-status.show { opacity:1; }
 .sat-map-status.done { opacity:0; }
@@ -1475,6 +1491,16 @@ body.loop-still .pill.bad {
             <div class="extreme-card" id="extremeCard" aria-live="polite"></div>
             <div class="wx-updated" id="wxUpdated" aria-live="polite">天气数据准备中</div>
             <div class="next2-card" id="next2Card" hidden aria-live="polite"></div>
+            <section class="insight-card" aria-labelledby="outdoorTitle">
+              <h3 id="outdoorTitle">什么时候适合出门</h3>
+              <div class="activity-tabs" role="group" aria-label="户外活动">
+                <button type="button" data-activity="walk" aria-pressed="true">散步</button>
+                <button type="button" data-activity="run" aria-pressed="false">跑步</button>
+                <button type="button" data-activity="cycle" aria-pressed="false">骑行</button>
+              </div>
+              <div id="outdoorWindows" aria-live="polite"><p>正在匹配未来 24 小时的天气</p></div>
+              <small class="insight-note">按降雨、阵风、体感和紫外线筛选连续 2 小时的白天时段；时间为所选城市当地时间。</small>
+            </section>
             <div class="clothing-card" id="clothingCard" hidden aria-live="polite"></div>
             <div class="metrics" id="metrics"></div>
           </div>
@@ -1482,7 +1508,15 @@ body.loop-still .pill.bad {
             <div class="sec-title">24 小时</div>
             <div class="hours" id="hours"></div>
             <div class="sec-title">16 天预报</div>
+            <p class="forecast-note">近期用于安排出行；7 天以后主要看趋势，请临近时再确认。</p>
             <div class="days" id="days"></div>
+            <details class="insight-card" id="modelCompare">
+              <summary>多模型对比 · 未来 3 天</summary>
+              <p>对比 ECMWF、GFS、ICON 的最高温和日降水量。模型分歧有助于判断计划是否需要留出余地。</p>
+              <div id="modelResults" aria-live="polite"></div>
+              <button type="button" id="modelRetry">更新对比</button>
+              <p>仅展开时加载。模型差值不是概率或准确率，也不替代官方预警。</p>
+            </details>
           </div>
         </div>
         <section class="trend-card" aria-labelledby="trendTitle">
@@ -1527,7 +1561,7 @@ body.loop-still .pill.bad {
                 <span class="ck">✓</span>
               </div>
             <div class="sat-sat-sub">
-              <span class="sat-live">实时<i>✓</i></span>
+              <span class="sat-live">卫星观测</span>
               <span class="sat-hd" title="高清城市底图可叠加卫星层">高清可叠加</span>
             </div>
             <div class="sat-subtitle">高清城市叠加</div>
@@ -1637,6 +1671,7 @@ body.loop-still .pill.bad {
                 <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
               </button>
               <div class="sat-play-time" id="satPlayTime">今天 —</div>
+              <button class="sat-now-btn" id="satNow" type="button">现在</button>
               <div class="sat-ticks" id="satTicks" role="slider" aria-label="时间轴"></div>
             </div>
             <div class="sat-caption" id="satCaption">现在：雷达实况</div>
@@ -1709,8 +1744,11 @@ body.loop-still .pill.bad {
     <button class="chip" id="closeAbout" type="button">关闭</button>
   </div>
 </div>
+<script src="assets/weather-insights.js?v=25"></script>
 <script>
 (function () {
+  const insights = window.WeatherInsights;
+  const weatherMs = (iso, w) => insights.epoch(iso, w || state.weather);
   const CITY_KEY = "weather-forecast-city";
   const REC_KEY = "weather-forecast-recents";
   const FAV_KEY = "weather-forecast-favorites";
@@ -1838,7 +1876,9 @@ body.loop-still .pill.bad {
     autoRefreshTimer: 0,
     stormRefreshTimer: 0,
     radarRefreshTimer: 0,
-    mapStatusTimer: 0
+    mapStatusTimer: 0,
+    activity: 'walk', weatherCached: false, modelRequest: 0, modelCache: null,
+    metRequest: 0, metLoadingKey: '', metRetryAt: 0
   };
   const $ = (id) => document.getElementById(id);
   function ov(k) { return !!(state.overlays && state.overlays[k]); }
@@ -2068,7 +2108,7 @@ body.loop-still .pill.bad {
     if (!h.time || !h[key]) return null;
     const now = Date.now();
     for (let i = 0; i < h.time.length; i++) {
-      const tm = new Date(h.time[i]).getTime();
+      const tm = weatherMs(h.time[i], w);
       if (tm >= now - 30 * 60 * 1000) return h[key][i];
     }
     return h[key][0];
@@ -2219,10 +2259,8 @@ body.loop-still .pill.bad {
     });
   }
   function maybeAutoplayRadar() {
-    if (state.tab !== "sat") return;
-    if (playFrames().length < 2) return;
-    if (state.radarPlaying || prefersReduced()) return;
-    toggleRadarPlay();
+    // Opening or returning to the map keeps the time selected by the user.
+    // Playback only starts from the explicit play control.
   }
   function todaySummary(w) {
     const cur = w.current || {};
@@ -2237,10 +2275,10 @@ body.loop-still .pill.bad {
     let rainPeak = 0, rainH = null;
     const now = Date.now();
     for (let i = 0; i < (hourly.time || []).length; i++) {
-      const tm = new Date(hourly.time[i]).getTime();
+      const tm = weatherMs(hourly.time[i], w);
       if (tm < now - 30 * 60 * 1000 || tm > now + 24 * 3600 * 1000) continue;
       const pop = hourly.precipitation_probability ? (hourly.precipitation_probability[i] || 0) : 0;
-      if (pop > rainPeak) { rainPeak = pop; rainH = new Date(hourly.time[i]).getHours(); }
+      if (pop > rainPeak) { rainPeak = pop; rainH = Number(hourly.time[i].slice(11, 13)); }
     }
     let s2;
     if (rainPeak >= 50 && rainH != null) {
@@ -2403,13 +2441,14 @@ body.loop-still .pill.bad {
     return (h < 10 ? "0" : "") + h + "时";
   }
   function dayName(iso, idx) {
-    if (idx === 0) return "今天";
-    if (idx === 1) return "明天";
-    return WEEK[new Date(iso).getDay()];
+    if (iso === dateKeyOffset(0)) return "今天";
+    if (iso === dateKeyOffset(1)) return "明天";
+    return WEEK[new Date(iso + 'T12:00:00Z').getUTCDay()];
   }
   async function loadWeather() {
     const requestId = ++state.weatherRequest;
     const c = state.city;
+    state.weatherCached = true;
     hideWxNote();
     const cached = readWxCache(c);
     state.aqi = cached && cached.aqi ? cached.aqi : null;
@@ -2421,6 +2460,14 @@ body.loop-still .pill.bad {
       renderMetrics();
       renderAlerts();
     } else {
+      state.weather = null;
+      ["hl","summary","sunrow","hours","days","metrics","life","extremeCard"].forEach(id => { $(id).textContent = ''; });
+      $("temp").innerHTML = '--<span>°</span>';
+      $("phrase").textContent = '正在获取所选城市天气';
+      $("next2Card").hidden = true;
+      $("clothingCard").hidden = true;
+      $("outdoorWindows").textContent = '正在获取所选城市天气…';
+      updateWeatherStamp(null, true);
       $("temp").classList.add("sk");
       $("phrase").classList.add("sk");
       if ($("summary")) $("summary").classList.add("sk");
@@ -2443,11 +2490,13 @@ body.loop-still .pill.bad {
         w = await getJson(wurl);
       }
       if (requestId !== state.weatherRequest) return;
+      state.weatherCached = false;
       state.weather = w;
       gotWx = true;
       hideWxNote();
       renderWeather();
     } catch (e) {
+      if (requestId !== state.weatherRequest) return;
       if (cached && cached.weather) {
         showWxNote("刚才没连上，先显示上次");
         updateWeatherStamp(cached.weather, true);
@@ -2657,55 +2706,89 @@ body.loop-still .pill.bad {
     bindTrendCursor(box.querySelector("svg"), series, x, W, pad, mode);
   }
   function renderNext2Hours(w) {
-    const el = $("next2Card");
+    const el = $("next2Card"), data = insights.nextTwo(w);
     if (!el) return;
-    const current = w && w.current || {}, hourly = w && w.hourly || {}, minute = w && w.minutely_15 || {};
-    const source = (minute.time && minute.time.length) ? minute : hourly;
-    const now = Date.now(), offsets = [10, 15, 30, 60, 90, 120], rows = [];
-    const valueAt = function (obj, field, target, fallback) {
-      const times = obj.time || [], vals = obj[field] || [];
-      if (!times.length || !vals.length) return fallback;
-      let left = -1, right = -1;
-      for (let i = 0; i < times.length; i++) {
-        const tm = new Date(times[i]).getTime();
-        if (tm <= target) left = i;
-        if (tm >= target) { right = i; break; }
-      }
-      if (left < 0) left = right;
-      if (right < 0) right = left;
-      if (left < 0 || right < 0 || vals[left] == null && vals[right] == null) return fallback;
-      const a = vals[left] == null ? vals[right] : vals[left], b = vals[right] == null ? vals[left] : vals[right];
-      if (field === "weather_code") return (target - new Date(times[left]).getTime()) < (new Date(times[right]).getTime() - target) ? a : b;
-      if (left === right || !isFinite(a) || !isFinite(b)) return a;
-      const span = new Date(times[right]).getTime() - new Date(times[left]).getTime();
-      const ratio = span ? Math.max(0, Math.min(1, (target - new Date(times[left]).getTime()) / span)) : 0;
-      return a + (b - a) * ratio;
-    };
-    const hourlyPop = function (target) { return valueAt(hourly, "precipitation_probability", target, 0) || 0; };
-    offsets.forEach(function (offset) {
-      const target = now + offset * 60000;
-      rows.push({ offset: offset, temp: valueAt(source, "temperature_2m", target, current.temperature_2m), pop: hourlyPop(target), mm: valueAt(source, "precipitation", target, 0) || 0, code: valueAt(source, "weather_code", target, current.weather_code || 0), wind: valueAt(source, "wind_speed_10m", target, current.wind_speed_10m || 0), gust: valueAt(source, "wind_gusts_10m", target, current.wind_gusts_10m || 0) });
+    el.hidden = false;
+    if (!data.available) {
+      el.className = "next2-card warn";
+      el.innerHTML = '<strong>未来 2 小时 · 暂无法判断</strong><p class="insight-note">' + data.reason + '</p>';
+      return;
+    }
+    const danger = data.storm || data.maxGust >= 17.2 || data.total >= 10;
+    const warn = danger || !data.complete || data.maxPop >= 60 || data.total >= 2;
+    el.className = "next2-card " + (danger ? "danger" : warn ? "warn" : "ok");
+    const amount = v => v == null ? "未知" : (v > 0 && v < .1 ? "<0.1" : v.toFixed(1)) + " mm";
+    const summary = data.storm ? "预报有雷暴风险，留意官方预警" : !data.complete ? "部分数据缺失，暂不能排除风险" :
+      "两小时累计降水约 " + amount(data.total) + (data.maxPop == null ? " · 降水概率未知" : " · 最高降水概率 " + Math.round(data.maxPop) + "%");
+    const slots = data.rows.map(r => '<div class="next2-slot"><div class="at">+' + r.offset + '分钟</div><div class="ico">' +
+      (r.code == null ? "—" : wxIcon(r.code, w.current.is_day === 1, 18)) +
+      '</div><div class="deg">' + (r.temp == null ? "—" : Math.round(r.temp) + "°") +
+      '</div><div class="rain">' + amount(r.mm) + '</div><div class="gust">阵风 ' +
+      (r.gust == null ? "—" : Math.round(r.gust) + "m/s") + '</div></div>').join("");
+    el.innerHTML = '<div class="next2-head"><div class="next2-icon">' + (danger ? "!" : "雨") +
+      '</div><div><strong>未来 2 小时 · ' + (danger ? "需要注意" : warn ? "留意变化" : "短临参考") +
+      '</strong><span>' + summary + '</span></div></div><div class="next2-grid">' + slots +
+      '</div><small class="next2-source">Open-Meteo · ' + data.minutes + ' 分钟时段预报；每格雨量为对应时段量，累计量按时间重叠估算。15 分钟数据在部分地区由小时预报插值，不代表逐分钟实测。</small>';
+  }
+  function renderOutdoor() {
+    const d = insights.outdoor(state.weather, state.activity), el = $("outdoorWindows");
+    if (!el) return;
+    if (!d.available) { el.innerHTML = '<p>' + d.reason + '</p>'; return; }
+    if (!d.windows.length) { el.innerHTML = '<p>未来 24 小时未找到合适的连续 2 小时白天时段：' + d.reason + '。</p>'; return; }
+    el.innerHTML = d.windows.map(x => '<div class="outdoor-window"><strong>' + x.label + '</strong><span>' +
+      Math.round(x.min) + '–' + Math.round(x.max) + '° · 降水概率 ≤' + Math.round(x.pop) + '%</span></div>').join('') +
+      '<p>筛选条件：体感 ' + d.cfg.min + '–' + d.cfg.max + '°、阵风低于 ' + d.cfg.gust + ' m/s、UV 低于 ' + d.cfg.uv + '。可结合自身耐受调整安排。</p>';
+  }
+  async function loadModelComparison(force) {
+    if (!$("modelCompare").open || !state.city) return;
+    const key = cityKey(state.city), box = $("modelResults");
+    if (state.modelLoadingKey === key) return;
+    if (!force && state.modelCache && state.modelCache.key === key && Date.now()-state.modelCache.time < 1800000) {
+      box.innerHTML = state.modelCache.html; return;
+    }
+    const request = ++state.modelRequest, c = Object.assign({}, state.city);
+    state.modelLoadingKey = key;
+    box.textContent = "正在比较所选城市的三个预报模型…";
+    $("modelRetry").disabled = true;
+    const models = [["ECMWF", "ecmwf_ifs025"], ["GFS", "gfs_seamless"], ["ICON", "icon_seamless"]];
+    const results = await Promise.all(models.map(async m => {
+      try {
+        const d = await getJson("https://api.open-meteo.com/v1/forecast?latitude=" + c.lat + "&longitude=" + c.lon +
+          "&timezone=auto&forecast_days=3&daily=temperature_2m_max,precipitation_sum&models=" + m[1]);
+        if (!d.daily || !Array.isArray(d.daily.time) || !Array.isArray(d.daily.temperature_2m_max) || !Array.isArray(d.daily.precipitation_sum)) throw new Error("missing daily");
+        return {name:m[0], daily:d.daily};
+      } catch (_) {return {name:m[0], daily:null};}
+    }));
+    if (request !== state.modelRequest || key !== cityKey(state.city)) return;
+    state.modelLoadingKey = '';
+    const dates = [...new Set(results.flatMap(r => r.daily ? r.daily.time : []))].filter(d => /^\d{4}-\d{2}-\d{2}$/.test(d)).sort().slice(0,3);
+    let html = "";
+    dates.forEach(day => {
+      const highs = [];
+      const rows = results.map(r => {
+        const i = r.daily ? r.daily.time.indexOf(day) : -1;
+        const high = i>=0 && Number.isFinite(r.daily.temperature_2m_max[i]) ? r.daily.temperature_2m_max[i] : null;
+        const rain = i>=0 && Number.isFinite(r.daily.precipitation_sum[i]) ? r.daily.precipitation_sum[i] : null;
+        if (typeof high === "number") highs.push(high);
+        return "<tr><th scope='row'>" + r.name + "</th><td>" + (high == null ? "暂缺" : Math.round(high)+"°") +
+          "</td><td>" + (rain == null ? "暂缺" : rain.toFixed(1)+" mm") + "</td></tr>";
+      }).join("");
+      html += '<div class="model-table-wrap"><table class="model-table"><caption>' + day +
+        (highs.length>=2 ? " · 最高温模型差 " + (Math.max(...highs)-Math.min(...highs)).toFixed(1)+"°" : " · 可用模型不足，不能比较差异") +
+        '</caption><thead><tr><th scope="col">模型</th><th scope="col">最高温</th><th scope="col">日降水量</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
     });
-    if (!rows.length) { el.hidden = true; return; }
-    const maxPop = Math.max.apply(null, rows.map(function (r) { return r.pop; }));
-    const maxMm = Math.max.apply(null, rows.map(function (r) { return r.mm; }));
-    const maxGust = Math.max.apply(null, rows.map(function (r) { return r.gust; }));
-    const storm = rows.some(function (r) { return r.code >= 95; });
-    const danger = storm || maxMm >= 10 || maxGust >= 17.2;
-    const warn = danger || maxPop >= 60 || maxMm >= 2;
-    el.hidden = false; el.className = "next2-card " + (danger ? "danger" : warn ? "warn" : "ok");
-    const text = storm ? "可能出现雷暴，请暂缓户外活动" : maxMm > 0 ? "预计降雨 " + (maxMm < .1 ? "<0.1" : maxMm.toFixed(1)) + " mm，概率 " + Math.round(maxPop) + "%" : maxPop >= 40 ? "降雨概率 " + Math.round(maxPop) + "%，建议随身带伞" : "未来 2 小时暂无明显降雨或大风风险";
-    const slots = rows.map(function (r) {
-      const rain = r.mm > 0 ? (r.mm < .1 ? "<0.1" : r.mm.toFixed(1)) + "mm" : (r.pop >= 1 ? Math.round(r.pop) + "%" : "无雨");
-      return '<div class="next2-slot"><div class="at">+' + r.offset + '分钟</div><div class="ico">' + wxIcon(r.code, true, 18) + '</div><div class="deg">' + (r.temp == null ? "—" : Math.round(r.temp) + "°") + '</div><div class="rain">' + rain + '</div><div class="gust">阵风 ' + (r.gust == null ? "—" : Math.round(r.gust) + "m/s") + '</div></div>';
-    }).join("");
-    el.innerHTML = '<div class="next2-head"><div class="next2-icon">' + (danger ? "!" : warn ? "雨" : "✓") + '</div><div><strong>未来 2 小时 · ' + (danger ? "需要注意" : warn ? "天气变化" : "暂无明显风险") + '</strong><span>' + text + (maxGust >= 10 ? " · 阵风约 " + Math.round(maxGust) + " m/s" : "") + '</span></div></div><div class="next2-grid">' + slots + '</div><small class="next2-source">按 10 / 15 / 30 / 60 / 90 / 120 分钟连续提示 · ' + (minute.time && minute.time.length ? "15 分钟预报数据" : "小时数据插值") + '</small>';
+    box.innerHTML = html || '<p>模型对比暂不可用，请稍后点“更新对比”重试。</p>';
+    if (html) {
+      box.insertAdjacentHTML('beforeend','<p>数据获取于 ' + new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'}) + '（设备时间）。各模型起报时次可能不同。</p>');
+      state.modelCache = {key,time:Date.now(),html:box.innerHTML};
+    }
+    $("modelRetry").disabled = false;
   }
   function clothingGuide(w) {
     const c = w && w.current || {}, h = w && w.hourly || {}, t = c.apparent_temperature != null ? c.apparent_temperature : c.temperature_2m;
     let pop = 0;
-    (h.time || []).forEach(function (iso, i) { const tm = new Date(iso).getTime(); if (tm >= Date.now() && tm <= Date.now() + 6 * 3600000) pop = Math.max(pop, (h.precipitation_probability && h.precipitation_probability[i]) || 0); });
-    const rain = pop >= 45 || c.weather_code >= 51;
+    (h.time || []).forEach(function (iso, i) { const tm = weatherMs(iso, w); if (tm >= Date.now() && tm <= Date.now() + 6 * 3600000) pop = Math.max(pop, (h.precipitation_probability && h.precipitation_probability[i]) || 0); });
+    const rain = pop >= 45 || (c.weather_code >= 51 && c.weather_code <= 67) || (c.weather_code >= 80 && c.weather_code <= 82) || c.weather_code >= 95;
     const cls = (rain ? "rain" : t <= 10 ? "cold" : t >= 28 ? "hot" : "") + (c.wind_speed_10m >= 8 ? " windy" : "");
     let title = t == null ? "适合按体感穿衣" : t <= 5 ? "厚外套 + 保暖层" : t <= 12 ? "外套 + 长袖" : t <= 20 ? "薄外套较舒适" : t <= 27 ? "长袖或薄衫" : "轻薄透气衣物";
     if (rain) title += " · 记得带伞";
@@ -2734,10 +2817,11 @@ body.loop-still .pill.bad {
     const now = Date.now();
     const hits = [];
     for (let i = 0; i < times.length; i++) {
-      const tm = new Date(times[i]).getTime();
+      const tm = weatherMs(times[i], w);
       if (isNaN(tm) || tm < now - 30 * 60000 || tm > now + 16 * 86400000) continue;
       const code = Number((h.weather_code || [])[i]);
-      const temp = Number((h.temperature_2m || [])[i]);
+      const rawTemp = (h.temperature_2m || [])[i];
+      const temp = rawTemp == null ? NaN : Number(rawTemp);
       const rain = Number((h.precipitation || [])[i]) || 0;
       const wind = Number((h.wind_speed_10m || [])[i]) || 0;
       const gust = Number((h.wind_gusts_10m || [])[i]) || 0;
@@ -2758,23 +2842,33 @@ body.loop-still .pill.bad {
   function renderExtremeAlert(w) {
     const el = $("extremeCard");
     if (!el) return;
+    const fresh = !insights.freshness(w).stale;
+    const valid = (w.hourly && w.hourly.time || []).filter((t,i) => weatherMs(t,w)>=Date.now() &&
+      ['temperature_2m','weather_code','precipitation','wind_gusts_10m'].every(k => typeof w.hourly[k]?.[i] === 'number'));
+    if (!fresh || !valid.length) {
+      el.className = 'extreme-card warn';
+      el.innerHTML = '<div class="extreme-copy"><strong>天气风险 · 数据待更新</strong><span>当前预报不足以判断风险，请刷新并留意当地官方预警。</span></div>';
+      return;
+    }
     const event = nearestExtremeWeather(w);
     if (!event) {
       el.className = "extreme-card ok";
-      el.innerHTML = '<div class="extreme-icon">✓</div><div class="extreme-copy"><strong>极端天气提醒</strong><span>未来 16 天暂未发现明显雷暴、强降雨、强风或极端温度</span></div>';
+      el.innerHTML = '<div class="extreme-icon">✓</div><div class="extreme-copy"><strong>天气风险参考</strong><span>已提供的逐时预报内暂未触发风险阈值，覆盖至 ' + valid[valid.length-1].replace('T',' ') + '（城市当地时间）。</span></div>';
       return;
     }
     el.className = "extreme-card " + event.level;
-    const status = event.time <= Date.now() + 30 * 60000 ? "正在发生或即将发生" : "预计出现时间";
+    const status = event.time <= Date.now() + 30 * 60000 ? "预报时段临近" : "模型预计时间";
     el.innerHTML = '<div class="extreme-icon">' + event.icon + '</div><div class="extreme-copy"><strong>最近一次极端天气 · ' + event.title + '</strong><span>' + event.detail + '</span></div><div class="extreme-time">' + forecastTimeLabel(event.iso) + '<small>' + status + '</small></div>';
   }
   function updateWeatherStamp(w, cached) {
     const el = $("wxUpdated");
     if (!el) return;
-    const when = w && w.current && w.current.time ? fmtBjShort(w.current.time) : "";
-    el.textContent = when
-      ? (cached ? "天气数据 · 上次缓存 · " + when : "天气数据 · " + when)
-      : "天气数据暂不可用，可点击右上角刷新";
+    const status = insights.freshness(w);
+    const when = w && w.current && w.current.time;
+    el.classList.toggle('stale', status.stale);
+    el.textContent = when ? 'Open-Meteo · ' + (status.stale ? '数据已过期 · ' : cached ? '上次缓存 · ' : '已获取 · ') +
+      when.replace('T',' ') + '（' + (w.timezone || '城市当地时间') + '）' +
+      (navigator.onLine === false ? ' · 当前离线' : '') : '天气数据暂不可用，可点击右上角刷新';
   }
   function renderWeather() {
     const w = state.weather;
@@ -2799,19 +2893,19 @@ body.loop-still .pill.bad {
     applySky(cur.weather_code, isDay);
     $("heroGlyph").innerHTML = wxIcon(cur.weather_code, isDay, 52);
     $("phrase").textContent = wxPhrase(cur.weather_code, isDay);
-    $("summary").textContent = todaySummary(w);
-    updateWeatherStamp(w, false);
+    $("summary").textContent = insights.freshness(w).stale ? '正在展示缓存天气，数据已过期；刷新后再安排出行。' : todaySummary(w);
+    updateWeatherStamp(w, state.weatherCached);
     const hours = w.hourly || {};
     const now = Date.now();
     let html = "";
     let n = 0;
     for (let i = 0; i < (hours.time || []).length && n < 24; i++) {
-      const tm = new Date(hours.time[i]).getTime();
+      const tm = weatherMs(hours.time[i], w);
       if (tm < now - 30 * 60 * 1000) continue;
       const pop = hours.precipitation_probability ? (hours.precipitation_probability[i] || 0) : 0;
       const mm = hours.precipitation ? (hours.precipitation[i] || 0) : 0;
       const hcode = hours.weather_code ? hours.weather_code[i] : cur.weather_code;
-      const hh = new Date(hours.time[i]).getHours();
+      const hh = Number(hours.time[i].slice(11, 13));
       const hIsDay = hh >= 6 && hh < 19;
       html += '<div class="hour' + (n === 0 ? " now" : "") + '" style="animation-delay:' + (n * 30) + 'ms"><div class="t">' + (n === 0 ? "现在" : fmtHour(hours.time[i])) +
         '</div><div class="g">' + wxIcon(hcode, hIsDay, 20) + '</div><div class="n">' +
@@ -2831,6 +2925,7 @@ body.loop-still .pill.bad {
     const span = Math.max(1, weekMax - weekMin);
     let dh = "";
     (d.time || []).forEach(function (iso, i) {
+      if (iso < dateKeyOffset(0)) return;
       const tmin = d.temperature_2m_min[i], tmax = d.temperature_2m_max[i];
       const left = tmin == null ? 0 : ((tmin - weekMin) / span) * 100;
       const width = (tmin == null || tmax == null) ? 0 : ((tmax - tmin) / span) * 100;
@@ -2846,7 +2941,7 @@ body.loop-still .pill.bad {
     });
     $("days").innerHTML = dh;
     const rise = (daily.sunrise || [])[0], sunset = (daily.sunset || [])[0], shine = (daily.sunshine_duration || [])[0];
-    $("sunrow").innerHTML = "<span>☀ 今日</span><span>日出 <b>" + fmtHM(rise) + "</b></span><span>日落 <b>" + fmtHM(sunset) +
+    $("sunrow").innerHTML = '<span>☀ ' + (daily.time && daily.time[0] === dateKeyOffset(0) ? '今日' : (daily.time || ['日期未知'])[0]) + '</span><span>日出 <b>' + fmtHM(rise) + "</b></span><span>日落 <b>" + fmtHM(sunset) +
       "</b></span>" + (shine != null ? "<span>日照 <b>" + (shine / 3600).toFixed(1) + " 小时</b></span>" : "<span>日照 <b>—</b></span>");
     renderExtremeAlert(w);
     $("life").innerHTML = lifeIndices(w).map(function (it) {
@@ -2854,6 +2949,7 @@ body.loop-still .pill.bad {
         '</div><span class="pill ' + it.cls + '">' + it.lv + "</span></div>";
     }).join("");
     renderNext2Hours(w);
+    renderOutdoor();
     renderClothing(w);
     renderTrendChart();
     updateWindPill();
@@ -3101,28 +3197,24 @@ body.loop-still .pill.bad {
           (dist != null ? " · 距" + ((state.city && state.city.name) || "") + "约 " + dist + " 公里" : ""),
         level: warn ? "警告" : "关注",
         lvCls: warn ? "bad" : "warn",
-        when: "实时",
+        when: s.time ? fmtBjShort(s.time) : '时效待确认',
         advice: imp.t === "远离" ? "暂无直接风雨，留意路径变化" : (imp.t === "关注" ? "关注风雨影响，减少沿海活动" : "外围可能有风雨，出行留意"),
         go: function () { showTab("sat"); selectStorm(s); }
       });
     });
     const w = state.weather;
-    if (w && w.current) {
+    if (w && w.current && !insights.freshness(w).stale) {
       const cur = w.current;
       const daily = w.daily || {};
       const hourly = w.hourly || {};
-      const near2 = [];
-      (hourly.time || []).forEach(function (iso, i) {
-        const tm = new Date(iso).getTime();
-        if (tm < Date.now() - 20 * 60000 || tm > Date.now() + 2 * 3600000 + 20 * 60000) return;
-        near2.push({ pop: (hourly.precipitation_probability && hourly.precipitation_probability[i]) || 0, mm: (hourly.precipitation && hourly.precipitation[i]) || 0, code: (hourly.weather_code && hourly.weather_code[i]) || 0, gust: (hourly.wind_gusts_10m && hourly.wind_gusts_10m[i]) || 0 });
-      });
-      if (near2.length) {
-        const nPop = Math.max.apply(null, near2.map(function (x) { return x.pop; }));
-        const nMm = Math.max.apply(null, near2.map(function (x) { return x.mm; }));
-        const nGust = Math.max.apply(null, near2.map(function (x) { return x.gust; }));
-        const nStorm = near2.some(function (x) { return x.code >= 95; });
-        if (nStorm || nMm >= 2 || nGust >= 17.2 || nPop >= 60) items.unshift({ cls: nStorm || nMm >= 10 ? "hot" : "rain", title: "未来 2 小时重点", body: nStorm ? "可能出现雷暴" : "降雨概率 " + Math.round(nPop) + "% · 预计雨量 " + nMm.toFixed(1) + " mm" + (nGust >= 10 ? " · 阵风 " + Math.round(nGust) + " m/s" : ""), level: nStorm || nMm >= 10 || nGust >= 17.2 ? "警告" : "关注", lvCls: nStorm || nMm >= 10 || nGust >= 17.2 ? "bad" : "warn", when: "未来 2 小时", advice: nStorm ? "暂缓户外活动，关注官方预警" : "随身带伞并留意雷达变化" });
+      const near = insights.nextTwo(w);
+      if (near.available && (near.storm || near.total >= 2 || near.maxGust >= 17.2 || near.maxPop >= 60)) {
+        const severe = near.storm || near.total >= 10 || near.maxGust >= 17.2;
+        items.unshift({cls:"rain",title:"未来 2 小时重点",
+          body:(near.storm ? "可能出现雷暴 · " : "") + "累计降水 " + (near.total == null ? "未知" : near.total.toFixed(1)+" mm") +
+            " · 阵风 " + (near.maxGust == null ? "未知" : Math.round(near.maxGust)+" m/s"),
+          level:severe ? "警告" : "关注",lvCls:severe ? "bad" : "warn",when:"未来 2 小时",
+          advice:"根据预报安排出行，留意当地官方预警"});
       }
       const tmax = (daily.temperature_2m_max || [])[0];
       if (tmax != null && tmax >= 35) items.push({ cls: "hot", title: "高温", body: "今天最高气温约 " + Math.round(tmax) + " 度。", level: tmax >= 37 ? "警告" : "关注", lvCls: tmax >= 37 ? "bad" : "warn", when: "今天", advice: "防暑补水，减少正午户外" });
@@ -3133,7 +3225,7 @@ body.loop-still .pill.bad {
       if (!rainHit && hourly.time) {
         const now = Date.now();
         for (let i = 0; i < hourly.time.length; i++) {
-          const t = new Date(hourly.time[i]).getTime();
+          const t = weatherMs(hourly.time[i], w);
           if (t < now - 30 * 60 * 1000 || t > now + 24 * 3600 * 1000) continue;
           const pop = hourly.precipitation_probability[i];
           const code = hourly.weather_code[i];
@@ -3142,7 +3234,7 @@ body.loop-still .pill.bad {
       }
       if (rainHit) items.push({ cls: "rain", title: "暴雨", body: "未来降水概率高，并可能出现大雨、强阵雨或雷暴。", level: "警告", lvCls: "bad", when: "未来24小时", advice: "带伞，注意积水和出行安全" });
       const gust = cur.wind_gusts_10m || 0;
-      const vmax = Math.max(cur.wind_speed_10m || 0, gust, Math.max.apply(null, [0].concat(daily.wind_speed_10m_max || [])));
+      const vmax = Math.max(cur.wind_speed_10m || 0, gust, (daily.wind_speed_10m_max || [])[0] || 0);
       if (vmax >= 17.2) items.push({ cls: "gale", title: "大风", body: "风力约 " + Math.round(vmax) + " 米/秒，" + windLevel(vmax) + " 级。", level: vmax >= 24.5 ? "警告" : "关注", lvCls: vmax >= 24.5 ? "bad" : "warn", when: "今天", advice: "注意高空坠物，减少户外停留" });
       const tmin = Math.min.apply(null, [99].concat((daily.temperature_2m_min || []).map((x) => x == null ? 99 : x)));
       if (tmin <= 0) items.push({ cls: "", title: "低温冰冻", body: "最低气温可能降至 " + Math.round(tmin) + " 度。", level: "关注", lvCls: "warn", when: "未来几天", advice: "防寒防冻，留意路面结冰" });
@@ -3150,7 +3242,7 @@ body.loop-still .pill.bad {
       if (!fog && hourly.weather_code) {
         const now = Date.now();
         for (let i = 0; i < (hourly.time || []).length && i < 12; i++) {
-          const t = new Date(hourly.time[i]).getTime();
+          const t = weatherMs(hourly.time[i], w);
           if (t < now - 30 * 60 * 1000) continue;
           if (hourly.weather_code[i] === 45 || hourly.weather_code[i] === 48) { fog = true; break; }
         }
@@ -3158,11 +3250,13 @@ body.loop-still .pill.bad {
       if (fog) items.push({ cls: "", title: "大雾", body: "能见度较差。", level: "关注", lvCls: "warn", when: "今天", advice: "出行小心，驾驶减速" });
     }
     const box = $("alertList");
+    const notice = '<div class="alert-source">这里是模型风险提示与台风资料汇总，不是气象部门发布的官方预警。' +
+      (insights.freshness(w).stale ? '城市天气数据缺失或已过期，无法判断当前风险。' : '时间按所选城市当地时间解读；请同时关注当地气象部门信息。') + '</div>';
     if (!items.length) {
-      box.innerHTML = '<div class="empty"><strong>目前没有生效预警</strong>已监测：台风、高温、暴雨、大风、低温、大雾</div>';
+      box.innerHTML = notice + '<div class="empty"><strong>暂无可展示的风险提示</strong></div>';
       return;
     }
-    box.innerHTML = items.map(function (it, i) {
+    box.innerHTML = notice + items.map(function (it, i) {
       const sev = it.lvCls === "bad" ? "sev-bad" : "sev-warn";
       return '<div class="alert-card ' + (it.cls || "") + " " + sev + '" data-i="' + i + '" style="animation-delay:' + (i * 40) + 'ms"><div class="alert-head"><h3>' +
         it.title + '</h3><span class="pill ' + (it.lvCls || "warn") + '">' + (it.level || "关注") +
@@ -3187,7 +3281,7 @@ body.loop-still .pill.bad {
       const s = document.createElement("script");
       s.src = leafBase() + "leaflet.js";
       s.onload = () => resolve();
-      s.onerror = () => reject(new Error("map lib"));
+      s.onerror = () => { window.__leafP = null; link.remove(); s.remove(); reject(new Error("map lib")); };
       document.head.appendChild(s);
     });
     return window.__leafP;
@@ -3285,7 +3379,7 @@ body.loop-still .pill.bad {
   }
   function fmtPlayZh(d, isForecast) {
     if (!(d instanceof Date) || isNaN(d.getTime())) return "—";
-    const tz = "Asia/Shanghai";
+    const tz = state.weather && state.weather.timezone || 'Asia/Shanghai';
     const parts = ymdParts(d, tz);
     const get = function (t) { return partVal(parts, t); };
     const nowP = ymdParts(new Date(), tz);
@@ -3300,9 +3394,7 @@ body.loop-still .pill.bad {
       const hh = get("hour") || "00";
       return day + " " + hh + ":" + m + " · 预报";
     }
-    let h12 = h % 12;
-    if (h12 === 0) h12 = 12;
-    return day + " " + h12 + ":" + m + " " + periodName(h);
+    return day + " " + (get('hour') || '00') + ":" + m;
   }
   function buildTimeline() {
     const now = Math.floor(Date.now() / 1000);
@@ -3381,6 +3473,9 @@ body.loop-still .pill.bad {
       return;
     }
     const idx = Math.max(0, Math.min(n - 1, state.radarIdx));
+    ticks.setAttribute('aria-valuemin', '0');
+    ticks.setAttribute('aria-valuemax', String(n-1));
+    ticks.setAttribute('aria-valuenow', String(idx));
     const stamp = n + (state.fcUnavailable ? "-na" : "");
     if (ticks.getAttribute("data-n") !== stamp) {
       let html = "";
@@ -3408,6 +3503,8 @@ body.loop-still .pill.bad {
     const fr = frames[idx];
     const dt = fr && fr.time ? new Date(fr.time * 1000) : null;
     if (timeEl) timeEl.textContent = dt ? fmtPlayZh(dt, fr && fr.kind === "forecast") : "今天 —";
+    ticks.setAttribute('aria-valuetext', timeEl ? timeEl.textContent + '（所选城市时间）' : '时间未提供');
+    if (timeEl) timeEl.title = state.weather && state.weather.timezone || 'Asia/Shanghai';
     if (playBtn) {
       playBtn.disabled = n < 2;
       playBtn.innerHTML = state.radarPlaying ? ICON_PAUSE : ICON_PLAY;
@@ -3429,7 +3526,7 @@ body.loop-still .pill.bad {
     if (!times || !times.length) return -1;
     let best = -1, d = Infinity;
     for (let i = 0; i < times.length; i++) {
-      const tt = new Date(times[i]).getTime() / 1000;
+      const tt = weatherMs(times[i], {timezone:'Asia/Shanghai',utc_offset_seconds:28800}) / 1000;
       const dd = Math.abs(tt - unix);
       if (dd < d) { d = dd; best = i; }
     }
@@ -3464,7 +3561,9 @@ body.loop-still .pill.bad {
     }
     const solarHint = " · 晨昏线已显示";
     if (state.satLayer === "city") {
-      el.textContent = "高清城市底图" + solarHint + " · 云/降雨图层随缩放保留，可放大查看城市细节";
+      const future = playheadIsFuture();
+      const rain = future ? (ov('precip') ? (state.metLoadingKey ? '预报降水加载中' : state.fcUnavailable ? '预报降水暂不可用' : '预报降水') : '开启“降水”查看预报') : (state.radarFrames.length ? '雷达历史/实况' : '雷达暂不可用');
+      el.textContent = '高清影像 · ' + rain + ' · 卫星云图为独立观测，不随预报时间变化';
       return;
     }
     const fr = playheadFrame();
@@ -3492,7 +3591,7 @@ body.loop-still .pill.bad {
     if (cityH && cityH.time) {
       let bi = -1, bd = Infinity;
       for (let i = 0; i < cityH.time.length; i++) {
-        const dd = Math.abs(new Date(cityH.time[i]).getTime() / 1000 - fr.time);
+        const dd = Math.abs(weatherMs(cityH.time[i]) / 1000 - fr.time);
         if (dd < bd) { bd = dd; bi = i; }
       }
       if (bi >= 0 && bd < 50 * 60) {
@@ -3503,7 +3602,7 @@ body.loop-still .pill.bad {
       }
     }
     const prefix = "+" + Math.max(1, leadH) + "小时：";
-    if (maxMm >= 2 || (n && rainPts >= Math.max(2, n * 0.22))) el.textContent = prefix + "华东有雨" + solarHint;
+    if (maxMm >= 2 || (n && rainPts >= Math.max(2, n * 0.22))) el.textContent = prefix + "当前视野有降水信号" + solarHint;
     else if (maxPop >= 50 || maxMm >= 0.2) el.textContent = prefix + "局部有雨" + solarHint;
     else el.textContent = prefix + "降水不多" + solarHint;
   }
@@ -4235,7 +4334,7 @@ body.loop-still .pill.bad {
     const precipPane = state.satMap.getPane("precipPane") ? "precipPane" : "overlayPane";
     const future = playheadIsFuture();
     const unix = (playheadFrame() && playheadFrame().time) || (Date.now() / 1000);
-    const showFcPrecip = future && !state.fcUnavailable;
+    const showFcPrecip = future && ov("precip") && !state.fcUnavailable;
     pts.forEach(function (pt) {
       const m = metAt(pt, unix, future);
       if (showFcPrecip) {
@@ -4291,11 +4390,14 @@ body.loop-still .pill.bad {
     if (!state.satMap || !window.L) return;
     if (!needsMet()) { drawMetFields(); return; }
     const key = metBoundsKey();
+    if (state.metLoadingKey === key || (!force && Date.now() < state.metRetryAt)) return;
     if (!force && state.metGrid && state.metGrid.key === key && state.metGrid.points && state.metGrid.points.length) {
       drawMetFields();
       updateCaption();
       return;
     }
+    const request = ++state.metRequest;
+    state.metLoadingKey = key;
     const pts = sampleMetGrid();
     try {
       const lats = pts.map(function (p) { return p.lat.toFixed(3); }).join(",");
@@ -4305,6 +4407,7 @@ body.loop-still .pill.bad {
         "&hourly=precipitation,precipitation_probability,weather_code,wind_speed_10m,wind_gusts_10m,temperature_2m,relative_humidity_2m,wind_direction_10m,surface_pressure" +
         "&forecast_days=3&past_days=1&wind_speed_unit=ms&timezone=Asia/Shanghai";
       const data = await getJson(url);
+      if (request !== state.metRequest || key !== metBoundsKey()) return;
       const arr = Array.isArray(data) ? data : [data];
       arr.forEach(function (d, i) {
         if (!pts[i] || !d) return;
@@ -4319,9 +4422,12 @@ body.loop-still .pill.bad {
       state.metGrid = { key: key, points: pts };
       state.fcUnavailable = !arr.some(function (d) { return d && d.hourly && d.hourly.time; });
     } catch (e) {
-      const msg = String((e && e.message) || e);
-      if (msg.indexOf("429") >= 0) state.fcUnavailable = true;
-      if (!state.metGrid) state.metGrid = { key: "", points: pts };
+      if (request !== state.metRequest || key !== metBoundsKey()) return;
+      state.fcUnavailable = true;
+      state.metRetryAt = Date.now() + 30000;
+      if (!state.metGrid || state.metGrid.key !== key) state.metGrid = null;
+    } finally {
+      if (request === state.metRequest) state.metLoadingKey = '';
     }
     drawMetFields();
     updatePlayhead();
@@ -4463,7 +4569,6 @@ body.loop-still .pill.bad {
     });
     const radarMetaPromise = loadRadarMeta();
     await setSatBase(state.satLayer || "city");
-    setMapStatus("地图已就绪，天气图层正在补充…", true);
     ensureSatLabels();
     drawSolarTerminator();
     drawChinaOfficialRange();
@@ -4511,6 +4616,7 @@ body.loop-still .pill.bad {
     state.satBase = layer;
   }
   async function setSatHdOverlay(kind) {
+    const request = state.hdRequest = (state.hdRequest || 0) + 1;
     state.satHdOverlay = kind === "infrared" ? "infrared" : kind === "none" ? "none" : "truecolor";
     if (state.satHdOverlayObj && state.satMap) { state.satMap.removeLayer(state.satHdOverlayObj); state.satHdOverlayObj = null; }
     syncSatLy();
@@ -4527,14 +4633,16 @@ body.loop-still .pill.bad {
       url = gibsUrl("VIIRS_SNPP_CorrectedReflectance_TrueColor", "GoogleMapsCompatible_Level9", "jpg").replace("{time}", tm);
       attr = "NASA GIBS / VIIRS";
     }
-    if (!url || state.satLayer !== "city") return;
+    if (!url || state.satLayer !== "city" || request !== state.hdRequest) return;
     state.satHdOverlayObj = L.tileLayer(url, {
       pane: "cityPane", maxNativeZoom: maxNative, maxZoom: 19, tileSize: 256,
-      keepBuffer: 3, reuseTiles: true, updateWhenZooming: false, updateWhenIdle: true,
+      keepBuffer: 3, updateWhenZooming: false, updateWhenIdle: true,
       attribution: attr, opacity: Math.min(.52, state.satOp)
     }).addTo(state.satMap);
   }
   async function setSatBase(name) {
+    const request = state.baseRequest = (state.baseRequest || 0) + 1;
+    state.hdRequest = (state.hdRequest || 0) + 1;
     state.satLayer = name || "city";
     syncSatLy();
     if (!state.satMap) return;
@@ -4568,6 +4676,7 @@ body.loop-still .pill.bad {
       }
       state.satTimeFrames = frames;
     }
+    if (request !== state.baseRequest) return;
     if (!url) {
       await ensureSatFallback();
       return;
@@ -4579,13 +4688,14 @@ body.loop-still .pill.bad {
     }
     state.satLayerObj = L.tileLayer(url, {
       maxNativeZoom: maxZ || 7, maxZoom: mapMaxZoom, tileSize: 256,
-      keepBuffer: 3, reuseTiles: true, updateWhenZooming: false, updateWhenIdle: true,
+      keepBuffer: 3, updateWhenZooming: false, updateWhenIdle: true,
       attribution: attr, opacity: state.satOp
     });
     let errN = 0;
+    state.satLayerObj.once('tileload', function () { setMapStatus('底图已显示', true); });
     state.satLayerObj.on("tileerror", function () {
       errN++;
-      if (errN === 3) ensureSatFallback();
+      if (errN === 3) { setMapStatus('部分底图加载失败，可切换底图或重试', false); ensureSatFallback(); }
     });
     state.satLayerObj.addTo(state.satMap);
     ensureSatLabels();
@@ -4616,10 +4726,13 @@ body.loop-still .pill.bad {
       state.radarFrames = state.radarFrames || [];
       state.precipFrames = state.precipFrames || [];
     }
-    const first = !(state.timeline && state.timeline.length);
+    const previous = state.timeline && state.timeline[state.radarIdx];
     buildTimeline();
-    if (first) snapPlayheadToNow();
-    else state.radarIdx = Math.max(0, Math.min(state.timeline.length - 1, state.radarIdx));
+    if (!previous || previous.kind === 'now') snapPlayheadToNow();
+    else {
+      const nearest = nearestFrame(state.timeline, previous.time);
+      state.radarIdx = Math.max(0, state.timeline.indexOf(nearest));
+    }
   }
   function applySatOverlays() {
     if (!state.satMap) return;
@@ -4633,7 +4746,7 @@ body.loop-still .pill.bad {
       const f = nearestFrame(state.radarFrames, t) || state.radarFrames[state.radarFrames.length - 1];
       state.satRadarLayer = L.tileLayer(f.url, {
         pane: "radarPane", opacity: 0.65, maxZoom: 19, maxNativeZoom: 7,
-        keepBuffer: 3, reuseTiles: true, updateWhenZooming: false, updateWhenIdle: true,
+        keepBuffer: 3, updateWhenZooming: false, updateWhenIdle: true,
         attribution: "RainViewer", tileSize: 256
       }).addTo(state.satMap);
     }
@@ -4641,7 +4754,7 @@ body.loop-still .pill.bad {
       const f = nearestFrame(state.precipFrames, t) || state.precipFrames[state.precipFrames.length - 1];
       state.satPrecipLayer = L.tileLayer(f.url, {
         pane: "precipPane", opacity: 0.55, maxZoom: 19, maxNativeZoom: 7,
-        keepBuffer: 3, reuseTiles: true, updateWhenZooming: false, updateWhenIdle: true,
+        keepBuffer: 3, updateWhenZooming: false, updateWhenIdle: true,
         attribution: "RainViewer", tileSize: 256
       }).addTo(state.satMap);
     }
@@ -4666,7 +4779,7 @@ body.loop-still .pill.bad {
         if (f && state.satPrecipLayer.setUrl) state.satPrecipLayer.setUrl(f.url);
       }
     }
-    if (nowFuture || wasFuture !== nowFuture) {
+      if (nowFuture || wasFuture !== nowFuture) {
       // Forecast precipitation is a vector field, so fetch it at the moment
       // the timeline enters the future instead of leaving an empty map.
       loadMetGrid(false);
@@ -4994,8 +5107,14 @@ body.loop-still .pill.bad {
         getJson("https://geocoding-api.open-meteo.com/v1/search?" + queries + "&language=en")
       ]);
       if (requestId !== state.citySearchRequest) return;
-      const rows = pair[0].results || [], englishRows = pair[1].results || [];
-      rows.forEach(function (r, i) { if (!isChinaResult(r) && englishRows[i] && englishRows[i].name) { r.name_en = englishRows[i].name; r.name_local = r.name; } });
+      const zhRows = pair[0].results || [], englishRows = pair[1].results || [];
+      const rows = /^[\x00-\x7F]+$/.test(q) ? englishRows : zhRows;
+      rows.forEach(function (r) {
+        const en = englishRows.find(x => x.id === r.id);
+        const zh = zhRows.find(x => x.id === r.id);
+        if (isChinaResult(r) && zh) r.name = zh.name;
+        else if (en) { r.name_en = en.name; r.name = en.name; }
+      });
       if (!rows.length) { box.innerHTML = '<div class="empty">没有找到这个地名</div>'; return; }
       box.innerHTML = rows.map((r, i) => '<button class="city-row" data-i="' + i + '" type="button">' + placeNameFromResult(r) +
         "<small>" + [r.admin1, r.country].filter(Boolean).join(" · ") + "</small></button>").join("");
@@ -5027,6 +5146,11 @@ body.loop-still .pill.bad {
     box.querySelectorAll(".recent-row").forEach((el, i) => el.addEventListener("click", () => pickCity(state.recents[i])));
   }
   function pickCity(c) {
+    state.modelRequest++;
+    state.modelLoadingKey = '';
+    state.modelCache = null;
+    $("modelResults").textContent = '';
+    $("modelRetry").disabled = false;
     c = Object.assign({}, c, { isChina: c.isChina != null ? !!c.isChina : String(c.country_code || "").toLowerCase() === "cn" || c.country === "中国" || c.country === "China" || /省|市|自治区|特别行政区|台湾|香港|澳门/.test(c.admin || "") });
     saveCity(c);
     clearRoute(true);
@@ -5034,6 +5158,7 @@ body.loop-still .pill.bad {
     closeSheet("citySheet");
     loadWeather();
     loadHistory();
+    loadModelComparison(false);
     const go = function () {
       if (state.satMap && c.lat != null) {
         const z = state.satLayer === "city" ? Math.max(state.satMap.getZoom ? state.satMap.getZoom() : 12, 12) : Math.max(state.satMap.getZoom ? state.satMap.getZoom() : 6, 6);
@@ -5141,6 +5266,14 @@ body.loop-still .pill.bad {
     if (cap) cap.textContent = "高清城市底图 · 已放大到城市细节，可继续放大至 19 级";
   }
   function bind() {
+    document.querySelectorAll('[data-activity]').forEach(button => button.addEventListener('click', function () {
+      state.activity = button.dataset.activity;
+      document.querySelectorAll('[data-activity]').forEach(b => b.setAttribute('aria-pressed', String(b === button)));
+      renderOutdoor();
+    }));
+    $('modelCompare').addEventListener('toggle', function () { if (this.open) loadModelComparison(false); });
+    $('modelRetry').addEventListener('click', function () { loadModelComparison(true); });
+    $('satNow').addEventListener('click', function () { stopRadarLoop(); snapPlayheadToNow(); applySatOverlays(); drawMetFields(); });
     document.querySelectorAll(".nav-item").forEach((b) => b.addEventListener("click", () => showTab(b.getAttribute("data-tab"))));
     $("cityBtn").addEventListener("click", () => {
       renderHotCities();
@@ -5359,12 +5492,23 @@ body.loop-still .pill.bad {
     });
     const ticks = $("satTicks");
     if (ticks) ticks.addEventListener("click", function (e) {
+      stopRadarLoop();
       const frames = playFrames();
       if (!frames.length) return;
       const rect = ticks.getBoundingClientRect();
       const t = (e.clientX - rect.left) / Math.max(1, rect.width);
       showRadarFrame(Math.round(t * (frames.length - 1)));
     });
+    if (ticks) {
+      ticks.tabIndex = 0;
+      ticks.addEventListener('keydown', function (e) {
+        if (!['ArrowLeft','ArrowRight','Home','End'].includes(e.key)) return;
+        e.preventDefault(); stopRadarLoop();
+        const n = playFrames().length;
+        const index = e.key === 'Home' ? 0 : e.key === 'End' ? n-1 : state.radarIdx + (e.key === 'ArrowRight' ? 1 : -1);
+        showRadarFrame(Math.max(0,Math.min(n-1,index)));
+      });
+    }
     let timer = 0;
     $("citySearch").addEventListener("input", () => {
       clearTimeout(timer);
@@ -5412,6 +5556,16 @@ body.loop-still .pill.bad {
   }
   window.addEventListener("resize", function () { invalidateMaps(); resizeParticles(); syncSatRail(); });
   document.addEventListener("visibilitychange", syncMotion);
+  function refreshTimeSensitiveCards() {
+    if (document.hidden) return;
+    updateWeatherStamp(state.weather, state.weatherCached);
+    renderNext2Hours(state.weather);
+    renderExtremeAlert(state.weather || {});
+    renderOutdoor();
+  }
+  window.addEventListener('offline', refreshTimeSensitiveCards);
+  window.addEventListener('online', function () { refreshTimeSensitiveCards(); loadWeather(); });
+  setInterval(refreshTimeSensitiveCards, 60000);
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
   else init();
 })();
