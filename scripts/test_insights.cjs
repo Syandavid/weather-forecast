@@ -120,3 +120,12 @@ test('a model response from the previous city cannot replace the current city',a
   pending.slice(0,3).forEach(resolve=>resolve(modelDaily));await a;
   assert.equal(nodes.modelResults.innerHTML,current);assert.match(current,/30°/);
 });
+
+test('summary labels next-day rain explicitly and missing probability stays unknown',()=>{
+  const clockNow=Date.parse('2026-09-05T23:00Z');
+  const ctx={Date:{now:()=>clockNow},weatherMs:(iso,w)=>wx.epoch(iso,w),wxPhrase:()=> '晴',forecastTimeLabel:iso=>iso.startsWith('2026-09-06')?'明天 12:00':'今天'};
+  vm.createContext(ctx);vm.runInContext(html.slice(html.indexOf('  function todaySummary('),html.indexOf('  function lifeIndices(')),ctx);
+  const w={timezone:'UTC',daily:{temperature_2m_max:[25]},hourly:{time:['2026-09-05T23:00','2026-09-06T12:00'],precipitation_probability:[0,74]}};
+  assert.match(ctx.todaySummary(w),/明天 12:00附近降水概率到 74%/);
+  w.hourly.precipitation_probability=[null,null];assert.match(ctx.todaySummary(w),/数据暂缺/);
+});

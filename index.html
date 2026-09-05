@@ -2272,23 +2272,22 @@ body.loop-still .pill.bad {
     let s1 = "今天" + wxPhrase(code, true);
     if (hi != null) s1 += "，最高 " + Math.round(hi) + "°。";
     else s1 += "。";
-    let rainPeak = 0, rainH = null;
+    let rainPeak = 0, rainIso = null, rainKnown = false;
     const now = Date.now();
     for (let i = 0; i < (hourly.time || []).length; i++) {
       const tm = weatherMs(hourly.time[i], w);
       if (tm < now - 30 * 60 * 1000 || tm > now + 24 * 3600 * 1000) continue;
-      const pop = hourly.precipitation_probability ? (hourly.precipitation_probability[i] || 0) : 0;
-      if (pop > rainPeak) { rainPeak = pop; rainH = Number(hourly.time[i].slice(11, 13)); }
+      const pop = (hourly.precipitation_probability || [])[i];
+      if (!Number.isFinite(pop)) continue;
+      rainKnown = true;
+      if (pop > rainPeak) { rainPeak = pop; rainIso = hourly.time[i]; }
     }
     let s2;
-    if (rainPeak >= 50 && rainH != null) {
-      let win = periodName(rainH);
-      if (rainH >= 13 && rainH < 17) win = "午后到傍晚";
-      else if (rainH >= 17) win = "傍晚到夜间";
-      else if (rainH < 11) win = "上午";
-      s2 = win + "降水概率到 " + rainPeak + "%，出门带伞。";
-    } else if (rainPeak >= 30) s2 = "有短时降水可能，备把伞更稳妥。";
-    else s2 = "降水不多。";
+    if (rainPeak >= 50 && rainIso != null) {
+      s2 = forecastTimeLabel(rainIso) + "附近降水概率到 " + Math.round(rainPeak) + "%，出门带伞。";
+    } else if (!rainKnown) s2 = "未来24小时降水概率数据暂缺。";
+    else if (rainPeak >= 30) s2 = "未来24小时有降水可能，备把伞更稳妥。";
+    else s2 = "未来24小时降水概率较低。";
     const uv = (daily.uv_index_max || [])[0];
     let s3;
     if (uv >= 8) s3 = "紫外线很强，中午少暴晒。";
