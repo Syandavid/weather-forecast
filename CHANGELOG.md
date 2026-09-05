@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+- v27: Replace the 96px forecast overlay with aspect-aware bounded high-resolution rendering, denser regional sampling, continuous precipitation colors/alpha and bounded shape-preserving interpolation.
+- Move raster generation and supported PNG encoding to a worker; retain eight frames, skip superseded times, and keep the previous frame explicitly labeled during rendering. Preserve unknown data and original source-node values.
+
 - v26: Wire satellite observations and forecast cloud/rain overlays to the map playhead. Default radar selection now requests future precipitation; replace sparse rain dots with a georeferenced interpolated field and separately configurable forecast cloud cover.
 - Hide observations in future mode, restore on return, report real infrared/true-color time granularity, and stop using infrared brightness as precipitation. Preserve map overzoom and missing-data states.
 

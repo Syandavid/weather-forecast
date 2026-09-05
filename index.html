@@ -1749,7 +1749,7 @@ body.loop-still .pill.bad {
   </div>
 </div>
 <script src="assets/weather-insights.js?v=25"></script>
-<script src="assets/map-weather.js?v=26"></script>
+<script src="assets/map-weather.js?v=27.1"></script>
 <script>
 (function () {
   const insights = window.WeatherInsights;
@@ -3571,7 +3571,7 @@ body.loop-still .pill.bad {
       if (future) {
         const active=ov('radar')||ov('precip')||ov('cloud');
         const fields=[ov('cloud')?'白灰：云量':'',ov('radar')||ov('precip')?'蓝紫：降水 mm/h':''].filter(Boolean).join('；');
-        const status=!active?'云量和降水图层已关闭':state.metLoadingKey?'云雨预报加载中':state.fcUnavailable||!state.forecastRasterKnown?'当前时段/视野预报数据暂缺':'逐小时预报 · '+fields;
+        const status=!active?'云量和降水图层已关闭':state.metLoadingKey?'云雨预报加载中':state.forecastRenderError?'云雨绘图暂不可用，请刷新':state.forecastRendering?'云雨绘制中'+(state.forecastRaster?'（暂显示上一帧）':''):state.fcUnavailable||!state.forecastRasterKnown?'当前时段/视野预报数据暂缺':'逐小时预报 · '+fields;
         el.textContent=status+' · 模型采样插值，非未来卫星实拍';
       } else {
         const fr=playheadFrame(), radar=nearestFrame(state.radarFrames,fr&&fr.time||Date.now()/1000);
@@ -4288,14 +4288,15 @@ body.loop-still .pill.bad {
     south=Math.max(-85,south); north=Math.min(85,north);
     const latSpan = Math.max(0.0001, north - south);
     const lonSpan = Math.max(0.0001, east - west);
-    let step = 1.75;
-    const maxPoints = state.satMap.getZoom() >= 8 ? 96 : state.satMap.getZoom() >= 7 ? 72 : 48;
-    let nLat = Math.max(2, Math.round(latSpan / step));
-    let nLon = Math.max(2, Math.round(lonSpan / step));
-    while ((nLat + 1) * (nLon + 1) > maxPoints && step < 360) {
-      step += 0.25;
-      nLat = Math.max(2, Math.round(latSpan / step));
-      nLon = Math.max(2, Math.round(lonSpan / step));
+    const maxPoints = state.satMap.getZoom() >= 8 ? 96 : state.satMap.getZoom() >= 5 ? 81 : 48;
+    const latKm=latSpan*111,lonKm=lonSpan*111*Math.max(.1,Math.cos((south+north)*Math.PI/360));
+    // Spend the bounded request budget across the actual area, rather than a
+    // fixed 1.75-degree spacing. Sampling is not native model resolution.
+    let stepKm=Math.max(12,Math.sqrt(latKm*lonKm/maxPoints));
+    let nLat=Math.max(2,Math.ceil(latKm/stepKm)),nLon=Math.max(2,Math.ceil(lonKm/stepKm));
+    while ((nLat+1)*(nLon+1)>maxPoints) {
+      stepKm*=1.05;
+      nLat=Math.max(2,Math.ceil(latKm/stepKm));nLon=Math.max(2,Math.ceil(lonKm/stepKm));
     }
     const pts = [];
     for (let i = 0; i <= nLat && pts.length < maxPoints; i++) {
@@ -4338,8 +4339,41 @@ body.loop-still .pill.bad {
     if (ms < 20) return "#ff8a3d";
     return "#ff5a5f";
   }
+  function finishForecastRender(result) {
+    const job=state.forecastRenderJob;
+    if(!job||job.id!==result.id)return;
+    state.forecastRenderJob=null;
+    if(result.error&&job.data===state.metGrid){state.forecastRenderError=true;state.forecastRendering=false;drawMetFields();updateCaption();return;}
+    if(job.data===state.metGrid&&state.forecastRenderCache){
+      const started=performance.now();let url=result.url||null;
+      if(result.known&&!url){
+        const canvas=document.createElement('canvas');canvas.width=job.width;canvas.height=job.height;
+        const ctx=canvas.getContext('2d'),img=ctx.createImageData(job.width,job.height);img.data.set(result.pixels);ctx.putImageData(img,0,0);url=canvas.toDataURL();
+      }
+      state.forecastRenderCache.set(job.key,{url,known:result.known,ms:result.ms,uiMs:Math.round(performance.now()-started)});
+      if(state.forecastRenderCache.size>8)state.forecastRenderCache.delete(state.forecastRenderCache.keys().next().value);
+    }
+    // Only draw the currently selected time. Intermediate queued times are
+    // intentionally skipped, so dragging cannot build up a render backlog.
+    drawMetFields();updateCaption();
+  }
+  function startForecastRender(job) {
+    state.forecastRenderJob=job;
+    if(!state.forecastWorker&&!state.forecastWorkerDisabled&&window.Worker){
+      try{
+        state.forecastWorker=new Worker('assets/map-weather-worker.js?v=27.1');
+        state.forecastWorker.onmessage=e=>finishForecastRender(e.data);
+        state.forecastWorker.onerror=function(){state.forecastWorker.terminate();state.forecastWorker=null;state.forecastWorkerDisabled=true;const current=state.forecastRenderJob;if(current)finishForecastRender({id:current.id,error:true});};
+      }catch(_){state.forecastWorker=null;}
+    }
+    const payload={id:job.id,grid:job.grid,width:job.width,height:job.height,bounds:job.bounds,clouds:job.clouds,rain:job.rain};
+    if(state.forecastWorker){state.forecastWorker.postMessage(payload);return;}
+    // Old browsers without Worker still render correctly, at their own pace.
+    setTimeout(function(){try{const t=performance.now(),r=window.MapWeather.raster(job.grid,job.width,job.height,job.bounds,job.clouds,job.rain);finishForecastRender({id:job.id,pixels:r.pixels,known:r.known,ms:Math.round(performance.now()-t)});}catch(_){finishForecastRender({id:job.id,error:true});}},0);
+  }
   function drawForecastRaster() {
     state.forecastRasterKnown=0;
+    state.forecastRendering=false;
     const clear=function(){if(state.forecastRaster){state.satMap.removeLayer(state.forecastRaster);state.forecastRaster=null;}};
     const pts=state.metGrid&&state.metGrid.points||[];
     // Keep the previous georeferenced field while zooming/loading a denser
@@ -4348,18 +4382,27 @@ body.loop-still .pill.bad {
     const rows=1+Math.max(...pts.map(p=>p.row)), cols=1+Math.max(...pts.map(p=>p.col));
     if(!Number.isFinite(rows)||rows<2||cols<2||rows*cols!==pts.length){clear();return;}
     const bounds={south:pts[0].lat,north:pts[pts.length-1].lat,west:pts[0].unwrappedLon,east:pts[pts.length-1].unwrappedLon};
-    const fr=playheadFrame(), grid=Array.from({length:rows},()=>[]);
-    pts.forEach(p=>{grid[p.row][p.col]=metAt(p,fr.time,true);});
-    const size=96, result=window.MapWeather.raster(grid,size,size,bounds,ov('cloud'),ov('radar')||ov('precip'));
-    if(!result.known){clear();return;}
-    const canvas=document.createElement('canvas');canvas.width=size;canvas.height=size;
-    const ctx=canvas.getContext('2d'), img=ctx.createImageData(size,size);img.data.set(result.pixels);ctx.putImageData(img,0,0);
-    const area=[[bounds.south,bounds.west],[bounds.north,bounds.east]], url=canvas.toDataURL();
+    const fr=playheadFrame(), view=state.satMap.getSize(), size=window.MapWeather.renderSize(view.x,view.y,window.devicePixelRatio||1);
+    if(state.forecastRenderGrid!==state.metGrid){state.forecastRenderGrid=state.metGrid;state.forecastRenderCache=new Map();state.forecastRenderError=false;}
+    const key=[fr.time,ov('cloud'),ov('radar')||ov('precip'),size.width,size.height].join('|');
+    let rendered=state.forecastRenderCache.get(key);
+    if(!rendered){
+      if(state.forecastRenderError){clear();return;}
+      state.forecastRendering=true;
+      if(!state.forecastRenderJob){
+        const grid=Array.from({length:rows},()=>[]);pts.forEach(p=>{grid[p.row][p.col]=metAt(p,fr.time,true);});
+        const id=state.forecastRenderSeq=(state.forecastRenderSeq||0)+1;
+        startForecastRender({id,key,data:state.metGrid,grid,width:size.width,height:size.height,bounds,clouds:ov('cloud'),rain:ov('radar')||ov('precip')});
+      }
+      return;
+    }
+    if(!rendered.known){clear();return;}
+    const area=[[bounds.south,bounds.west],[bounds.north,bounds.east]],url=rendered.url;
     if(state.forecastRaster)state.forecastRaster.setBounds(area).setUrl(url);
     else state.forecastRaster=L.imageOverlay(url,area,{pane:'precipPane',interactive:false,opacity:1,alt:'逐小时云量与降水模型预报'}).addTo(state.satMap);
-    state.forecastRasterKnown=result.known;
+    state.forecastRasterKnown=rendered.known;
     const el=state.forecastRaster.getElement();
-    if(el){el.dataset.forecastTime=String(fr.time);el.dataset.clouds=String(ov('cloud'));el.dataset.rain=String(ov('radar')||ov('precip'));}
+    if(el){el.dataset.forecastTime=String(fr.time);el.dataset.clouds=String(ov('cloud'));el.dataset.rain=String(ov('radar')||ov('precip'));el.dataset.rasterSize=size.width+'x'+size.height;el.dataset.sampleGrid=cols+'x'+rows;el.dataset.renderMs=String(rendered.ms);el.dataset.uiMs=String(rendered.uiMs);}
   }
   function drawMetFields() {
     if (!state.satMap || !window.L) return;
@@ -4437,7 +4480,7 @@ body.loop-still .pill.bad {
       const url = "https://api.open-meteo.com/v1/forecast?latitude=" + lats + "&longitude=" + lons +
         "&current=temperature_2m,relative_humidity_2m,wind_speed_10m,wind_direction_10m,surface_pressure" +
         "&hourly=precipitation,precipitation_probability,cloud_cover,weather_code,wind_speed_10m,wind_gusts_10m,temperature_2m,relative_humidity_2m,wind_direction_10m,surface_pressure" +
-        "&forecast_days=3&past_days=1&wind_speed_unit=ms&timezone=Asia/Shanghai";
+        "&forecast_days=3&past_days=1&wind_speed_unit=ms&cell_selection=nearest&timezone=Asia/Shanghai";
       const data = await getJson(url);
       if (request !== state.metRequest || key !== metBoundsKey()) return;
       const arr = Array.isArray(data) ? data : [data];
@@ -4840,6 +4883,7 @@ body.loop-still .pill.bad {
   function playTick() {
     state.radarTimer = null;
     if (!state.radarPlaying) return;
+    if(state.forecastRendering){schedulePlayTick(150);return;}
     const frames = playFrames();
     if (frames.length < 2) { stopRadarLoop(); updatePlayhead(); return; }
     const prev = frames[state.radarIdx];

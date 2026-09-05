@@ -1,9 +1,10 @@
-const CACHE = "weather-forecast-v26";
+const CACHE = "weather-forecast-v27.1";
 const ASSETS = [
   "./",
   "./index.html",
   "./assets/weather-insights.js?v=25",
-  "./assets/map-weather.js?v=26",
+  "./assets/map-weather.js?v=27.1",
+  "./assets/map-weather-worker.js?v=27.1",
   "./manifest.webmanifest",
   "./icon-192-v3.png",
   "./icon-512-v3.png",

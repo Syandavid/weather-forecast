@@ -63,3 +63,58 @@ test('city-detail panning gets a new viewport cache key',()=>{
  const c={state:{satMap:{getBounds:()=>bounds,getZoom:()=>19}}};vm.createContext(c);vm.runInContext(source('metBoundsKey','sampleMetGrid'),c);
  const first=c.metBoundsKey();lon+=.002;assert.notEqual(c.metBoundsKey(),first);
 });
+
+test('rain color and alpha are continuous across former hard thresholds',()=>{
+ const color=mm=>{const v={cloud:0,mm},g=[[v,v],[v,v]];return mw.raster(g,2,2,{south:20,north:21},false,true).pixels.slice(0,4);};
+ for(const threshold of [.08,.5,2,6,15]){
+  const a=color(threshold-.001),b=color(threshold+.001);
+  for(let k=0;k<4;k++)assert.ok(Math.abs(a[k]-b[k])<=3,`jump at ${threshold}, channel ${k}`);
+ }
+ assert.equal(color(0)[3],0);assert.ok(color(4)[3]>color(.2)[3]);
+});
+test('responsive raster is much finer than 96px while respecting pixel and aspect budgets',()=>{
+ for(const [w,h,dpr] of [[1280,720,1],[390,740,3],[2560,1440,2]]){
+  const s=mw.renderSize(w,h,dpr);assert.ok(s.width>300&&s.height>300);
+  assert.ok(s.width*s.height<=400000);assert.ok(Math.max(s.width,s.height)<=1024);
+  assert.ok(Math.abs(s.width/s.height-w/h)<.01);
+ }
+});
+test('regional viewport uses denser samples without exceeding existing request limit',()=>{
+ const bounds={pad(){return this;},getSouth:()=>28,getNorth:()=>33,getWest:()=>118,getEast:()=>124};
+ const c={state:{satMap:{getBounds:()=>bounds,getZoom:()=>6}}};vm.createContext(c);vm.runInContext(source('sampleMetGrid','tempColor'),c);
+ const pts=c.sampleMetGrid();assert.ok(pts.length>=49&&pts.length<=81);assert.equal(pts.length,(1+Math.max(...pts.map(p=>p.row)))*(1+Math.max(...pts.map(p=>p.col))));
+});
+
+test('worker returns transferable raster pixels and echoes the request ID',()=>{
+ let posted;const self={MapWeather:mw,postMessage:r=>posted=r};
+ const c={self,importScripts(){},performance:{now:()=>0}};vm.createContext(c);vm.runInContext(fs.readFileSync(path.join(__dirname,'../assets/map-weather-worker.js'),'utf8'),c);
+ const v={cloud:50,mm:1};self.onmessage({data:{id:7,grid:[[v,v],[v,v]],width:8,height:8,bounds:{south:20,north:21},clouds:true,rain:true}});
+ assert.equal(posted.id,7);assert.equal(posted.known,64);assert.equal(posted.pixels.length,256);
+ self.onmessage({data:{id:8,grid:null}});assert.equal(posted.id,8);assert.equal(posted.error,true);
+});
+test('worker completions cannot overwrite a newer viewport and keep a bounded cache',()=>{
+ const data={},cache=new Map();let draws=0;
+ const state={metGrid:data,forecastRenderCache:cache};
+ const c={state,performance:{now:()=>0},drawMetFields(){draws++;},updateCaption(){}};vm.createContext(c);vm.runInContext(source('finishForecastRender','startForecastRender'),c);
+ for(let i=0;i<12;i++){state.forecastRenderJob={id:i,key:String(i),data};c.finishForecastRender({id:i,known:0,ms:10});}
+ assert.equal(cache.size,8);assert.ok(!cache.has('0'));
+ state.forecastRenderJob={id:99,key:'old',data:{}};c.finishForecastRender({id:99,known:0,ms:10});assert.ok(!cache.has('old'));
+ state.forecastRenderJob={id:100,key:'current',data};c.finishForecastRender({id:99,known:0,ms:10});assert.equal(state.forecastRenderJob.id,100);assert.equal(draws,13);
+});
+
+test('shape-preserving refinement keeps source nodes and does not invent rain extremes or fill gaps',()=>{
+ const g=[[{cloud:0,mm:0},{cloud:70,mm:2},{cloud:100,mm:0}],[{cloud:50,mm:1},{cloud:100,mm:4},{cloud:20,mm:1}]];
+ const r=mw.refineGrid(g);assert.equal(r.length,5);assert.equal(r[0].length,9);
+ for(let y=0;y<g.length;y++)for(let x=0;x<g[0].length;x++){assert.equal(r[y*4][x*4].mm,g[y][x].mm);assert.equal(r[y*4][x*4].cloud,g[y][x].cloud);}
+ assert.ok(r.flat().every(v=>v.mm>=0&&v.mm<=4&&v.cloud>=0&&v.cloud<=100));
+ g[0][1].mm=null;const missing=mw.refineGrid(g);assert.equal(missing[0][2].mm,null);assert.equal(missing[0][4].mm,null);
+});
+
+test('worker encodes offscreen when available instead of sending work back to UI',async()=>{
+ let posted;const self={MapWeather:mw,postMessage:r=>posted=r};
+ class Canvas {getContext(){return {createImageData:(w,h)=>({data:new Uint8ClampedArray(w*h*4)}),putImageData(){}};}async convertToBlob(){return {};}}
+ class Reader {readAsDataURL(){return 'data:image/png;base64,fixture';}}
+ const c={self,OffscreenCanvas:Canvas,FileReaderSync:Reader,importScripts(){},performance:{now:()=>0}};vm.createContext(c);vm.runInContext(fs.readFileSync(path.join(__dirname,'../assets/map-weather-worker.js'),'utf8'),c);
+ const v={cloud:50,mm:1};await self.onmessage({data:{id:9,grid:[[v,v],[v,v]],width:8,height:8,bounds:{south:20,north:21},clouds:true,rain:true}});
+ assert.equal(posted.url,'data:image/png;base64,fixture');assert.equal(posted.pixels,undefined);assert.equal(posted.id,9);
+});
