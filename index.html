@@ -1395,6 +1395,14 @@ body.loop-still .pill.bad {
 .sat-city-pill { box-shadow:0 2px 10px rgba(0,0,0,.22); }
 .sat-wind-barb.wind-flow { animation: windFlow 1.7s ease-in-out infinite; }
 .wind-gust { stroke:#ffd166; stroke-dasharray:2 2; }
+.sat-map-status { position:absolute; left:50%; top:50%; z-index:700; transform:translate(-50%,-50%); pointer-events:none; padding:9px 13px; border:1px solid rgba(126,197,255,.35); border-radius:999px; background:rgba(7,17,31,.82); color:#eaf3ff; font-size:12px; box-shadow:0 8px 24px rgba(0,0,0,.25); opacity:0; transition:opacity .2s ease; white-space:nowrap; }
+.sat-map-status.show { opacity:1; }
+.sat-map-status.done { opacity:0; }
+.city-favorite-current { margin-top:8px; color:var(--text); }
+.favorite-empty { margin:8px 0; }
+.favorite-row { display:flex; align-items:center; gap:7px; margin:6px 0; }
+.favorite-row .recent-row { flex:1; margin:0; }
+.favorite-toggle { flex:none; min-width:36px; min-height:36px; border:1px solid var(--line); border-radius:10px; background:rgba(255,255,255,.06); color:#ffd166; font-size:18px; cursor:pointer; }
 @keyframes windFlow { 0%,100% { transform: translateY(2px) rotate(var(--wind-rot,0deg)); opacity:.62; } 50% { transform: translateY(-2px) rotate(var(--wind-rot,0deg)); opacity:1; } }
 .sat-legend-body .lg-rain { display:inline-block; width:22px; height:8px; border-radius:4px; margin-right:5px; background:linear-gradient(90deg,#7dd3fc,#0ea5e9,#7c3aed); }
 .sat-legend-body .lg-city { display:inline-block; width:9px; height:9px; border-radius:50%; background:#4ea2ff; border:2px solid white; margin-right:8px; }
@@ -1495,6 +1503,7 @@ body.loop-still .pill.bad {
     <section class="panel" id="sat">
       <div class="map-wrap">
         <div id="satMap" style="height:100%;width:100%"></div>
+        <div class="sat-map-status show" id="satMapStatus" aria-live="polite">正在准备地图…</div>
         <div id="sat3dMap" aria-label="三维城市地图"></div>
         <div class="sat-hud" aria-hidden="false">
           <button class="sat-wind" id="satWind" type="button" title="定位到所选城市">
@@ -1669,9 +1678,12 @@ body.loop-still .pill.bad {
     <h2>选择城市</h2>
     <input class="search" id="citySearch" placeholder="搜索城市，例如 杭州" autocomplete="off">
     <button class="city-row" id="sheetLocate" type="button">定位到当前位置</button>
+    <button class="city-row city-favorite-current" id="toggleFavorite" type="button">☆ 收藏当前城市</button>
     <div id="geoHint" class="empty" style="margin:12px 0">也可在顶部使用定位</div>
     <div class="sec-title">热门城市</div>
     <div class="hot-cities" id="hotCities"></div>
+    <div class="sec-title">收藏</div>
+    <div id="favorites"></div>
     <div class="sec-title">最近</div>
     <div id="recents"></div>
     <div class="sec-title" id="cityResultsTitle" hidden>搜索结果</div>
@@ -1701,6 +1713,7 @@ body.loop-still .pill.bad {
 (function () {
   const CITY_KEY = "weather-forecast-city";
   const REC_KEY = "weather-forecast-recents";
+  const FAV_KEY = "weather-forecast-favorites";
   const WX_CACHE_KEY = "weather-forecast-wx-cache";
   const ESRI_DARK = "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}";
   const ESRI_IMAGERY = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
@@ -1768,6 +1781,7 @@ body.loop-still .pill.bad {
     satRailUser: false,
     satStormsOpen: false,
     selected: null,
+    favorites: [],
     recents: [],
     satMap: null,
     sat3dMap: null,
@@ -1823,7 +1837,8 @@ body.loop-still .pill.bad {
     historyZone: "",
     autoRefreshTimer: 0,
     stormRefreshTimer: 0,
-    radarRefreshTimer: 0
+    radarRefreshTimer: 0,
+    mapStatusTimer: 0
   };
   const $ = (id) => document.getElementById(id);
   function ov(k) { return !!(state.overlays && state.overlays[k]); }
@@ -2316,6 +2331,57 @@ body.loop-still .pill.bad {
     $("cityBtn").innerHTML = c.name + " <small>选择城市</small>";
     update3DCityMarker();
     sync3DPlaceLanguage();
+    syncFavoriteButton();
+  }
+  function cityKey(c) {
+    return c ? (Math.round(Number(c.lat) * 10000) / 10000) + "," + (Math.round(Number(c.lon) * 10000) / 10000) : "";
+  }
+  function isFavorite(c) {
+    const key = cityKey(c || state.city);
+    return !!key && state.favorites.some(function (x) { return cityKey(x) === key; });
+  }
+  function syncFavoriteButton() {
+    const btn = $("toggleFavorite");
+    if (!btn) return;
+    const on = isFavorite(state.city);
+    btn.textContent = (on ? "★" : "☆") + " " + (on ? "已收藏当前城市" : "收藏当前城市");
+    btn.setAttribute("aria-pressed", on ? "true" : "false");
+  }
+  function renderFavorites() {
+    const box = $("favorites");
+    if (!box) return;
+    if (!state.favorites.length) {
+      box.innerHTML = '<div class="empty favorite-empty">收藏城市会出现在这里</div>';
+      syncFavoriteButton();
+      return;
+    }
+    box.innerHTML = state.favorites.map(function (c, i) {
+      return '<div class="favorite-row"><button class="recent-row" data-favorite-index="' + i + '" type="button">' + c.name +
+        (c.admin ? "<small>" + c.admin + "</small>" : "") + '</button><button class="favorite-toggle" data-favorite-remove="' + i + '" type="button" aria-label="取消收藏 ' + c.name + '">★</button></div>';
+    }).join("");
+    box.querySelectorAll("[data-favorite-index]").forEach(function (el) {
+      el.addEventListener("click", function () { pickCity(state.favorites[+el.getAttribute("data-favorite-index")]); });
+    });
+    box.querySelectorAll("[data-favorite-remove]").forEach(function (el) {
+      el.addEventListener("click", function () {
+        const i = +el.getAttribute("data-favorite-remove");
+        state.favorites.splice(i, 1);
+        try { localStorage.setItem(FAV_KEY, JSON.stringify(state.favorites)); } catch (e) {}
+        renderFavorites();
+      });
+    });
+    syncFavoriteButton();
+  }
+  function toggleFavorite() {
+    const c = state.city;
+    if (!c) return;
+    const key = cityKey(c);
+    const i = state.favorites.findIndex(function (x) { return cityKey(x) === key; });
+    if (i >= 0) state.favorites.splice(i, 1);
+    else state.favorites.unshift(Object.assign({}, c));
+    state.favorites = state.favorites.slice(0, 12);
+    try { localStorage.setItem(FAV_KEY, JSON.stringify(state.favorites)); } catch (e) {}
+    renderFavorites();
   }
   function showTab(id) {
     state.tab = id;
@@ -3398,7 +3464,7 @@ body.loop-still .pill.bad {
     }
     const solarHint = " · 晨昏线已显示";
     if (state.satLayer === "city") {
-      el.textContent = "高清城市底图" + solarHint + " · 非实时云图，可放大查看城市细节";
+      el.textContent = "高清城市底图" + solarHint + " · 云/降雨图层随缩放保留，可放大查看城市细节";
       return;
     }
     const fr = playheadFrame();
@@ -3440,6 +3506,17 @@ body.loop-still .pill.bad {
     if (maxMm >= 2 || (n && rainPts >= Math.max(2, n * 0.22))) el.textContent = prefix + "华东有雨" + solarHint;
     else if (maxPop >= 50 || maxMm >= 0.2) el.textContent = prefix + "局部有雨" + solarHint;
     else el.textContent = prefix + "降水不多" + solarHint;
+  }
+  function setMapStatus(message, done) {
+    const el = $("satMapStatus");
+    if (!el) return;
+    if (state.mapStatusTimer) clearTimeout(state.mapStatusTimer);
+    el.textContent = message || "正在准备地图…";
+    el.classList.toggle("show", !done);
+    el.classList.toggle("done", !!done);
+    if (done) {
+      state.mapStatusTimer = setTimeout(function () { el.classList.remove("show"); }, 900);
+    }
   }
   function fmtBjShort(iso) {
     if (!iso) return "—";
@@ -4078,7 +4155,10 @@ body.loop-still .pill.bad {
     updateWindPill();
   }
   function needsMet() {
-    return true;
+    // Keep the first map paint light: only request the grid when a vector
+    // weather field is actually visible.
+    return ov("wind") || ov("humidity") || ov("pressure") ||
+      (ov("precip") && playheadIsFuture());
   }
   function metBoundsKey() {
     const b = state.satMap.getBounds();
@@ -4330,13 +4410,18 @@ body.loop-still .pill.bad {
     state.chinaRangeLayer = group.addTo(state.satMap);
   }
   async function ensureSatMap() {
-    try { await loadLeaflet(); } catch (e) { return; }
+    setMapStatus("正在准备地图…", false);
+    try { await loadLeaflet(); } catch (e) {
+      setMapStatus("地图组件加载失败，请检查网络", false);
+      return;
+    }
     syncSatRail();
     if (state.satMap) {
       state.satMap.invalidateSize();
       refreshCityPills();
       drawSatTracks();
       loadMetGrid(false);
+      setMapStatus("地图已就绪", true);
       return;
     }
     const initialCity = state.city || DEFAULT_CITY;
@@ -4378,6 +4463,7 @@ body.loop-still .pill.bad {
     });
     const radarMetaPromise = loadRadarMeta();
     await setSatBase(state.satLayer || "city");
+    setMapStatus("地图已就绪，天气图层正在补充…", true);
     ensureSatLabels();
     drawSolarTerminator();
     drawChinaOfficialRange();
@@ -4385,7 +4471,8 @@ body.loop-still .pill.bad {
     drawMetFields();
     updatePlayhead();
     drawSatTracks();
-    loadSatCityWx();
+    // Keep first interaction independent from the city-pill weather batch.
+    setTimeout(loadSatCityWx, 80);
     loadMetGrid(true);
     scheduleRoadDetails();
     scheduleTrafficSignals();
@@ -4441,7 +4528,11 @@ body.loop-still .pill.bad {
       attr = "NASA GIBS / VIIRS";
     }
     if (!url || state.satLayer !== "city") return;
-    state.satHdOverlayObj = L.tileLayer(url, { pane: "cityPane", maxNativeZoom: maxNative, maxZoom: 19, tileSize: 256, attribution: attr, opacity: Math.min(.52, state.satOp) }).addTo(state.satMap);
+    state.satHdOverlayObj = L.tileLayer(url, {
+      pane: "cityPane", maxNativeZoom: maxNative, maxZoom: 19, tileSize: 256,
+      keepBuffer: 3, reuseTiles: true, updateWhenZooming: false, updateWhenIdle: true,
+      attribution: attr, opacity: Math.min(.52, state.satOp)
+    }).addTo(state.satMap);
   }
   async function setSatBase(name) {
     state.satLayer = name || "city";
@@ -4488,6 +4579,7 @@ body.loop-still .pill.bad {
     }
     state.satLayerObj = L.tileLayer(url, {
       maxNativeZoom: maxZ || 7, maxZoom: mapMaxZoom, tileSize: 256,
+      keepBuffer: 3, reuseTiles: true, updateWhenZooming: false, updateWhenIdle: true,
       attribution: attr, opacity: state.satOp
     });
     let errN = 0;
@@ -4541,7 +4633,7 @@ body.loop-still .pill.bad {
       const f = nearestFrame(state.radarFrames, t) || state.radarFrames[state.radarFrames.length - 1];
       state.satRadarLayer = L.tileLayer(f.url, {
         pane: "radarPane", opacity: 0.65, maxZoom: 19, maxNativeZoom: 7,
-        keepBuffer: 2, updateWhenZooming: false,
+        keepBuffer: 3, reuseTiles: true, updateWhenZooming: false, updateWhenIdle: true,
         attribution: "RainViewer", tileSize: 256
       }).addTo(state.satMap);
     }
@@ -4549,7 +4641,7 @@ body.loop-still .pill.bad {
       const f = nearestFrame(state.precipFrames, t) || state.precipFrames[state.precipFrames.length - 1];
       state.satPrecipLayer = L.tileLayer(f.url, {
         pane: "precipPane", opacity: 0.55, maxZoom: 19, maxNativeZoom: 7,
-        keepBuffer: 2, updateWhenZooming: false,
+        keepBuffer: 3, reuseTiles: true, updateWhenZooming: false, updateWhenIdle: true,
         attribution: "RainViewer", tileSize: 256
       }).addTo(state.satMap);
     }
@@ -4574,7 +4666,11 @@ body.loop-still .pill.bad {
         if (f && state.satPrecipLayer.setUrl) state.satPrecipLayer.setUrl(f.url);
       }
     }
-    if (nowFuture || wasFuture !== nowFuture) drawMetFields();
+    if (nowFuture || wasFuture !== nowFuture) {
+      // Forecast precipitation is a vector field, so fetch it at the moment
+      // the timeline enters the future instead of leaving an empty map.
+      loadMetGrid(false);
+    }
     updatePlayhead();
   }
   function schedulePlayTick(ms) {
@@ -5048,6 +5144,7 @@ body.loop-still .pill.bad {
     document.querySelectorAll(".nav-item").forEach((b) => b.addEventListener("click", () => showTab(b.getAttribute("data-tab"))));
     $("cityBtn").addEventListener("click", () => {
       renderHotCities();
+      renderFavorites();
       renderRecents();
       openSheet("citySheet");
       const q = $("citySearch");
@@ -5104,6 +5201,8 @@ body.loop-still .pill.bad {
       }
     });
     $("sheetLocate").addEventListener("click", () => tryGeo(false));
+    const favoriteButton = $("toggleFavorite");
+    if (favoriteButton) favoriteButton.addEventListener("click", toggleFavorite);
     const satPlay = $("satPlay");
     if (satPlay) satPlay.addEventListener("click", function () { toggleRadarPlay(); });
     const satWind = $("satWind");
@@ -5175,7 +5274,7 @@ body.loop-still .pill.bad {
         if (k === "radar" || k === "precip") {
           loadRadarMeta().then(function () {
             applySatOverlays();
-            drawMetFields();
+            loadMetGrid(false);
             updatePlayhead();
           });
         } else if (k === "typhoon") {
@@ -5277,6 +5376,10 @@ body.loop-still .pill.bad {
     try {
       state.recents = JSON.parse(localStorage.getItem(REC_KEY) || "[]");
     } catch (e) { state.recents = []; }
+    try {
+      const savedFavorites = JSON.parse(localStorage.getItem(FAV_KEY) || "[]");
+      state.favorites = Array.isArray(savedFavorites) ? savedFavorites.slice(0, 12) : [];
+    } catch (e) { state.favorites = []; }
     const saved = loadCity();
     saveCity(saved || DEFAULT_CITY);
     bind();

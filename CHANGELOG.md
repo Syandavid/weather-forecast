@@ -20,6 +20,7 @@
 - Remove the Taiwan-east extension from the map preview so the South China Sea layer contains exactly nine separate segments; verify the count in the browser-rendered Leaflet layer before release.
 - Permanently hide the temperature-grid dot layer and remove its map-panel switch at the user's request.
 - Make the city basemap render without waiting for the satellite probe, load radar metadata in parallel, and keep cloud/rain tiles available through zoom 19 by overzooming from their native resolution.
+- Optimize map first paint by skipping hidden meteorological grids, deferring city weather pills, adding a visible map-ready state, and retaining cached satellite/radar/rain tiles while zooming; add local favorite-city shortcuts.
 - Add bounded network requests, city-timezone-aware history dates and cancellation for stale route requests.
 
 ## 2026-08-30 - Weather timeline and globe
