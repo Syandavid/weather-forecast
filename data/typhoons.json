@@ -1,10 +1,829 @@
 {
-  "updated": "2026-09-04T22:58:30Z",
+  "updated": "2026-09-05T00:50:16Z",
   "sources": [
     "CMA",
     "NHC"
   ],
   "storms": [
+    {
+      "id": "cma-3326569",
+      "provider": "CMA",
+      "basin": "WPAC",
+      "basinZh": "西北太平洋",
+      "nameZh": "科罗旺",
+      "nameEn": "KROVANH",
+      "code": "2624",
+      "status": "start",
+      "grade": "TS",
+      "gradeZh": "热带风暴",
+      "lat": 27.9,
+      "lon": 127.2,
+      "windMs": 23,
+      "pressure": 990,
+      "moveDir": "S",
+      "moveSpeedKmh": 18,
+      "time": "2026-09-05T00:00:00Z",
+      "issuedZh": "2026年09月05日08时00分",
+      "radii": [
+        {
+          "kt": 30,
+          "ne": 350,
+          "se": 200,
+          "sw": 250,
+          "nw": 350
+        }
+      ],
+      "track": [
+        {
+          "time": "2026-09-01T00:00:00Z",
+          "timeRaw": "202609010000",
+          "lon": 132,
+          "lat": 22.5,
+          "pressure": 995,
+          "windMs": 18,
+          "grade": "TS",
+          "gradeZh": "热带风暴",
+          "moveDir": "0",
+          "moveSpeedKmh": 0,
+          "kind": "analysis",
+          "radii": [
+            {
+              "kt": 30,
+              "ne": 280,
+              "se": 220,
+              "sw": 380,
+              "nw": 200
+            }
+          ]
+        },
+        {
+          "time": "2026-09-01T03:00:00Z",
+          "timeRaw": "202609010300",
+          "lon": 132.1,
+          "lat": 22.5,
+          "pressure": 995,
+          "windMs": 18,
+          "grade": "TS",
+          "gradeZh": "热带风暴",
+          "moveDir": "0",
+          "moveSpeedKmh": 0,
+          "kind": "analysis",
+          "radii": [
+            {
+              "kt": 30,
+              "ne": 280,
+              "se": 220,
+              "sw": 380,
+              "nw": 200
+            }
+          ]
+        },
+        {
+          "time": "2026-09-01T06:00:00Z",
+          "timeRaw": "202609010600",
+          "lon": 132.1,
+          "lat": 22.5,
+          "pressure": 995,
+          "windMs": 18,
+          "grade": "TS",
+          "gradeZh": "热带风暴",
+          "moveDir": "0",
+          "moveSpeedKmh": 0,
+          "kind": "analysis",
+          "radii": [
+            {
+              "kt": 30,
+              "ne": 280,
+              "se": 220,
+              "sw": 380,
+              "nw": 200
+            }
+          ]
+        },
+        {
+          "time": "2026-09-01T09:00:00Z",
+          "timeRaw": "202609010900",
+          "lon": 132.1,
+          "lat": 22.6,
+          "pressure": 995,
+          "windMs": 18,
+          "grade": "TS",
+          "gradeZh": "热带风暴",
+          "moveDir": "0",
+          "moveSpeedKmh": 0,
+          "kind": "analysis",
+          "radii": [
+            {
+              "kt": 30,
+              "ne": 280,
+              "se": 220,
+              "sw": 380,
+              "nw": 200
+            }
+          ]
+        },
+        {
+          "time": "2026-09-01T12:00:00Z",
+          "timeRaw": "202609011200",
+          "lon": 132.2,
+          "lat": 22.7,
+          "pressure": 995,
+          "windMs": 18,
+          "grade": "TS",
+          "gradeZh": "热带风暴",
+          "moveDir": "N",
+          "moveSpeedKmh": 6,
+          "kind": "analysis",
+          "radii": [
+            {
+              "kt": 30,
+              "ne": 280,
+              "se": 220,
+              "sw": 380,
+              "nw": 200
+            }
+          ]
+        },
+        {
+          "time": "2026-09-01T15:00:00Z",
+          "timeRaw": "202609011500",
+          "lon": 132.2,
+          "lat": 22.8,
+          "pressure": 995,
+          "windMs": 18,
+          "grade": "TS",
+          "gradeZh": "热带风暴",
+          "moveDir": "N",
+          "moveSpeedKmh": 6,
+          "kind": "analysis",
+          "radii": [
+            {
+              "kt": 30,
+              "ne": 280,
+              "se": 220,
+              "sw": 380,
+              "nw": 200
+            }
+          ]
+        },
+        {
+          "time": "2026-09-01T18:00:00Z",
+          "timeRaw": "202609011800",
+          "lon": 132.2,
+          "lat": 22.9,
+          "pressure": 995,
+          "windMs": 18,
+          "grade": "TS",
+          "gradeZh": "热带风暴",
+          "moveDir": "NNW",
+          "moveSpeedKmh": 6,
+          "kind": "analysis",
+          "radii": [
+            {
+              "kt": 30,
+              "ne": 280,
+              "se": 220,
+              "sw": 380,
+              "nw": 200
+            }
+          ]
+        },
+        {
+          "time": "2026-09-01T21:00:00Z",
+          "timeRaw": "202609012100",
+          "lon": 132.2,
+          "lat": 22.9,
+          "pressure": 995,
+          "windMs": 18,
+          "grade": "TS",
+          "gradeZh": "热带风暴",
+          "moveDir": "NNW",
+          "moveSpeedKmh": 10,
+          "kind": "analysis",
+          "radii": [
+            {
+              "kt": 30,
+              "ne": 280,
+              "se": 220,
+              "sw": 380,
+              "nw": 200
+            }
+          ]
+        },
+        {
+          "time": "2026-09-02T00:00:00Z",
+          "timeRaw": "202609020000",
+          "lon": 132.1,
+          "lat": 23,
+          "pressure": 995,
+          "windMs": 18,
+          "grade": "TS",
+          "gradeZh": "热带风暴",
+          "moveDir": "NNW",
+          "moveSpeedKmh": 10,
+          "kind": "analysis",
+          "radii": [
+            {
+              "kt": 30,
+              "ne": 280,
+              "se": 220,
+              "sw": 380,
+              "nw": 200
+            }
+          ]
+        },
+        {
+          "time": "2026-09-02T03:00:00Z",
+          "timeRaw": "202609020300",
+          "lon": 132,
+          "lat": 23.2,
+          "pressure": 995,
+          "windMs": 18,
+          "grade": "TS",
+          "gradeZh": "热带风暴",
+          "moveDir": "NNW",
+          "moveSpeedKmh": 10,
+          "kind": "analysis",
+          "radii": [
+            {
+              "kt": 30,
+              "ne": 280,
+              "se": 220,
+              "sw": 380,
+              "nw": 200
+            }
+          ]
+        },
+        {
+          "time": "2026-09-02T06:00:00Z",
+          "timeRaw": "202609020600",
+          "lon": 132,
+          "lat": 23.5,
+          "pressure": 995,
+          "windMs": 18,
+          "grade": "TS",
+          "gradeZh": "热带风暴",
+          "moveDir": "NNW",
+          "moveSpeedKmh": 20,
+          "kind": "analysis",
+          "radii": [
+            {
+              "kt": 30,
+              "ne": 280,
+              "se": 220,
+              "sw": 380,
+              "nw": 200
+            }
+          ]
+        },
+        {
+          "time": "2026-09-02T09:00:00Z",
+          "timeRaw": "202609020900",
+          "lon": 131.8,
+          "lat": 23.7,
+          "pressure": 995,
+          "windMs": 18,
+          "grade": "TS",
+          "gradeZh": "热带风暴",
+          "moveDir": "NNW",
+          "moveSpeedKmh": 21,
+          "kind": "analysis",
+          "radii": [
+            {
+              "kt": 30,
+              "ne": 280,
+              "se": 220,
+              "sw": 380,
+              "nw": 200
+            }
+          ]
+        },
+        {
+          "time": "2026-09-02T12:00:00Z",
+          "timeRaw": "202609021200",
+          "lon": 131.5,
+          "lat": 23.7,
+          "pressure": 995,
+          "windMs": 18,
+          "grade": "TS",
+          "gradeZh": "热带风暴",
+          "moveDir": "NNW",
+          "moveSpeedKmh": 26,
+          "kind": "analysis",
+          "radii": [
+            {
+              "kt": 30,
+              "ne": 280,
+              "se": 220,
+              "sw": 380,
+              "nw": 200
+            }
+          ]
+        },
+        {
+          "time": "2026-09-02T15:00:00Z",
+          "timeRaw": "202609021500",
+          "lon": 131.4,
+          "lat": 24,
+          "pressure": 995,
+          "windMs": 18,
+          "grade": "TS",
+          "gradeZh": "热带风暴",
+          "moveDir": "NNW",
+          "moveSpeedKmh": 25,
+          "kind": "analysis",
+          "radii": [
+            {
+              "kt": 30,
+              "ne": 280,
+              "se": 220,
+              "sw": 380,
+              "nw": 200
+            }
+          ]
+        },
+        {
+          "time": "2026-09-02T18:00:00Z",
+          "timeRaw": "202609021800",
+          "lon": 131.3,
+          "lat": 24.3,
+          "pressure": 995,
+          "windMs": 18,
+          "grade": "TS",
+          "gradeZh": "热带风暴",
+          "moveDir": "NW",
+          "moveSpeedKmh": 27,
+          "kind": "analysis",
+          "radii": [
+            {
+              "kt": 30,
+              "ne": 280,
+              "se": 220,
+              "sw": 380,
+              "nw": 200
+            }
+          ]
+        },
+        {
+          "time": "2026-09-02T21:00:00Z",
+          "timeRaw": "202609022100",
+          "lon": 130.8,
+          "lat": 25,
+          "pressure": 995,
+          "windMs": 20,
+          "grade": "TS",
+          "gradeZh": "热带风暴",
+          "moveDir": "NW",
+          "moveSpeedKmh": 26,
+          "kind": "analysis",
+          "radii": [
+            {
+              "kt": 30,
+              "ne": 280,
+              "se": 220,
+              "sw": 380,
+              "nw": 200
+            }
+          ]
+        },
+        {
+          "time": "2026-09-03T00:00:00Z",
+          "timeRaw": "202609030000",
+          "lon": 130.5,
+          "lat": 25.4,
+          "pressure": 995,
+          "windMs": 20,
+          "grade": "TS",
+          "gradeZh": "热带风暴",
+          "moveDir": "NNW",
+          "moveSpeedKmh": 27,
+          "kind": "analysis",
+          "radii": [
+            {
+              "kt": 30,
+              "ne": 250,
+              "se": 280,
+              "sw": 280,
+              "nw": 220
+            }
+          ]
+        },
+        {
+          "time": "2026-09-03T03:00:00Z",
+          "timeRaw": "202609030300",
+          "lon": 129.4,
+          "lat": 26.9,
+          "pressure": 995,
+          "windMs": 20,
+          "grade": "TS",
+          "gradeZh": "热带风暴",
+          "moveDir": "NW",
+          "moveSpeedKmh": 9,
+          "kind": "analysis",
+          "radii": [
+            {
+              "kt": 30,
+              "ne": 250,
+              "se": 280,
+              "sw": 280,
+              "nw": 220
+            }
+          ]
+        },
+        {
+          "time": "2026-09-03T06:00:00Z",
+          "timeRaw": "202609030600",
+          "lon": 129.1,
+          "lat": 27.1,
+          "pressure": 995,
+          "windMs": 20,
+          "grade": "TS",
+          "gradeZh": "热带风暴",
+          "moveDir": "NNW",
+          "moveSpeedKmh": 20,
+          "kind": "analysis",
+          "radii": [
+            {
+              "kt": 30,
+              "ne": 250,
+              "se": 280,
+              "sw": 280,
+              "nw": 220
+            }
+          ]
+        },
+        {
+          "time": "2026-09-03T09:00:00Z",
+          "timeRaw": "202609030900",
+          "lon": 129.1,
+          "lat": 27.3,
+          "pressure": 990,
+          "windMs": 23,
+          "grade": "TS",
+          "gradeZh": "热带风暴",
+          "moveDir": "NNW",
+          "moveSpeedKmh": 15,
+          "kind": "analysis",
+          "radii": [
+            {
+              "kt": 30,
+              "ne": 250,
+              "se": 300,
+              "sw": 300,
+              "nw": 220
+            }
+          ]
+        },
+        {
+          "time": "2026-09-03T12:00:00Z",
+          "timeRaw": "202609031200",
+          "lon": 129.1,
+          "lat": 27.6,
+          "pressure": 990,
+          "windMs": 23,
+          "grade": "TS",
+          "gradeZh": "热带风暴",
+          "moveDir": "NW",
+          "moveSpeedKmh": 15,
+          "kind": "analysis",
+          "radii": [
+            {
+              "kt": 30,
+              "ne": 250,
+              "se": 300,
+              "sw": 300,
+              "nw": 220
+            }
+          ]
+        },
+        {
+          "time": "2026-09-03T15:00:00Z",
+          "timeRaw": "202609031500",
+          "lon": 128.9,
+          "lat": 28.5,
+          "pressure": 990,
+          "windMs": 23,
+          "grade": "TS",
+          "gradeZh": "热带风暴",
+          "moveDir": "NW",
+          "moveSpeedKmh": 15,
+          "kind": "analysis",
+          "radii": [
+            {
+              "kt": 30,
+              "ne": 250,
+              "se": 300,
+              "sw": 300,
+              "nw": 220
+            }
+          ]
+        },
+        {
+          "time": "2026-09-03T18:00:00Z",
+          "timeRaw": "202609031800",
+          "lon": 128.3,
+          "lat": 29,
+          "pressure": 990,
+          "windMs": 23,
+          "grade": "TS",
+          "gradeZh": "热带风暴",
+          "moveDir": "NW",
+          "moveSpeedKmh": 7,
+          "kind": "analysis",
+          "radii": [
+            {
+              "kt": 30,
+              "ne": 250,
+              "se": 300,
+              "sw": 300,
+              "nw": 220
+            }
+          ]
+        },
+        {
+          "time": "2026-09-03T21:00:00Z",
+          "timeRaw": "202609032100",
+          "lon": 128.1,
+          "lat": 29.2,
+          "pressure": 990,
+          "windMs": 23,
+          "grade": "TS",
+          "gradeZh": "热带风暴",
+          "moveDir": "0",
+          "moveSpeedKmh": 0,
+          "kind": "analysis",
+          "radii": [
+            {
+              "kt": 30,
+              "ne": 250,
+              "se": 300,
+              "sw": 300,
+              "nw": 220
+            }
+          ]
+        },
+        {
+          "time": "2026-09-04T00:00:00Z",
+          "timeRaw": "202609040000",
+          "lon": 128,
+          "lat": 29.5,
+          "pressure": 995,
+          "windMs": 20,
+          "grade": "TS",
+          "gradeZh": "热带风暴",
+          "moveDir": "SW",
+          "moveSpeedKmh": 6,
+          "kind": "analysis",
+          "radii": [
+            {
+              "kt": 30,
+              "ne": 250,
+              "se": 300,
+              "sw": 300,
+              "nw": 220
+            }
+          ]
+        },
+        {
+          "time": "2026-09-04T03:00:00Z",
+          "timeRaw": "202609040300",
+          "lon": 128,
+          "lat": 29.7,
+          "pressure": 995,
+          "windMs": 20,
+          "grade": "TS",
+          "gradeZh": "热带风暴",
+          "moveDir": "SSW",
+          "moveSpeedKmh": 9,
+          "kind": "analysis",
+          "radii": [
+            {
+              "kt": 30,
+              "ne": 300,
+              "se": 250,
+              "sw": 200,
+              "nw": 300
+            }
+          ]
+        },
+        {
+          "time": "2026-09-04T06:00:00Z",
+          "timeRaw": "202609040600",
+          "lon": 127.4,
+          "lat": 29.8,
+          "pressure": 998,
+          "windMs": 18,
+          "grade": "TS",
+          "gradeZh": "热带风暴",
+          "moveDir": "S",
+          "moveSpeedKmh": 12,
+          "kind": "analysis",
+          "radii": [
+            {
+              "kt": 30,
+              "ne": 300,
+              "se": 250,
+              "sw": 200,
+              "nw": 300
+            }
+          ]
+        },
+        {
+          "time": "2026-09-04T09:00:00Z",
+          "timeRaw": "202609040900",
+          "lon": 127.2,
+          "lat": 29.2,
+          "pressure": 998,
+          "windMs": 18,
+          "grade": "TS",
+          "gradeZh": "热带风暴",
+          "moveDir": "S",
+          "moveSpeedKmh": 8,
+          "kind": "analysis",
+          "radii": [
+            {
+              "kt": 30,
+              "ne": 300,
+              "se": 200,
+              "sw": 200,
+              "nw": 300
+            }
+          ]
+        },
+        {
+          "time": "2026-09-04T12:00:00Z",
+          "timeRaw": "202609041200",
+          "lon": 127.4,
+          "lat": 28.8,
+          "pressure": 998,
+          "windMs": 18,
+          "grade": "TS",
+          "gradeZh": "热带风暴",
+          "moveDir": "S",
+          "moveSpeedKmh": 7,
+          "kind": "analysis",
+          "radii": [
+            {
+              "kt": 30,
+              "ne": 300,
+              "se": 200,
+              "sw": 200,
+              "nw": 300
+            }
+          ]
+        },
+        {
+          "time": "2026-09-04T15:00:00Z",
+          "timeRaw": "202609041500",
+          "lon": 127.4,
+          "lat": 28.6,
+          "pressure": 998,
+          "windMs": 18,
+          "grade": "TS",
+          "gradeZh": "热带风暴",
+          "moveDir": "S",
+          "moveSpeedKmh": 9,
+          "kind": "analysis",
+          "radii": [
+            {
+              "kt": 30,
+              "ne": 300,
+              "se": 200,
+              "sw": 200,
+              "nw": 300
+            }
+          ]
+        },
+        {
+          "time": "2026-09-04T18:00:00Z",
+          "timeRaw": "202609041800",
+          "lon": 127.1,
+          "lat": 28.4,
+          "pressure": 998,
+          "windMs": 18,
+          "grade": "TS",
+          "gradeZh": "热带风暴",
+          "moveDir": "SSW",
+          "moveSpeedKmh": 11,
+          "kind": "analysis",
+          "radii": [
+            {
+              "kt": 30,
+              "ne": 300,
+              "se": 200,
+              "sw": 200,
+              "nw": 300
+            }
+          ]
+        },
+        {
+          "time": "2026-09-04T21:00:00Z",
+          "timeRaw": "202609042100",
+          "lon": 126.5,
+          "lat": 28.1,
+          "pressure": 990,
+          "windMs": 23,
+          "grade": "TS",
+          "gradeZh": "热带风暴",
+          "moveDir": "S",
+          "moveSpeedKmh": 18,
+          "kind": "analysis",
+          "radii": [
+            {
+              "kt": 30,
+              "ne": 350,
+              "se": 200,
+              "sw": 250,
+              "nw": 350
+            }
+          ]
+        },
+        {
+          "time": "2026-09-05T00:00:00Z",
+          "timeRaw": "202609050000",
+          "lon": 127.2,
+          "lat": 27.9,
+          "pressure": 990,
+          "windMs": 23,
+          "grade": "TS",
+          "gradeZh": "热带风暴",
+          "moveDir": "S",
+          "moveSpeedKmh": 18,
+          "kind": "analysis",
+          "radii": [
+            {
+              "kt": 30,
+              "ne": 350,
+              "se": 200,
+              "sw": 250,
+              "nw": 350
+            }
+          ]
+        }
+      ],
+      "forecast": [
+        {
+          "leadH": 12,
+          "baseTime": "2026-09-05T00:00:00Z",
+          "lon": 127.2,
+          "lat": 26,
+          "pressure": 990,
+          "windMs": 23,
+          "agency": "BABJ",
+          "grade": "TS",
+          "gradeZh": "热带风暴",
+          "kind": "forecast"
+        },
+        {
+          "leadH": 24,
+          "baseTime": "2026-09-05T00:00:00Z",
+          "lon": 127.9,
+          "lat": 25.4,
+          "pressure": 995,
+          "windMs": 20,
+          "agency": "BABJ",
+          "grade": "TS",
+          "gradeZh": "热带风暴",
+          "kind": "forecast"
+        },
+        {
+          "leadH": 36,
+          "baseTime": "2026-09-05T00:00:00Z",
+          "lon": 129.7,
+          "lat": 24.8,
+          "pressure": 998,
+          "windMs": 18,
+          "agency": "BABJ",
+          "grade": "TS",
+          "gradeZh": "热带风暴",
+          "kind": "forecast"
+        },
+        {
+          "leadH": 48,
+          "baseTime": "2026-09-05T00:00:00Z",
+          "lon": 131.5,
+          "lat": 25.6,
+          "pressure": 1000,
+          "windMs": 15,
+          "agency": "BABJ",
+          "grade": "TD",
+          "gradeZh": "热带低压",
+          "kind": "forecast"
+        },
+        {
+          "leadH": 60,
+          "baseTime": "2026-09-05T00:00:00Z",
+          "lon": 132.4,
+          "lat": 27.2,
+          "pressure": 1000,
+          "windMs": 15,
+          "agency": "BABJ",
+          "grade": "TD",
+          "gradeZh": "热带低压",
+          "kind": "forecast"
+        }
+      ]
+    },
     {
       "id": "nhc-ep132026",
       "provider": "NHC",
@@ -105,7 +924,5 @@
       "forecast": []
     }
   ],
-  "errors": [
-    "CMA list: <urlopen error timed out>"
-  ]
+  "errors": []
 }
