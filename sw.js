@@ -1,10 +1,11 @@
-const CACHE = "weather-forecast-v27.1";
+const CACHE = "weather-forecast-v28";
 const ASSETS = [
   "./",
   "./index.html",
   "./assets/weather-insights.js?v=25",
   "./assets/map-weather.js?v=27.1",
   "./assets/map-weather-worker.js?v=27.1",
+  "./assets/pro-weather.js?v=28",
   "./manifest.webmanifest",
   "./icon-192-v3.png",
   "./icon-512-v3.png",
@@ -51,6 +52,8 @@ function sameOrigin(request) {
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
   const req = event.request;
+  // Never replace a failed third-party iframe navigation with our app shell.
+  if (!sameOrigin(req)) return;
 
   if (isHtmlRequest(req)) {
     event.respondWith(
@@ -69,8 +72,6 @@ self.addEventListener("fetch", (event) => {
     );
     return;
   }
-
-  if (!sameOrigin(req)) return;
 
   event.respondWith(
     caches.match(req).then((cached) => {

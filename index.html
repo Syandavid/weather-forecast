@@ -298,6 +298,22 @@ button { color: inherit; }
 }
 .sat-view-btn.on { background:rgba(78,162,255,0.28); color:#f4f7fb; font-weight:650; }
 .sat-view-btn:active { background:rgba(78,162,255,0.4); }
+.sat-view-btn { font-size:14px; min-height:38px; }
+.pro-weather { display:none; position:absolute; inset:0; z-index:2; background:#081018; }
+.map-wrap.view-pro .pro-weather { display:flex; flex-direction:column; }
+.map-wrap.view-pro #satMap, .map-wrap.view-pro #sat3dMap, .map-wrap.view-pro #satMapStatus { display:none !important; }
+.map-wrap.view-pro .sat-hud > :not(.sat-view-switch) { display:none !important; }
+.map-wrap.view-pro .sat-view-switch { top:8px; }
+.pro-toolbar { padding:58px 12px 8px; display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+.pro-place { flex:1; min-width:80px; font-size:14px; color:var(--muted); overflow-wrap:anywhere; }
+.pro-toolbar button, .pro-toolbar a { font:inherit; font-size:14px; color:#d7eaff; background:#182638; border:1px solid #34475f; border-radius:9px; padding:9px 10px; text-decoration:none; cursor:pointer; }
+.pro-frame { flex:1; min-height:180px; position:relative; background:#101e2c; }
+.pro-frame iframe { display:block; width:100%; height:100%; border:0; position:absolute; inset:0; }
+.pro-note { padding:8px 12px; font-size:14px; line-height:1.45; color:#b6c6d8; max-height:28%; overflow:auto; }
+.pro-note p { margin:0 0 4px; }
+.pro-note summary { cursor:pointer; color:#91bff5; }
+.pro-note details p { margin:6px 0 0; }
+.pro-toolbar :focus-visible, .sat-view-btn:focus-visible, .pro-note summary:focus-visible { outline:2px solid #78bbff; outline-offset:2px; }
 .sat-hud {
   position: absolute; inset: 0; z-index: 500;
   pointer-events: none;
@@ -1539,6 +1555,18 @@ body.loop-still .pill.bad {
         <div id="satMap" style="height:100%;width:100%"></div>
         <div class="sat-map-status show" id="satMapStatus" aria-live="polite">正在准备地图…</div>
         <div id="sat3dMap" aria-label="三维城市地图"></div>
+        <section class="pro-weather" id="proWeather" aria-label="专业云雨视图">
+          <div class="pro-toolbar">
+            <span class="pro-place" id="proPlace">所选城市附近</span>
+            <button id="proRetry" type="button">重新加载</button>
+            <a id="proExternal" target="_blank" rel="noopener noreferrer">单独打开 ↗</a>
+          </div>
+          <div class="pro-frame" id="proFrame"></div>
+          <div class="pro-note">
+            <p id="proStatus" role="status" aria-live="polite">进入后加载 Windy 云雨预报。</p>
+            <details><summary>Windy 提供 · 独立时间轴与地图</summary><p>云量与降雨为模型预报，不是未来卫星照片。原地图的路线、边界和时间不在此同步；第三方地名与边界由 Windy 提供。仅传递城市附近的粗略坐标，首次打开及重新进入均以当前时刻初始化。离开视图会释放地图以节省电量；需要保留图内所选时间，请保持此视图打开。需要联网。</p></details>
+          </div>
+        </section>
         <div class="sat-hud" aria-hidden="false">
           <button class="sat-wind" id="satWind" type="button" title="定位到所选城市">
             <span><b id="satWindNum">—</b> 公里/小时</span>
@@ -1550,6 +1578,7 @@ body.loop-still .pill.bad {
           <div class="sat-view-switch sat-glass" role="group" aria-label="地图模式">
             <button class="sat-view-btn on" data-view="2d" type="button">2D 天气</button>
             <button class="sat-view-btn" data-view="3d" type="button">3D 城市</button>
+            <button class="sat-view-btn" data-view="pro" type="button">专业云雨</button>
           </div>
           <aside class="sat-rail" id="satRail">
             <button class="sat-rail-close" id="satRailClose" type="button">关闭</button>
@@ -1750,6 +1779,7 @@ body.loop-still .pill.bad {
 </div>
 <script src="assets/weather-insights.js?v=25"></script>
 <script src="assets/map-weather.js?v=27.1"></script>
+<script src="assets/pro-weather.js?v=28"></script>
 <script>
 (function () {
   const insights = window.WeatherInsights;
@@ -2431,8 +2461,9 @@ body.loop-still .pill.bad {
     document.querySelectorAll(".nav-item").forEach((b) => b.classList.toggle("active", b.getAttribute("data-tab") === id));
     syncMotion();
     if (id === "sat") {
-      ensureSatMap().then(function () { maybeAutoplayRadar(); });
+      if (state.satView !== "pro") ensureSatMap().then(function () { maybeAutoplayRadar(); });
     }
+    syncProWeather();
     setTimeout(invalidateMaps, 80);
   }
   function invalidateMaps() {
@@ -5244,6 +5275,7 @@ body.loop-still .pill.bad {
     $("modelRetry").disabled = false;
     c = Object.assign({}, c, { isChina: c.isChina != null ? !!c.isChina : String(c.country_code || "").toLowerCase() === "cn" || c.country === "中国" || c.country === "China" || /省|市|自治区|特别行政区|台湾|香港|澳门/.test(c.admin || "") });
     saveCity(c);
+    syncProWeather();
     clearRoute(true);
     state.history = null;
     closeSheet("citySheet");
@@ -5288,17 +5320,33 @@ body.loop-still .pill.bad {
       if (!quiet) $("geoHint").textContent = "没有获得定位权限，可手动搜索城市";
     }, { enableHighAccuracy: false, timeout: 8000, maximumAge: 600000 });
   }
+  let proWeatherController = null;
+  let satViewRequest = 0;
+  function syncProWeather() {
+    const active = state.tab === "sat" && state.satView === "pro";
+    if (active && !proWeatherController) {
+      proWeatherController = window.ProWeather.create({host:$("proFrame"), status:$("proStatus"), place:$("proPlace"), external:$("proExternal"), retry:$("proRetry"), getCity:function () { return state.city || DEFAULT_CITY; }});
+    }
+    if (proWeatherController) proWeatherController.setActive(active);
+  }
   function syncSatView() {
     const wrap = document.querySelector(".map-wrap");
     if (wrap) wrap.classList.toggle("view-3d", state.satView === "3d");
+    if (wrap) wrap.classList.toggle("view-pro", state.satView === "pro");
+    syncProWeather();
     document.querySelectorAll("[data-view]").forEach(function (button) {
       button.classList.toggle("on", button.getAttribute("data-view") === state.satView);
       button.setAttribute("aria-pressed", button.getAttribute("data-view") === state.satView ? "true" : "false");
     });
   }
   async function setSatView(mode) {
-    const next = mode === "3d" ? "3d" : "2d";
+    const request = ++satViewRequest;
+    const next = mode === "pro" ? "pro" : mode === "3d" ? "3d" : "2d";
+    state.satView = next;
+    if (next === "pro") stopRadarLoop();
+    syncSatView();
     showTab("sat");
+    if (next === "pro") return;
     if (next === "2d") {
       state.satView = "2d";
       syncSatView();
@@ -5307,6 +5355,7 @@ body.loop-still .pill.bad {
       return;
     }
     const map = await ensure3DMap();
+    if (request !== satViewRequest) return;
     if (!map) {
       state.satView = "2d";
       syncSatView();
