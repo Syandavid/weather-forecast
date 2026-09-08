@@ -1,43 +1,10 @@
 {
-  "updated": "2026-09-08T21:43:24Z",
+  "updated": "2026-09-08T23:57:13Z",
   "sources": [
     "CMA",
     "NHC"
   ],
   "storms": [
-    {
-      "id": "nhc-ep132026",
-      "provider": "NHC",
-      "basin": "EPAC",
-      "basinZh": "东北太平洋",
-      "nameZh": "Marie",
-      "nameEn": "Marie",
-      "code": "ep132026",
-      "status": "start",
-      "grade": "PTC",
-      "gradeZh": "潜在热带气旋",
-      "lat": 25.8,
-      "lon": -127.4,
-      "windMs": 18.0,
-      "windKt": 35.0,
-      "pressure": 1000,
-      "moveDir": 300,
-      "moveSpeedKmh": 16.7,
-      "time": "2026-09-08T15:00:00.000Z",
-      "classification": "PTC",
-      "radii": [],
-      "track": [
-        {
-          "lat": 25.8,
-          "lon": -127.4,
-          "time": "2026-09-08T15:00:00.000Z",
-          "windMs": 18.0,
-          "grade": "PTC",
-          "kind": "analysis"
-        }
-      ],
-      "forecast": []
-    },
     {
       "id": "nhc-ep122026",
       "provider": "NHC",
