@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-09T13:50:27Z",
+  "updated": "2026-09-09T17:43:27Z",
   "sources": [
     "CMA",
     "NHC"
@@ -16,22 +16,22 @@
       "status": "start",
       "grade": "TS",
       "gradeZh": "热带风暴",
-      "lat": 27.3,
-      "lon": -161.5,
-      "windMs": 28.3,
-      "windKt": 55.0,
-      "pressure": 981,
-      "moveDir": 350,
-      "moveSpeedKmh": 25.9,
-      "time": "2026-09-09T09:00:00.000Z",
+      "lat": 28.1,
+      "lon": -162.3,
+      "windMs": 25.7,
+      "windKt": 50.0,
+      "pressure": 985,
+      "moveDir": 330,
+      "moveSpeedKmh": 24.1,
+      "time": "2026-09-09T15:00:00.000Z",
       "classification": "TS",
       "radii": [],
       "track": [
         {
-          "lat": 27.3,
-          "lon": -161.5,
-          "time": "2026-09-09T09:00:00.000Z",
-          "windMs": 28.3,
+          "lat": 28.1,
+          "lon": -162.3,
+          "time": "2026-09-09T15:00:00.000Z",
+          "windMs": 25.7,
           "grade": "TS",
           "kind": "analysis"
         }
