@@ -1,10 +1,43 @@
 {
-  "updated": "2026-09-09T17:43:27Z",
+  "updated": "2026-09-09T20:45:00Z",
   "sources": [
     "CMA",
     "NHC"
   ],
   "storms": [
+    {
+      "id": "nhc-ep142026",
+      "provider": "NHC",
+      "basin": "EPAC",
+      "basinZh": "东北太平洋",
+      "nameZh": "Fourteen-E",
+      "nameEn": "Fourteen-E",
+      "code": "ep142026",
+      "status": "start",
+      "grade": "TD",
+      "gradeZh": "热带低压",
+      "lat": 15.7,
+      "lon": -115.2,
+      "windMs": 15.4,
+      "windKt": 30.0,
+      "pressure": 1006,
+      "moveDir": 285,
+      "moveSpeedKmh": 16.7,
+      "time": "2026-09-09T21:00:00.000Z",
+      "classification": "TD",
+      "radii": [],
+      "track": [
+        {
+          "lat": 15.7,
+          "lon": -115.2,
+          "time": "2026-09-09T21:00:00.000Z",
+          "windMs": 15.4,
+          "grade": "TD",
+          "kind": "analysis"
+        }
+      ],
+      "forecast": []
+    },
     {
       "id": "nhc-ep122026",
       "provider": "NHC",
@@ -16,21 +49,21 @@
       "status": "start",
       "grade": "TS",
       "gradeZh": "热带风暴",
-      "lat": 28.1,
-      "lon": -162.3,
+      "lat": 28.9,
+      "lon": -163.7,
       "windMs": 25.7,
       "windKt": 50.0,
-      "pressure": 985,
-      "moveDir": 330,
-      "moveSpeedKmh": 24.1,
-      "time": "2026-09-09T15:00:00.000Z",
+      "pressure": 987,
+      "moveDir": 310,
+      "moveSpeedKmh": 25.9,
+      "time": "2026-09-09T21:00:00.000Z",
       "classification": "TS",
       "radii": [],
       "track": [
         {
-          "lat": 28.1,
-          "lon": -162.3,
-          "time": "2026-09-09T15:00:00.000Z",
+          "lat": 28.9,
+          "lon": -163.7,
+          "time": "2026-09-09T21:00:00.000Z",
           "windMs": 25.7,
           "grade": "TS",
           "kind": "analysis"
