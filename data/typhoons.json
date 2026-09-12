@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-12T16:52:14Z",
+  "updated": "2026-09-12T19:04:30Z",
   "sources": [
     "CMA",
     "NHC"
@@ -16,14 +16,14 @@
       "status": "start",
       "grade": "TD",
       "gradeZh": "热带低压",
-      "lat": 15.9,
-      "lon": 109,
+      "lat": 16.2,
+      "lon": 108.4,
       "windMs": 12,
       "pressure": 1006,
       "moveDir": "NW",
-      "moveSpeedKmh": 9,
-      "time": "2026-09-12T15:00:00Z",
-      "issuedZh": "2026年09月12日23时00分",
+      "moveSpeedKmh": 12,
+      "time": "2026-09-12T18:00:00Z",
+      "issuedZh": "2026年09月13日02时00分",
       "radii": [],
       "track": [
         {
@@ -103,14 +103,27 @@
           "moveDir": "NW",
           "moveSpeedKmh": 9,
           "kind": "analysis"
+        },
+        {
+          "time": "2026-09-12T18:00:00Z",
+          "timeRaw": "202609121800",
+          "lon": 108.4,
+          "lat": 16.2,
+          "pressure": 1006,
+          "windMs": 12,
+          "grade": "TD",
+          "gradeZh": "热带低压",
+          "moveDir": "NW",
+          "moveSpeedKmh": 12,
+          "kind": "analysis"
         }
       ],
       "forecast": [
         {
           "leadH": 12,
-          "baseTime": "2026-09-12T15:00:00Z",
-          "lon": 108.3,
-          "lat": 16.5,
+          "baseTime": "2026-09-12T18:00:00Z",
+          "lon": 107.4,
+          "lat": 17,
           "pressure": 1006,
           "windMs": 12,
           "agency": "BABJ",
@@ -120,9 +133,9 @@
         },
         {
           "leadH": 24,
-          "baseTime": "2026-09-12T15:00:00Z",
-          "lon": 107.2,
-          "lat": 17.1,
+          "baseTime": "2026-09-12T18:00:00Z",
+          "lon": 106,
+          "lat": 18.1,
           "pressure": 1006,
           "windMs": 12,
           "agency": "BABJ",
@@ -132,9 +145,9 @@
         },
         {
           "leadH": 36,
-          "baseTime": "2026-09-12T15:00:00Z",
-          "lon": 105.8,
-          "lat": 17.8,
+          "baseTime": "2026-09-12T18:00:00Z",
+          "lon": 106,
+          "lat": 19.1,
           "pressure": 1006,
           "windMs": 12,
           "agency": "BABJ",
