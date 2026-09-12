@@ -1,10 +1,96 @@
 {
-  "updated": "2026-09-11T22:27:50Z",
+  "updated": "2026-09-12T00:33:17Z",
   "sources": [
     "CMA",
     "NHC"
   ],
   "storms": [
+    {
+      "id": "cma-3332799",
+      "provider": "CMA",
+      "basin": "WPAC",
+      "basinZh": "西北太平洋",
+      "nameZh": "热带低压",
+      "nameEn": "nameless",
+      "code": "None",
+      "status": "start",
+      "grade": "TD",
+      "gradeZh": "热带低压",
+      "lat": 15.3,
+      "lon": 109.4,
+      "windMs": 13,
+      "pressure": 1005,
+      "moveDir": "NNW",
+      "moveSpeedKmh": 6,
+      "time": "2026-09-12T00:00:00Z",
+      "issuedZh": "2026年09月12日08时00分",
+      "radii": [],
+      "track": [
+        {
+          "time": "2026-09-12T00:00:00Z",
+          "timeRaw": "202609120000",
+          "lon": 109.4,
+          "lat": 15.3,
+          "pressure": 1005,
+          "windMs": 13,
+          "grade": "TD",
+          "gradeZh": "热带低压",
+          "moveDir": "NNW",
+          "moveSpeedKmh": 6,
+          "kind": "analysis"
+        }
+      ],
+      "forecast": [
+        {
+          "leadH": 12,
+          "baseTime": "2026-09-12T00:00:00Z",
+          "lon": 109.1,
+          "lat": 15.8,
+          "pressure": 1005,
+          "windMs": 13,
+          "agency": "BABJ",
+          "grade": "TD",
+          "gradeZh": "热带低压",
+          "kind": "forecast"
+        },
+        {
+          "leadH": 24,
+          "baseTime": "2026-09-12T00:00:00Z",
+          "lon": 108.7,
+          "lat": 16.3,
+          "pressure": 1005,
+          "windMs": 13,
+          "agency": "BABJ",
+          "grade": "TD",
+          "gradeZh": "热带低压",
+          "kind": "forecast"
+        },
+        {
+          "leadH": 36,
+          "baseTime": "2026-09-12T00:00:00Z",
+          "lon": 107.9,
+          "lat": 16.9,
+          "pressure": 1005,
+          "windMs": 13,
+          "agency": "BABJ",
+          "grade": "TD",
+          "gradeZh": "热带低压",
+          "kind": "forecast"
+        },
+        {
+          "leadH": 48,
+          "baseTime": "2026-09-12T00:00:00Z",
+          "lon": 106.1,
+          "lat": 18.2,
+          "pressure": 1008,
+          "windMs": 12,
+          "agency": "BABJ",
+          "grade": "TD",
+          "gradeZh": "热带低压",
+          "kind": "forecast"
+        }
+      ]
+    },
     {
       "id": "nhc-ep142026",
       "provider": "NHC",
