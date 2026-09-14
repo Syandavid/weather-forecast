@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-14T19:08:25Z",
+  "updated": "2026-09-14T22:39:55Z",
   "sources": [
     "CMA",
     "NHC"
@@ -16,21 +16,21 @@
       "status": "start",
       "grade": "TS",
       "gradeZh": "热带风暴",
-      "lat": 19.4,
-      "lon": -137.8,
+      "lat": 19.7,
+      "lon": -139.2,
       "windMs": 18.0,
       "windKt": 35.0,
       "pressure": 1005,
       "moveDir": 280,
       "moveSpeedKmh": 27.8,
-      "time": "2026-09-14T15:00:00.000Z",
+      "time": "2026-09-14T21:00:00.000Z",
       "classification": "TS",
       "radii": [],
       "track": [
         {
-          "lat": 19.4,
-          "lon": -137.8,
-          "time": "2026-09-14T15:00:00.000Z",
+          "lat": 19.7,
+          "lon": -139.2,
+          "time": "2026-09-14T21:00:00.000Z",
           "windMs": 18.0,
           "grade": "TS",
           "kind": "analysis"
@@ -49,21 +49,21 @@
       "status": "start",
       "grade": "TD",
       "gradeZh": "热带低压",
-      "lat": 16.3,
-      "lon": -119.7,
+      "lat": 16.9,
+      "lon": -120.5,
       "windMs": 15.4,
       "windKt": 30.0,
       "pressure": 1006,
-      "moveDir": 240,
+      "moveDir": 280,
       "moveSpeedKmh": 16.7,
-      "time": "2026-09-14T15:00:00.000Z",
+      "time": "2026-09-14T21:00:00.000Z",
       "classification": "TD",
       "radii": [],
       "track": [
         {
-          "lat": 16.3,
-          "lon": -119.7,
-          "time": "2026-09-14T15:00:00.000Z",
+          "lat": 16.9,
+          "lon": -120.5,
+          "time": "2026-09-14T21:00:00.000Z",
           "windMs": 15.4,
           "grade": "TD",
           "kind": "analysis"
