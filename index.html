@@ -1452,6 +1452,7 @@ body.loop-still .pill.bad {
 @media (max-width: 480px) { .hero::before { background-position: 68% center; } }
 @media (prefers-reduced-motion: reduce) { .clothing-person, .clothing-umbrella, .clothing-rain, .sat-wind-barb.wind-flow { animation:none !important; } }
 </style>
+<link rel="stylesheet" href="assets/ui-clean.css?v=30.1">
 </head>
 <body>
 <div id="app">
@@ -1511,11 +1512,17 @@ body.loop-still .pill.bad {
               </div>
             </div>
             <div class="wx-note" id="wxNote"></div>
-            <div class="summary sk" id="summary" aria-live="polite">正在整理今日摘要</div>
             <div class="sunrow" id="sunrow" aria-label="今日日照信息"></div>
+            <div class="summary sk" id="summary" aria-live="polite">正在整理今日摘要</div>
             <div class="extreme-card" id="extremeCard" aria-live="polite"></div>
             <div class="wx-updated" id="wxUpdated" aria-live="polite">天气数据准备中</div>
             <div class="next2-card" id="next2Card" hidden aria-live="polite"></div>
+            <details class="weather-more" id="weatherDetails">
+              <summary>气象详情 <span>体感 · 湿度 · 空气质量</span></summary>
+              <div class="metrics" id="metrics"></div>
+            </details>
+            <details class="weather-more" id="lifestyleDetails">
+              <summary>穿衣与出行 <span>穿衣指南 · 户外时段</span></summary>
             <section class="insight-card" aria-labelledby="outdoorTitle">
               <h3 id="outdoorTitle">什么时候适合出门</h3>
               <div class="activity-tabs" role="group" aria-label="户外活动">
@@ -1527,14 +1534,16 @@ body.loop-still .pill.bad {
               <small class="insight-note">按降雨、阵风、体感和紫外线筛选连续 2 小时的白天时段；时间为所选城市当地时间。</small>
             </section>
             <div class="clothing-card" id="clothingCard" hidden aria-live="polite"></div>
-            <div class="metrics" id="metrics"></div>
+            <div class="sec-title">生活指数</div>
+            <div class="life" id="life"></div>
+            </details>
           </div>
           <div>
-            <div class="sec-title">24 小时</div>
+            <div class="section-heading"><h2>未来 24 小时</h2><span>左右滑动</span></div>
             <div class="hours" id="hours"></div>
-            <div class="sec-title">16 天预报</div>
-            <p class="forecast-note">近期用于安排出行；7 天以后主要看趋势，请临近时再确认。</p>
+            <div class="section-heading"><h2>每日预报</h2><button class="text-action" id="forecastExpand" type="button" aria-expanded="false" aria-controls="days">查看 16 天</button></div>
             <div class="days" id="days"></div>
+            <p class="forecast-note">7 天以后主要看趋势，临近出行请再确认。</p>
             <details class="insight-card" id="modelCompare">
               <summary>多模型对比 · 未来 3 天</summary>
               <p>对比 ECMWF、GFS、ICON 的最高温和日降水量。模型分歧有助于判断计划是否需要留出余地。</p>
@@ -1544,19 +1553,18 @@ body.loop-still .pill.bad {
             </details>
           </div>
         </div>
-        <section class="trend-card" aria-labelledby="trendTitle">
+        <details class="weather-more trend-card" id="trendPanel">
+          <summary>历史与趋势 <span>日期查询 · 温度曲线</span></summary>
           <div class="trend-head"><div><div class="sec-title" id="trendTitle">过去 1 周 · 未来 2 周</div><div class="trend-note" id="trendNote">正在整理趋势数据</div></div><div class="trend-tabs" role="tablist" aria-label="趋势指标">
             <button class="trend-tab on" data-trend="temp" type="button">温度</button>
             <button class="trend-tab" data-trend="rain" type="button">降雨</button>
             <button class="trend-tab" data-trend="wind" type="button">风速</button>
           </div></div>
-          <div class="history-tools"><label>粒度 <select id="trendGranularity"><option value="daily">每日</option><option value="hourly">逐时</option></select></label><label>从 <input id="historyStart" type="date"><input id="historyStartTime" type="time" value="00:00"></label><span>至</span><label><input id="historyEnd" type="date"><input id="historyEndTime" type="time" value="23:00"></label><button id="historyQuery" type="button">查询时间段</button><button id="historyReset" type="button">近 7 天</button></div>
+          <div class="history-tools"><label>粒度 <select id="trendGranularity"><option value="daily">每日</option><option value="hourly">逐时</option></select></label><label>从 <input id="historyStart" type="date" aria-label="开始日期"><input id="historyStartTime" type="time" value="00:00" aria-label="开始时间"></label><span>至</span><label>至 <input id="historyEnd" type="date" aria-label="结束日期"><input id="historyEndTime" type="time" value="23:00" aria-label="结束时间"></label><button id="historyQuery" type="button">查询时间段</button><button id="historyReset" type="button">近 7 天</button></div>
           <div class="trend-selected" id="trendSelected" aria-live="polite">拖动图中的竖线，查看对应日期或时刻</div>
           <div class="trend-chart" id="trendChart"><div class="empty">趋势图准备中</div></div>
           <div class="trend-legend" id="trendLegend"></div>
-        </section>
-        <div class="sec-title">生活指数</div>
-        <div class="life" id="life"></div>
+        </details>
       </div>
     </section>
     <section class="panel" id="sat">
@@ -1613,7 +1621,8 @@ body.loop-still .pill.bad {
               <svg viewBox="0 0 24 24"><path d="M4 18h16M6 14h12M8 10h8M10 6h4"/><path d="M5 20V4M19 20V4"/></svg>
               <span>关键道路 · 城镇名称</span><span class="ck">✓</span>
             </button>
-            <div class="sat-subtitle">道路级别（默认全开）</div>
+            <details class="map-settings"><summary>道路与行政边界</summary>
+            <div class="sat-subtitle">道路级别</div>
             <div class="sat-road-row" role="group" aria-label="道路级别">
               <button class="sat-road on" data-road="national" type="button"><i></i>国道</button>
               <button class="sat-road on" data-road="provincial" type="button"><i></i>省道</button>
@@ -1633,6 +1642,7 @@ body.loop-still .pill.bad {
               <span>中国官方口径重点标注</span><span class="ck">✓</span>
             </button>
             <div class="china-range-note">南海断续线、台湾省、西藏自治区 · 预览示意</div>
+            </details>
             <button class="sat-ly on" data-overlay="radar" type="button">
               <svg viewBox="0 0 24 24"><path d="M4 18a8 8 0 0 1 16 0"/><path d="M7 18a5 5 0 0 1 10 0"/><circle cx="12" cy="18" r="1.2" fill="currentColor" stroke="none"/></svg>
               <span>雷达 / 预报降水</span><span class="ck">✓</span>
@@ -1686,7 +1696,7 @@ body.loop-still .pill.bad {
               <div class="sat-storm-list" id="tyList"><div class="empty"><strong>正在读取台风</strong>先看实时，失败则用快照</div></div>
             </div>
           </div>
-          <button class="sat-fab" id="satLayersBtn" type="button" title="图层" aria-label="图层">
+          <button class="sat-fab" id="satLayersBtn" type="button" title="图层" aria-label="图层" aria-expanded="false" aria-controls="satRail">
             <svg viewBox="0 0 24 24"><rect x="4" y="9" width="11" height="11" rx="1.6"/><rect x="9" y="4" width="11" height="11" rx="1.6"/></svg>
           </button>
           <button class="sat-route-fab" id="satRouteBtn" type="button" title="打开路线选择模式" aria-pressed="false">路线</button>
@@ -1752,26 +1762,29 @@ body.loop-still .pill.bad {
 <div class="sheet" id="citySheet">
   <div class="sheet-card">
     <div class="handle"></div>
-    <h2>选择全球城市 / 地点</h2>
+    <div class="sheet-heading"><h2>选择城市</h2><button class="sheet-close" id="closeCity" type="button" aria-label="关闭城市选择">×</button></div>
     <form class="city-search-form" id="citySearchForm" role="search">
       <input class="search" id="citySearch" type="search" aria-label="搜索全球城市或坐标" aria-describedby="citySearchHelp" placeholder="城市名 / 纬度, 经度" autocomplete="off" enterkeyhint="search" maxlength="160">
       <button class="chip" type="submit">搜索</button>
     </form>
-    <p class="city-search-help" id="citySearchHelp">支持中文、英文及地名库收录的当地名称。同名城市可加国家，例如 Paris, France；偏远地区可输入 35.6895, 139.6917（纬度在前）。</p>
+    <p class="city-search-help" id="citySearchHelp">搜索全球城市，也可输入「纬度, 经度」。</p>
+    <details class="search-tips"><summary>找不到地点？</summary><p>试试英文名、当地名称，或加国家区分同名城市，例如 Paris, France。坐标示例：35.6895, 139.6917（纬度在前）。</p></details>
     <div class="sec-title" id="cityResultsTitle" hidden>搜索结果</div>
     <div class="city-search-status" id="citySearchStatus" role="status" aria-live="polite"></div>
     <button class="chip" id="citySearchRetry" type="button" hidden>重试搜索</button>
     <div id="cityResults"></div>
-    <button class="city-row" id="sheetLocate" type="button">定位到当前位置</button>
+    <div id="cityShortcuts">
+    <button class="city-row" id="sheetLocate" type="button">使用当前位置</button>
     <button class="city-row city-favorite-current" id="toggleFavorite" type="button">☆ 收藏当前城市</button>
     <div id="geoHint" class="empty" style="margin:12px 0">也可在顶部使用定位</div>
-    <div class="sec-title">常用城市 · 国内与全球</div>
+    <details class="city-suggestions"><summary>浏览常用城市</summary>
     <div class="hot-cities" id="hotCities"></div>
+    </details>
     <div class="sec-title">收藏</div>
     <div id="favorites"></div>
     <div class="sec-title">最近</div>
     <div id="recents"></div>
-    <button class="chip" id="closeCity" type="button" style="margin-top:12px">关闭</button>
+    </div>
   </div>
 </div>
 <div class="sheet" id="aboutSheet">
@@ -2783,10 +2796,11 @@ body.loop-still .pill.bad {
       '</div><div class="deg">' + (r.temp == null ? "—" : Math.round(r.temp) + "°") +
       '</div><div class="rain">' + amount(r.mm) + '</div><div class="gust">阵风 ' +
       (r.gust == null ? "—" : Math.round(r.gust) + "m/s") + '</div></div>').join("");
+    const expanded = !!el.querySelector('details[open]');
     el.innerHTML = '<div class="next2-head"><div class="next2-icon">' + (danger ? "!" : "雨") +
       '</div><div><strong>未来 2 小时 · ' + (danger ? "需要注意" : warn ? "留意变化" : "短临参考") +
-      '</strong><span>' + summary + '</span></div></div><div class="next2-grid">' + slots +
-      '</div><small class="next2-source">Open-Meteo · ' + data.minutes + ' 分钟时段预报；每格雨量为对应时段量，累计量按时间重叠估算。15 分钟数据在部分地区由小时预报插值，不代表逐分钟实测。</small>';
+      '</strong><span>' + summary + '</span></div></div><details class="short-term-detail"' + (expanded ? ' open' : '') + '><summary>查看分时预报</summary><div class="next2-grid">' + slots +
+      '</div><small class="next2-source">Open-Meteo · ' + data.minutes + ' 分钟时段预报；每格雨量为对应时段量，累计量按时间重叠估算。15 分钟数据在部分地区由小时预报插值，不代表逐分钟实测。</small></details>';
   }
   function renderOutdoor() {
     const d = insights.outdoor(state.weather, state.activity), el = $("outdoorWindows");
@@ -2911,7 +2925,7 @@ body.loop-still .pill.bad {
     const event = nearestExtremeWeather(w);
     if (!event) {
       el.className = "extreme-card ok";
-      el.innerHTML = '<div class="extreme-icon">✓</div><div class="extreme-copy"><strong>天气风险参考</strong><span>已提供的逐时预报内暂未触发风险阈值，覆盖至 ' + valid[valid.length-1].replace('T',' ') + '（城市当地时间）。</span></div>';
+      el.innerHTML = '<details class="risk-coverage"><summary>预报内暂未触发风险阈值</summary><span>已提供的逐时预报覆盖至 ' + valid[valid.length-1].replace('T',' ') + '（城市当地时间）。这是模型参考，请继续留意官方预警。</span></details>';
       return;
     }
     el.className = "extreme-card " + event.level;
@@ -2945,7 +2959,7 @@ body.loop-still .pill.bad {
     const hi = (daily.temperature_2m_max || [])[0];
     const lo = (daily.temperature_2m_min || [])[0];
     $("hl").innerHTML = (hi != null && lo != null)
-      ? ("高 <b>" + Math.round(hi) + "°</b><br>低 " + Math.round(lo) + "°")
+      ? ("高 <b>" + Math.round(hi) + "°</b> · 低 " + Math.round(lo) + "°")
       : "";
     $("hero").className = "hero " + heroWash(cur.weather_code, isDay);
     applySky(cur.weather_code, isDay);
@@ -2998,6 +3012,7 @@ body.loop-still .pill.bad {
         (tmax == null ? "—" : Math.round(tmax) + "°") + "</span></div></div>";
     });
     $("days").innerHTML = dh;
+    $("forecastExpand").hidden = $("days").children.length <= 5;
     const rise = (daily.sunrise || [])[0], sunset = (daily.sunset || [])[0], shine = (daily.sunshine_duration || [])[0];
     $("sunrow").innerHTML = '<span>☀ ' + (daily.time && daily.time[0] === dateKeyOffset(0) ? '今日' : (daily.time || ['日期未知'])[0]) + '</span><span>日出 <b>' + fmtHM(rise) + "</b></span><span>日落 <b>" + fmtHM(sunset) +
       "</b></span>" + (shine != null ? "<span>日照 <b>" + (shine / 3600).toFixed(1) + " 小时</b></span>" : "<span>日照 <b>—</b></span>");
@@ -3424,8 +3439,8 @@ body.loop-still .pill.bad {
   function syncSatRail() {
     const rail = $("satRail");
     if (!rail) return;
-    if (satWide()) rail.classList.add("open");
-    else if (!state.satRailUser) rail.classList.remove("open");
+    rail.classList.toggle("open", !!state.satRailUser);
+    $("satLayersBtn").setAttribute("aria-expanded", String(!!state.satRailUser));
   }
   function ymdParts(d, tz) {
     return new Intl.DateTimeFormat("en-GB", {
@@ -5245,6 +5260,7 @@ body.loop-still .pill.bad {
     const box = $("cityResults");
     const focused = box.contains(document.activeElement) ? document.activeElement.dataset.cityKey : null;
     $("cityResultsTitle").hidden = !$("citySearch").value.trim();
+    $("cityShortcuts").hidden = !!$("citySearch").value.trim();
     $("citySearchStatus").textContent = result.message;
     $("citySearchRetry").hidden = !result.retry;
     box.setAttribute("aria-busy", String(result.loading));
@@ -5253,7 +5269,8 @@ body.loop-still .pill.bad {
       const button = document.createElement("button"), detail = document.createElement("small");
       button.className = "city-row"; button.type = "button"; button.dataset.cityKey = CitySearch.key(c);
       button.textContent = c.name;
-      detail.textContent = [c.admin, c.country, c.timezone, c.lat.toFixed(4) + ", " + c.lon.toFixed(4)].filter(Boolean).join(" · ");
+      detail.textContent = [c.admin, c.country].filter(Boolean).join(" · ") || c.lat.toFixed(4) + ", " + c.lon.toFixed(4);
+      button.title = [c.name, c.admin, c.country, c.timezone, c.lat.toFixed(4) + ", " + c.lon.toFixed(4)].filter(Boolean).join(" · ");
       button.appendChild(detail);
       button.addEventListener("click", function () { citySearch.cancel(); pickCity(c); });
       box.appendChild(button);
@@ -5438,6 +5455,11 @@ body.loop-still .pill.bad {
     });
     $("aboutBtn").addEventListener("click", () => openSheet("aboutSheet"));
     $("closeCity").addEventListener("click", () => closeSheet("citySheet"));
+    $("forecastExpand").addEventListener("click", function () {
+      const expanded = $("days").classList.toggle("expanded");
+      this.setAttribute("aria-expanded", String(expanded));
+      this.textContent = expanded ? "收起预报" : "查看 16 天";
+    });
     $("closeAbout").addEventListener("click", () => closeSheet("aboutSheet"));
     $("citySheet").addEventListener("click", (e) => { if (e.target.id === "citySheet") closeSheet("citySheet"); });
     $("aboutSheet").addEventListener("click", (e) => { if (e.target.id === "aboutSheet") closeSheet("aboutSheet"); });
@@ -5537,13 +5559,9 @@ body.loop-still .pill.bad {
     });
     const satLayers = $("satLayersBtn");
     if (satLayers) satLayers.addEventListener("click", function () {
-      if (satWide()) {
-        $("satBmap").classList.toggle("open");
-      } else {
-        state.satRailUser = !$("satRail").classList.contains("open");
-        $("satRail").classList.toggle("open", state.satRailUser);
-        $("satBmap").classList.remove("open");
-      }
+      state.satRailUser = !state.satRailUser;
+      syncSatRail();
+      $("satBmap").classList.remove("open");
     });
     const satRailClose = $("satRailClose");
     if (satRailClose) satRailClose.addEventListener("click", function () {
@@ -5669,6 +5687,7 @@ body.loop-still .pill.bad {
       citySearch.cancel();
       const q = $("citySearch").value.trim();
       $("cityResults").replaceChildren();
+      $("cityShortcuts").hidden = !!q;
       $("cityResultsTitle").hidden = !q;
       $("citySearchRetry").hidden = true;
       $("citySearchStatus").textContent = q ? (composing ? '请完成地名输入' : '正在搜索全球地名…') : '';
