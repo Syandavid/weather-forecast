@@ -885,6 +885,15 @@ body.loop-still .sat-eye-ring.pulse::after { animation-play-state: paused !impor
   border-bottom: 1px solid var(--line); cursor: pointer; font-size: 15px;
 }
 .city-row small, .recent-row small { color: var(--muted); margin-left: 8px; }
+.city-search-form { display:flex; gap:8px; align-items:stretch; }
+.city-search-form .search { flex:1; min-width:0; }
+.city-search-form .chip { flex:none; min-width:64px; }
+.city-search-help, .city-search-status { color:var(--muted); font-size:13px; line-height:1.6; margin:8px 0; }
+.city-search-help { overflow-wrap:anywhere; }
+.city-search-status:empty { display:none; }
+#cityResults .city-row { min-height:64px; overflow-wrap:anywhere; }
+#cityResults .city-row small { display:block; margin:4px 0 0; font-size:12px; line-height:1.5; }
+#citySearch:focus-visible { outline:2px solid var(--blue, #4ea2ff); outline-offset:2px; }
 .hot-cities { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 12px; }
 .hot-chip {
   appearance: none; border: 1px solid var(--line);
@@ -1743,19 +1752,25 @@ body.loop-still .pill.bad {
 <div class="sheet" id="citySheet">
   <div class="sheet-card">
     <div class="handle"></div>
-    <h2>选择城市</h2>
-    <input class="search" id="citySearch" placeholder="搜索城市，例如 杭州" autocomplete="off">
+    <h2>选择全球城市 / 地点</h2>
+    <form class="city-search-form" id="citySearchForm" role="search">
+      <input class="search" id="citySearch" type="search" aria-label="搜索全球城市或坐标" aria-describedby="citySearchHelp" placeholder="城市名 / 纬度, 经度" autocomplete="off" enterkeyhint="search" maxlength="160">
+      <button class="chip" type="submit">搜索</button>
+    </form>
+    <p class="city-search-help" id="citySearchHelp">支持中文、英文及地名库收录的当地名称。同名城市可加国家，例如 Paris, France；偏远地区可输入 35.6895, 139.6917（纬度在前）。</p>
+    <div class="sec-title" id="cityResultsTitle" hidden>搜索结果</div>
+    <div class="city-search-status" id="citySearchStatus" role="status" aria-live="polite"></div>
+    <button class="chip" id="citySearchRetry" type="button" hidden>重试搜索</button>
+    <div id="cityResults"></div>
     <button class="city-row" id="sheetLocate" type="button">定位到当前位置</button>
     <button class="city-row city-favorite-current" id="toggleFavorite" type="button">☆ 收藏当前城市</button>
     <div id="geoHint" class="empty" style="margin:12px 0">也可在顶部使用定位</div>
-    <div class="sec-title">热门城市</div>
+    <div class="sec-title">常用城市 · 国内与全球</div>
     <div class="hot-cities" id="hotCities"></div>
     <div class="sec-title">收藏</div>
     <div id="favorites"></div>
     <div class="sec-title">最近</div>
     <div id="recents"></div>
-    <div class="sec-title" id="cityResultsTitle" hidden>搜索结果</div>
-    <div id="cityResults"></div>
     <button class="chip" id="closeCity" type="button" style="margin-top:12px">关闭</button>
   </div>
 </div>
@@ -1780,6 +1795,7 @@ body.loop-still .pill.bad {
 <script src="assets/weather-insights.js?v=25"></script>
 <script src="assets/map-weather.js?v=27.1"></script>
 <script src="assets/pro-weather.js?v=28"></script>
+<script src="assets/city-search.js?v=29.1"></script>
 <script>
 (function () {
   const insights = window.WeatherInsights;
@@ -1904,7 +1920,6 @@ body.loop-still .pill.bad {
     weatherRequest: 0,
     mapPickRequest: 0,
     stormRequest: 0,
-    citySearchRequest: 0,
     historyRequest: 0,
     historyCityKey: "",
     historyZone: "",
@@ -2396,17 +2411,24 @@ body.loop-still .pill.bad {
   function saveCity(c) {
     state.city = c;
     try { localStorage.setItem(CITY_KEY, JSON.stringify(c)); } catch (e) {}
-    const rec = state.recents.filter((x) => x.name !== c.name);
+    const rec = state.recents.filter((x) => cityKey(x) !== cityKey(c));
     rec.unshift(c);
     state.recents = rec.slice(0, 8);
     try { localStorage.setItem(REC_KEY, JSON.stringify(state.recents)); } catch (e) {}
-    $("cityBtn").innerHTML = c.name + " <small>选择城市</small>";
+    $("cityBtn").textContent = c.name + " ";
+    const prompt = document.createElement("small");
+    prompt.textContent = "选择城市";
+    $("cityBtn").appendChild(prompt);
+    $("cityBtn").title = [c.name, c.admin, c.country].filter(Boolean).join(" · ");
     update3DCityMarker();
     sync3DPlaceLanguage();
     syncFavoriteButton();
   }
   function cityKey(c) {
     return c ? (Math.round(Number(c.lat) * 10000) / 10000) + "," + (Math.round(Number(c.lon) * 10000) / 10000) : "";
+  }
+  function escapeCityText(value) {
+    return String(value || '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
   }
   function isFavorite(c) {
     const key = cityKey(c || state.city);
@@ -2428,8 +2450,8 @@ body.loop-still .pill.bad {
       return;
     }
     box.innerHTML = state.favorites.map(function (c, i) {
-      return '<div class="favorite-row"><button class="recent-row" data-favorite-index="' + i + '" type="button">' + c.name +
-        (c.admin ? "<small>" + c.admin + "</small>" : "") + '</button><button class="favorite-toggle" data-favorite-remove="' + i + '" type="button" aria-label="取消收藏 ' + c.name + '">★</button></div>';
+      return '<div class="favorite-row"><button class="recent-row" data-favorite-index="' + i + '" type="button">' + escapeCityText(c.name) +
+        '<small>' + escapeCityText([c.admin, c.country].filter(Boolean).join(' · ')) + '</small></button><button class="favorite-toggle" data-favorite-remove="' + i + '" type="button" aria-label="取消收藏 ' + escapeCityText(c.name) + '">★</button></div>';
     }).join("");
     box.querySelectorAll("[data-favorite-index]").forEach(function (el) {
       el.addEventListener("click", function () { pickCity(state.favorites[+el.getAttribute("data-favorite-index")]); });
@@ -2496,7 +2518,7 @@ body.loop-still .pill.bad {
       renderAlerts();
     } else {
       state.weather = null;
-      ["hl","summary","sunrow","hours","days","metrics","life","extremeCard"].forEach(id => { $(id).textContent = ''; });
+      ["hl","summary","sunrow","hours","days","metrics","life","extremeCard","trendChart","trendSelected","trendLegend"].forEach(id => { $(id).textContent = ''; });
       $("temp").innerHTML = '--<span>°</span>';
       $("phrase").textContent = '正在获取所选城市天气';
       $("next2Card").hidden = true;
@@ -2522,6 +2544,7 @@ body.loop-still .pill.bad {
         w = await getJson(wurl);
       } catch (e1) {
         await sleep(800);
+        if (requestId !== state.weatherRequest) return;
         w = await getJson(wurl);
       }
       if (requestId !== state.weatherRequest) return;
@@ -3373,7 +3396,13 @@ body.loop-still .pill.bad {
     { name: "青岛", lat: 36.07, lon: 120.38, admin: "山东省" },
     { name: "长沙", lat: 28.23, lon: 112.94, admin: "湖南省" },
     { name: "台北", lat: 25.03, lon: 121.57, admin: "台湾" },
-    { name: "香港", lat: 22.32, lon: 114.17, admin: "香港" }
+    { name: "香港", lat: 22.32, lon: 114.17, admin: "香港" },
+    { name: "London", lat: 51.50853, lon: -0.12574, country: "英国", country_code: "GB" },
+    { name: "Tokyo · 東京", lat: 35.6895, lon: 139.69171, country: "日本", country_code: "JP" },
+    { name: "New York", lat: 40.71427, lon: -74.00597, country: "美国", country_code: "US" },
+    { name: "Sydney", lat: -33.86785, lon: 151.20732, country: "澳大利亚", country_code: "AU" },
+    { name: "Nairobi", lat: -1.28333, lon: 36.81667, country: "肯尼亚", country_code: "KE" },
+    { name: "São Paulo", lat: -23.5475, lon: -46.63611, country: "巴西", country_code: "BR" }
   ];
   const ICON_PLAY = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
   const ICON_PAUSE = '<svg viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>';
@@ -5212,42 +5241,25 @@ body.loop-still .pill.bad {
   }
   function openSheet(id) { $(id).classList.add("open"); }
   function closeSheet(id) { $(id).classList.remove("open"); }
-  async function searchCity(q) {
-    const requestId = ++state.citySearchRequest;
+  const citySearch = CitySearch.create({getJson, onUpdate: function (result) {
     const box = $("cityResults");
-    const title = $("cityResultsTitle");
-    if (!q || q.length < 1) {
-      if (box) box.innerHTML = "";
-      if (title) title.hidden = true;
-      return;
-    }
-    if (title) title.hidden = false;
-    try {
-      const queries = "name=" + encodeURIComponent(q) + "&count=8&format=json";
-      const pair = await Promise.all([
-        getJson("https://geocoding-api.open-meteo.com/v1/search?" + queries + "&language=zh"),
-        getJson("https://geocoding-api.open-meteo.com/v1/search?" + queries + "&language=en")
-      ]);
-      if (requestId !== state.citySearchRequest) return;
-      const zhRows = pair[0].results || [], englishRows = pair[1].results || [];
-      const rows = /^[\x00-\x7F]+$/.test(q) ? englishRows : zhRows;
-      rows.forEach(function (r) {
-        const en = englishRows.find(x => x.id === r.id);
-        const zh = zhRows.find(x => x.id === r.id);
-        if (isChinaResult(r) && zh) r.name = zh.name;
-        else if (en) { r.name_en = en.name; r.name = en.name; }
-      });
-      if (!rows.length) { box.innerHTML = '<div class="empty">没有找到这个地名</div>'; return; }
-      box.innerHTML = rows.map((r, i) => '<button class="city-row" data-i="' + i + '" type="button">' + placeNameFromResult(r) +
-        "<small>" + [r.admin1, r.country].filter(Boolean).join(" · ") + "</small></button>").join("");
-      box.querySelectorAll(".city-row").forEach((el, i) => {
-        el.addEventListener("click", () => pickCity({ name: placeNameFromResult(rows[i]), lat: rows[i].latitude, lon: rows[i].longitude, admin: rows[i].admin1, country: rows[i].country, country_code: rows[i].country_code, isChina: isChinaResult(rows[i]) }));
-      });
-    } catch (e) {
-      if (requestId !== state.citySearchRequest) return;
-      box.innerHTML = '<div class="empty">搜索暂时不可用，可用热门城市</div>';
-    }
-  }
+    const focused = box.contains(document.activeElement) ? document.activeElement.dataset.cityKey : null;
+    $("cityResultsTitle").hidden = !$("citySearch").value.trim();
+    $("citySearchStatus").textContent = result.message;
+    $("citySearchRetry").hidden = !result.retry;
+    box.setAttribute("aria-busy", String(result.loading));
+    box.replaceChildren();
+    result.rows.forEach(function (c) {
+      const button = document.createElement("button"), detail = document.createElement("small");
+      button.className = "city-row"; button.type = "button"; button.dataset.cityKey = CitySearch.key(c);
+      button.textContent = c.name;
+      detail.textContent = [c.admin, c.country, c.timezone, c.lat.toFixed(4) + ", " + c.lon.toFixed(4)].filter(Boolean).join(" · ");
+      button.appendChild(detail);
+      button.addEventListener("click", function () { citySearch.cancel(); pickCity(c); });
+      box.appendChild(button);
+      if (focused === button.dataset.cityKey) button.focus({preventScroll:true});
+    });
+  }});
   function renderHotCities() {
     const box = $("hotCities");
     if (!box) return;
@@ -5263,11 +5275,12 @@ body.loop-still .pill.bad {
   function renderRecents() {
     const box = $("recents");
     if (!state.recents.length) { box.innerHTML = '<div class="empty" style="margin:8px">还没有最近城市</div>'; return; }
-    box.innerHTML = state.recents.map((c, i) => '<button class="recent-row" data-i="' + i + '" type="button">' + c.name +
-      (c.admin ? "<small>" + c.admin + "</small>" : "") + "</button>").join("");
+    box.innerHTML = state.recents.map((c, i) => '<button class="recent-row" data-i="' + i + '" type="button">' + escapeCityText(c.name) +
+      '<small>' + escapeCityText([c.admin, c.country].filter(Boolean).join(' · ')) + '</small></button>').join("");
     box.querySelectorAll(".recent-row").forEach((el, i) => el.addEventListener("click", () => pickCity(state.recents[i])));
   }
   function pickCity(c) {
+    citySearch.cancel();
     state.modelRequest++;
     state.modelLoadingKey = '';
     state.modelCache = null;
@@ -5421,7 +5434,7 @@ body.loop-still .pill.bad {
       renderRecents();
       openSheet("citySheet");
       const q = $("citySearch");
-      if (q) q.focus();
+      if (q) { q.focus(); if (q.value.trim()) citySearch.search(q.value); }
     });
     $("aboutBtn").addEventListener("click", () => openSheet("aboutSheet"));
     $("closeCity").addEventListener("click", () => closeSheet("citySheet"));
@@ -5650,12 +5663,27 @@ body.loop-still .pill.bad {
         showRadarFrame(Math.max(0,Math.min(n-1,index)));
       });
     }
-    let timer = 0;
-    $("citySearch").addEventListener("input", () => {
+    let timer = 0, composing = false;
+    const scheduleSearch = function () {
       clearTimeout(timer);
+      citySearch.cancel();
       const q = $("citySearch").value.trim();
-      timer = setTimeout(() => searchCity(q), 280);
+      $("cityResults").replaceChildren();
+      $("cityResultsTitle").hidden = !q;
+      $("citySearchRetry").hidden = true;
+      $("citySearchStatus").textContent = q ? (composing ? '请完成地名输入' : '正在搜索全球地名…') : '';
+      $("cityResults").setAttribute('aria-busy', String(!!q && !composing));
+      if (!composing) timer = setTimeout(() => citySearch.search(q), 400);
+    };
+    $("citySearch").addEventListener("compositionstart", () => { composing = true; scheduleSearch(); });
+    $("citySearch").addEventListener("compositionend", () => { composing = false; scheduleSearch(); });
+    $("citySearch").addEventListener("input", scheduleSearch);
+    const submitSearch = function () { clearTimeout(timer); citySearch.search($("citySearch").value); };
+    $("citySearchForm").addEventListener("submit", e => {
+      e.preventDefault();
+      if (!composing) { $("citySearch").blur(); submitSearch(); }
     });
+    $("citySearchRetry").addEventListener("click", submitSearch);
   }
   function init() {
     try {

@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+- v29.1: Put global search results above shortcuts; add explicit submit/retry, coordinate input, country-qualified queries, and common translated international-city aliases.
+- Merge language results by location ID with partial-failure support, input-language ranking, IME-aware debouncing, bounded caching, and stale-query cancellation. Display country/region/timezone/coordinates and preserve namesake recents by coordinate rather than name.
+- Clear previous-city trend content while uncached weather loads, avoid retrying a superseded weather request, version the new search asset/PWA cache, and add offline regression plus opt-in live global-weather checks.
+
 - v27: Replace the 96px forecast overlay with aspect-aware bounded high-resolution rendering, denser regional sampling, continuous precipitation colors/alpha and bounded shape-preserving interpolation.
 - Move raster generation and supported PNG encoding to a worker; retain eight frames, skip superseded times, and keep the previous frame explicitly labeled during rendering. Preserve unknown data and original source-node values.
 
