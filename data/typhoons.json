@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-20T18:59:32Z",
+  "updated": "2026-09-20T21:28:33Z",
   "sources": [
     "CMA",
     "NHC"
@@ -16,14 +16,14 @@
       "status": "start",
       "grade": "STS",
       "gradeZh": "强热带风暴",
-      "lat": 31.3,
-      "lon": 137.9,
+      "lat": 32,
+      "lon": 138.2,
       "windMs": 30,
       "pressure": 980,
-      "moveDir": "NNE",
-      "moveSpeedKmh": 24,
-      "time": "2026-09-20T18:00:00Z",
-      "issuedZh": "2026年09月21日02时00分",
+      "moveDir": "NE",
+      "moveSpeedKmh": 25,
+      "time": "2026-09-20T21:00:00Z",
+      "issuedZh": "2026年09月21日05时00分",
       "radii": [
         {
           "kt": 30,
@@ -1020,14 +1020,43 @@
               "nw": 100
             }
           ]
+        },
+        {
+          "time": "2026-09-20T21:00:00Z",
+          "timeRaw": "202609202100",
+          "lon": 138.2,
+          "lat": 32,
+          "pressure": 980,
+          "windMs": 30,
+          "grade": "STS",
+          "gradeZh": "强热带风暴",
+          "moveDir": "NE",
+          "moveSpeedKmh": 25,
+          "kind": "analysis",
+          "radii": [
+            {
+              "kt": 30,
+              "ne": 500,
+              "se": 300,
+              "sw": 300,
+              "nw": 400
+            },
+            {
+              "kt": 50,
+              "ne": 100,
+              "se": 100,
+              "sw": 100,
+              "nw": 100
+            }
+          ]
         }
       ],
       "forecast": [
         {
           "leadH": 12,
-          "baseTime": "2026-09-20T18:00:00Z",
-          "lon": 139.3,
-          "lat": 33.6,
+          "baseTime": "2026-09-20T21:00:00Z",
+          "lon": 140.3,
+          "lat": 34,
           "pressure": 980,
           "windMs": 30,
           "agency": "BABJ",
@@ -1037,9 +1066,9 @@
         },
         {
           "leadH": 24,
-          "baseTime": "2026-09-20T18:00:00Z",
-          "lon": 143.4,
-          "lat": 36.3,
+          "baseTime": "2026-09-20T21:00:00Z",
+          "lon": 145.1,
+          "lat": 36.9,
           "pressure": 980,
           "windMs": 30,
           "agency": "BABJ",
@@ -1049,23 +1078,11 @@
         },
         {
           "leadH": 36,
-          "baseTime": "2026-09-20T18:00:00Z",
-          "lon": 149.7,
-          "lat": 39,
-          "pressure": 980,
-          "windMs": 30,
-          "agency": "BABJ",
-          "grade": "STS",
-          "gradeZh": "强热带风暴",
-          "kind": "forecast"
-        },
-        {
-          "leadH": 48,
-          "baseTime": "2026-09-20T18:00:00Z",
-          "lon": 156.2,
-          "lat": 40.7,
-          "pressure": 982,
-          "windMs": 28,
+          "baseTime": "2026-09-20T21:00:00Z",
+          "lon": 151.3,
+          "lat": 39.1,
+          "pressure": 985,
+          "windMs": 25,
           "agency": "BABJ",
           "grade": "STS",
           "gradeZh": "强热带风暴",
@@ -1084,22 +1101,22 @@
       "status": "start",
       "grade": "TS",
       "gradeZh": "热带风暴",
-      "lat": 34.1,
-      "lon": -33,
-      "windMs": 25.7,
-      "windKt": 50.0,
-      "pressure": 1004,
-      "moveDir": 40,
-      "moveSpeedKmh": 5.6,
-      "time": "2026-09-20T15:00:00.000Z",
+      "lat": 34.4,
+      "lon": -32.7,
+      "windMs": 28.3,
+      "windKt": 55.0,
+      "pressure": 999,
+      "moveDir": 20,
+      "moveSpeedKmh": 11.1,
+      "time": "2026-09-20T21:00:00.000Z",
       "classification": "TS",
       "radii": [],
       "track": [
         {
-          "lat": 34.1,
-          "lon": -33,
-          "time": "2026-09-20T15:00:00.000Z",
-          "windMs": 25.7,
+          "lat": 34.4,
+          "lon": -32.7,
+          "time": "2026-09-20T21:00:00.000Z",
+          "windMs": 28.3,
           "grade": "TS",
           "kind": "analysis"
         }
@@ -1117,23 +1134,56 @@
       "status": "start",
       "grade": "TS",
       "gradeZh": "热带风暴",
-      "lat": 11.1,
-      "lon": -125.5,
-      "windMs": 20.6,
-      "windKt": 40.0,
-      "pressure": 1003,
-      "moveDir": 285,
-      "moveSpeedKmh": 16.7,
-      "time": "2026-09-20T15:00:00.000Z",
+      "lat": 11.7,
+      "lon": -126.6,
+      "windMs": 23.1,
+      "windKt": 45.0,
+      "pressure": 1002,
+      "moveDir": 300,
+      "moveSpeedKmh": 18.5,
+      "time": "2026-09-20T21:00:00.000Z",
       "classification": "TS",
       "radii": [],
       "track": [
         {
-          "lat": 11.1,
-          "lon": -125.5,
-          "time": "2026-09-20T15:00:00.000Z",
-          "windMs": 20.6,
+          "lat": 11.7,
+          "lon": -126.6,
+          "time": "2026-09-20T21:00:00.000Z",
+          "windMs": 23.1,
           "grade": "TS",
+          "kind": "analysis"
+        }
+      ],
+      "forecast": []
+    },
+    {
+      "id": "nhc-ep172026",
+      "provider": "NHC",
+      "basin": "EPAC",
+      "basinZh": "东北太平洋",
+      "nameZh": "Seventeen-E",
+      "nameEn": "Seventeen-E",
+      "code": "ep172026",
+      "status": "start",
+      "grade": "TD",
+      "gradeZh": "热带低压",
+      "lat": 14.9,
+      "lon": -104.9,
+      "windMs": 15.4,
+      "windKt": 30.0,
+      "pressure": 1007,
+      "moveDir": 30,
+      "moveSpeedKmh": 14.8,
+      "time": "2026-09-20T21:00:00.000Z",
+      "classification": "TD",
+      "radii": [],
+      "track": [
+        {
+          "lat": 14.9,
+          "lon": -104.9,
+          "time": "2026-09-20T21:00:00.000Z",
+          "windMs": 15.4,
+          "grade": "TD",
           "kind": "analysis"
         }
       ],
