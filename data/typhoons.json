@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-21T14:58:31Z",
+  "updated": "2026-09-21T19:56:46Z",
   "sources": [
     "CMA",
     "NHC"
@@ -16,14 +16,14 @@
       "status": "start",
       "grade": "STS",
       "gradeZh": "强热带风暴",
-      "lat": 35.2,
-      "lon": 141.8,
-      "windMs": 30,
-      "pressure": 980,
+      "lat": 36.6,
+      "lon": 144.2,
+      "windMs": 28,
+      "pressure": 982,
       "moveDir": "ENE",
       "moveSpeedKmh": 45,
-      "time": "2026-09-21T12:00:00Z",
-      "issuedZh": "2026年09月21日20时00分",
+      "time": "2026-09-21T18:00:00Z",
+      "issuedZh": "2026年09月22日02时00分",
       "radii": [
         {
           "kt": 30,
@@ -1194,16 +1194,74 @@
               "nw": 100
             }
           ]
+        },
+        {
+          "time": "2026-09-21T15:00:00Z",
+          "timeRaw": "202609211500",
+          "lon": 143,
+          "lat": 35.7,
+          "pressure": 980,
+          "windMs": 30,
+          "grade": "STS",
+          "gradeZh": "强热带风暴",
+          "moveDir": "NE",
+          "moveSpeedKmh": 44,
+          "kind": "analysis",
+          "radii": [
+            {
+              "kt": 30,
+              "ne": 500,
+              "se": 300,
+              "sw": 300,
+              "nw": 400
+            },
+            {
+              "kt": 50,
+              "ne": 100,
+              "se": 100,
+              "sw": 100,
+              "nw": 100
+            }
+          ]
+        },
+        {
+          "time": "2026-09-21T18:00:00Z",
+          "timeRaw": "202609211800",
+          "lon": 144.2,
+          "lat": 36.6,
+          "pressure": 982,
+          "windMs": 28,
+          "grade": "STS",
+          "gradeZh": "强热带风暴",
+          "moveDir": "ENE",
+          "moveSpeedKmh": 45,
+          "kind": "analysis",
+          "radii": [
+            {
+              "kt": 30,
+              "ne": 500,
+              "se": 300,
+              "sw": 300,
+              "nw": 400
+            },
+            {
+              "kt": 50,
+              "ne": 100,
+              "se": 100,
+              "sw": 100,
+              "nw": 100
+            }
+          ]
         }
       ],
       "forecast": [
         {
           "leadH": 12,
-          "baseTime": "2026-09-21T12:00:00Z",
-          "lon": 146.9,
-          "lat": 37.8,
-          "pressure": 980,
-          "windMs": 30,
+          "baseTime": "2026-09-21T18:00:00Z",
+          "lon": 149.6,
+          "lat": 38.7,
+          "pressure": 985,
+          "windMs": 25,
           "agency": "BABJ",
           "grade": "STS",
           "gradeZh": "强热带风暴",
@@ -1211,14 +1269,14 @@
         },
         {
           "leadH": 24,
-          "baseTime": "2026-09-21T12:00:00Z",
-          "lon": 154.7,
-          "lat": 40.1,
-          "pressure": 985,
-          "windMs": 25,
+          "baseTime": "2026-09-21T18:00:00Z",
+          "lon": 158.1,
+          "lat": 40.3,
+          "pressure": 988,
+          "windMs": 23,
           "agency": "BABJ",
-          "grade": "STS",
-          "gradeZh": "强热带风暴",
+          "grade": "TS",
+          "gradeZh": "热带风暴",
           "kind": "forecast"
         }
       ]
@@ -1298,25 +1356,25 @@
       "nameEn": "Polo",
       "code": "ep172026",
       "status": "start",
-      "grade": "TS",
-      "gradeZh": "热带风暴",
-      "lat": 15.4,
-      "lon": -103.4,
-      "windMs": 28.3,
-      "windKt": 55.0,
-      "pressure": 997,
-      "moveDir": 90,
+      "grade": "HU",
+      "gradeZh": "飓风",
+      "lat": 15.3,
+      "lon": -103,
+      "windMs": 36.0,
+      "windKt": 70.0,
+      "pressure": 977,
+      "moveDir": 100,
       "moveSpeedKmh": 9.3,
-      "time": "2026-09-21T15:00:00.000Z",
-      "classification": "TS",
+      "time": "2026-09-21T18:00:00.000Z",
+      "classification": "HU",
       "radii": [],
       "track": [
         {
-          "lat": 15.4,
-          "lon": -103.4,
-          "time": "2026-09-21T15:00:00.000Z",
-          "windMs": 28.3,
-          "grade": "TS",
+          "lat": 15.3,
+          "lon": -103,
+          "time": "2026-09-21T18:00:00.000Z",
+          "windMs": 36.0,
+          "grade": "HU",
           "kind": "analysis"
         }
       ],
