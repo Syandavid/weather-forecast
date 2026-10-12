@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-11T22:20:15Z",
+  "updated": "2026-10-12T01:36:52Z",
   "sources": [
     "CMA",
     "NHC"
@@ -16,14 +16,14 @@
       "status": "start",
       "grade": "STY",
       "gradeZh": "强台风",
-      "lat": 27.7,
+      "lat": 28.3,
       "lon": 147.4,
-      "windMs": 48,
-      "pressure": 945,
+      "windMs": 45,
+      "pressure": 950,
       "moveDir": "NNE",
-      "moveSpeedKmh": 26,
-      "time": "2026-10-11T21:00:00Z",
-      "issuedZh": "2026年10月12日05时00分",
+      "moveSpeedKmh": 27,
+      "time": "2026-10-12T00:00:00Z",
+      "issuedZh": "2026年10月12日08时00分",
       "radii": [
         {
           "kt": 30,
@@ -1718,14 +1718,50 @@
               "nw": 60
             }
           ]
+        },
+        {
+          "time": "2026-10-12T00:00:00Z",
+          "timeRaw": "202610120000",
+          "lon": 147.4,
+          "lat": 28.3,
+          "pressure": 950,
+          "windMs": 45,
+          "grade": "STY",
+          "gradeZh": "强台风",
+          "moveDir": "NNE",
+          "moveSpeedKmh": 27,
+          "kind": "analysis",
+          "radii": [
+            {
+              "kt": 30,
+              "ne": 320,
+              "se": 320,
+              "sw": 220,
+              "nw": 250
+            },
+            {
+              "kt": 50,
+              "ne": 120,
+              "se": 120,
+              "sw": 100,
+              "nw": 100
+            },
+            {
+              "kt": 64,
+              "ne": 60,
+              "se": 60,
+              "sw": 60,
+              "nw": 60
+            }
+          ]
         }
       ],
       "forecast": [
         {
           "leadH": 12,
-          "baseTime": "2026-10-11T21:00:00Z",
-          "lon": 148,
-          "lat": 30.4,
+          "baseTime": "2026-10-12T00:00:00Z",
+          "lon": 148.4,
+          "lat": 31,
           "pressure": 960,
           "windMs": 40,
           "agency": "BABJ",
@@ -1735,9 +1771,9 @@
         },
         {
           "leadH": 24,
-          "baseTime": "2026-10-11T21:00:00Z",
-          "lon": 150.4,
-          "lat": 33.2,
+          "baseTime": "2026-10-12T00:00:00Z",
+          "lon": 151.3,
+          "lat": 34,
           "pressure": 970,
           "windMs": 35,
           "agency": "BABJ",
@@ -1747,9 +1783,9 @@
         },
         {
           "leadH": 36,
-          "baseTime": "2026-10-11T21:00:00Z",
-          "lon": 154.1,
-          "lat": 35.9,
+          "baseTime": "2026-10-12T00:00:00Z",
+          "lon": 155,
+          "lat": 36.8,
           "pressure": 980,
           "windMs": 30,
           "agency": "BABJ",
@@ -1759,9 +1795,9 @@
         },
         {
           "leadH": 48,
-          "baseTime": "2026-10-11T21:00:00Z",
-          "lon": 157.6,
-          "lat": 38.6,
+          "baseTime": "2026-10-12T00:00:00Z",
+          "lon": 159.3,
+          "lat": 39.8,
           "pressure": 985,
           "windMs": 25,
           "agency": "BABJ",
@@ -1771,83 +1807,17 @@
         },
         {
           "leadH": 60,
-          "baseTime": "2026-10-11T21:00:00Z",
-          "lon": 161.6,
-          "lat": 40.8,
+          "baseTime": "2026-10-12T00:00:00Z",
+          "lon": 163.9,
+          "lat": 42,
           "pressure": 990,
-          "windMs": 20,
+          "windMs": 23,
           "agency": "BABJ",
           "grade": "TS",
           "gradeZh": "热带风暴",
           "kind": "forecast"
         }
       ]
-    },
-    {
-      "id": "nhc-al092026",
-      "provider": "NHC",
-      "basin": "ATL",
-      "basinZh": "大西洋",
-      "nameZh": "Isaias",
-      "nameEn": "Isaias",
-      "code": "al092026",
-      "status": "start",
-      "grade": "PTC",
-      "gradeZh": "潜在热带气旋",
-      "lat": 37.5,
-      "lon": -84,
-      "windMs": 10.3,
-      "windKt": 20.0,
-      "pressure": 1010,
-      "moveDir": 65,
-      "moveSpeedKmh": 40.7,
-      "time": "2026-10-11T15:00:00.000Z",
-      "classification": "PTC",
-      "radii": [],
-      "track": [
-        {
-          "lat": 37.5,
-          "lon": -84,
-          "time": "2026-10-11T15:00:00.000Z",
-          "windMs": 10.3,
-          "grade": "PTC",
-          "kind": "analysis"
-        }
-      ],
-      "forecast": []
-    },
-    {
-      "id": "nhc-ep182026",
-      "provider": "NHC",
-      "basin": "EPAC",
-      "basinZh": "东北太平洋",
-      "nameZh": "Rachel",
-      "nameEn": "Rachel",
-      "code": "ep182026",
-      "status": "start",
-      "grade": "PTC",
-      "gradeZh": "潜在热带气旋",
-      "lat": 35.8,
-      "lon": -114.6,
-      "windMs": 15.4,
-      "windKt": 30.0,
-      "pressure": 994,
-      "moveDir": 15,
-      "moveSpeedKmh": 53.7,
-      "time": "2026-10-11T15:00:00.000Z",
-      "classification": "PTC",
-      "radii": [],
-      "track": [
-        {
-          "lat": 35.8,
-          "lon": -114.6,
-          "time": "2026-10-11T15:00:00.000Z",
-          "windMs": 15.4,
-          "grade": "PTC",
-          "kind": "analysis"
-        }
-      ],
-      "forecast": []
     },
     {
       "id": "nhc-ep202026",
@@ -1860,22 +1830,22 @@
       "status": "start",
       "grade": "HU",
       "gradeZh": "飓风",
-      "lat": 19.6,
+      "lat": 19.7,
       "lon": -105.8,
-      "windMs": 59.2,
-      "windKt": 115.0,
-      "pressure": 947,
-      "moveDir": 335,
-      "moveSpeedKmh": 11.1,
-      "time": "2026-10-11T21:00:00.000Z",
+      "windMs": 56.6,
+      "windKt": 110.0,
+      "pressure": 951,
+      "moveDir": 325,
+      "moveSpeedKmh": 9.3,
+      "time": "2026-10-12T00:00:00.000Z",
       "classification": "HU",
       "radii": [],
       "track": [
         {
-          "lat": 19.6,
+          "lat": 19.7,
           "lon": -105.8,
-          "time": "2026-10-11T21:00:00.000Z",
-          "windMs": 59.2,
+          "time": "2026-10-12T00:00:00.000Z",
+          "windMs": 56.6,
           "grade": "HU",
           "kind": "analysis"
         }
