@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-17T21:38:40Z",
+  "updated": "2026-10-17T23:53:19Z",
   "sources": [
     "CMA",
     "NHC"
@@ -776,21 +776,21 @@
       "status": "start",
       "grade": "HU",
       "gradeZh": "飓风",
-      "lat": 17.5,
-      "lon": -105,
+      "lat": 17.9,
+      "lon": -105.3,
       "windMs": 43.7,
       "windKt": 85.0,
       "pressure": 976,
       "moveDir": 325,
       "moveSpeedKmh": 18.5,
-      "time": "2026-10-17T21:00:00.000Z",
+      "time": "2026-10-18T00:00:00.000Z",
       "classification": "HU",
       "radii": [],
       "track": [
         {
-          "lat": 17.5,
-          "lon": -105,
-          "time": "2026-10-17T21:00:00.000Z",
+          "lat": 17.9,
+          "lon": -105.3,
+          "time": "2026-10-18T00:00:00.000Z",
           "windMs": 43.7,
           "grade": "HU",
           "kind": "analysis"
