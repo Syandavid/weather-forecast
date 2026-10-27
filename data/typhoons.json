@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-26T20:40:50Z",
+  "updated": "2026-10-27T00:17:25Z",
   "sources": [
     "CMA",
     "NHC"
@@ -14,30 +14,30 @@
       "nameEn": "IN-FA",
       "code": "2631",
       "status": "start",
-      "grade": "STY",
-      "gradeZh": "强台风",
-      "lat": 14.2,
-      "lon": 162.6,
-      "windMs": 50,
-      "pressure": 940,
+      "grade": "SuperTY",
+      "gradeZh": "超强台风",
+      "lat": 14.3,
+      "lon": 162.5,
+      "windMs": 52,
+      "pressure": 935,
       "moveDir": "W",
-      "moveSpeedKmh": 7,
-      "time": "2026-10-26T18:00:00Z",
-      "issuedZh": "2026年10月27日02时00分",
+      "moveSpeedKmh": 9,
+      "time": "2026-10-26T21:00:00Z",
+      "issuedZh": "2026年10月27日05时00分",
       "radii": [
         {
           "kt": 30,
-          "ne": 180,
-          "se": 200,
-          "sw": 180,
-          "nw": 240
+          "ne": 320,
+          "se": 250,
+          "sw": 220,
+          "nw": 280
         },
         {
           "kt": 50,
-          "ne": 80,
-          "se": 60,
-          "sw": 50,
-          "nw": 70
+          "ne": 100,
+          "se": 90,
+          "sw": 80,
+          "nw": 90
         },
         {
           "kt": 64,
@@ -723,14 +723,50 @@
               "nw": 40
             }
           ]
+        },
+        {
+          "time": "2026-10-26T21:00:00Z",
+          "timeRaw": "202610262100",
+          "lon": 162.5,
+          "lat": 14.3,
+          "pressure": 935,
+          "windMs": 52,
+          "grade": "SuperTY",
+          "gradeZh": "超强台风",
+          "moveDir": "W",
+          "moveSpeedKmh": 9,
+          "kind": "analysis",
+          "radii": [
+            {
+              "kt": 30,
+              "ne": 320,
+              "se": 250,
+              "sw": 220,
+              "nw": 280
+            },
+            {
+              "kt": 50,
+              "ne": 100,
+              "se": 90,
+              "sw": 80,
+              "nw": 90
+            },
+            {
+              "kt": 64,
+              "ne": 40,
+              "se": 30,
+              "sw": 30,
+              "nw": 40
+            }
+          ]
         }
       ],
       "forecast": [
         {
           "leadH": 12,
-          "baseTime": "2026-10-26T18:00:00Z",
-          "lon": 161.9,
-          "lat": 14.2,
+          "baseTime": "2026-10-26T21:00:00Z",
+          "lon": 161.6,
+          "lat": 14.3,
           "pressure": 930,
           "windMs": 55,
           "agency": "BABJ",
@@ -740,9 +776,9 @@
         },
         {
           "leadH": 24,
-          "baseTime": "2026-10-26T18:00:00Z",
-          "lon": 160.7,
-          "lat": 14.3,
+          "baseTime": "2026-10-26T21:00:00Z",
+          "lon": 160.2,
+          "lat": 14.4,
           "pressure": 925,
           "windMs": 58,
           "agency": "BABJ",
@@ -752,11 +788,11 @@
         },
         {
           "leadH": 36,
-          "baseTime": "2026-10-26T18:00:00Z",
-          "lon": 158.8,
-          "lat": 14.5,
-          "pressure": 925,
-          "windMs": 58,
+          "baseTime": "2026-10-26T21:00:00Z",
+          "lon": 158,
+          "lat": 14.7,
+          "pressure": 920,
+          "windMs": 60,
           "agency": "BABJ",
           "grade": "SuperTY",
           "gradeZh": "超强台风",
@@ -764,11 +800,11 @@
         },
         {
           "leadH": 48,
-          "baseTime": "2026-10-26T18:00:00Z",
-          "lon": 156.3,
-          "lat": 14.8,
-          "pressure": 920,
-          "windMs": 60,
+          "baseTime": "2026-10-26T21:00:00Z",
+          "lon": 155.3,
+          "lat": 15,
+          "pressure": 915,
+          "windMs": 62,
           "agency": "BABJ",
           "grade": "SuperTY",
           "gradeZh": "超强台风",
@@ -776,11 +812,11 @@
         },
         {
           "leadH": 60,
-          "baseTime": "2026-10-26T18:00:00Z",
-          "lon": 153.1,
-          "lat": 15.2,
-          "pressure": 920,
-          "windMs": 60,
+          "baseTime": "2026-10-26T21:00:00Z",
+          "lon": 152,
+          "lat": 15.5,
+          "pressure": 915,
+          "windMs": 62,
           "agency": "BABJ",
           "grade": "SuperTY",
           "gradeZh": "超强台风",
@@ -788,9 +824,9 @@
         },
         {
           "leadH": 72,
-          "baseTime": "2026-10-26T18:00:00Z",
-          "lon": 149.4,
-          "lat": 15.8,
+          "baseTime": "2026-10-26T21:00:00Z",
+          "lon": 148.2,
+          "lat": 16.3,
           "pressure": 915,
           "windMs": 62,
           "agency": "BABJ",
@@ -800,11 +836,11 @@
         },
         {
           "leadH": 96,
-          "baseTime": "2026-10-26T18:00:00Z",
-          "lon": 142.7,
-          "lat": 18.8,
-          "pressure": 915,
-          "windMs": 62,
+          "baseTime": "2026-10-26T21:00:00Z",
+          "lon": 142,
+          "lat": 19.6,
+          "pressure": 920,
+          "windMs": 60,
           "agency": "BABJ",
           "grade": "SuperTY",
           "gradeZh": "超强台风",
@@ -812,9 +848,9 @@
         },
         {
           "leadH": 120,
-          "baseTime": "2026-10-26T18:00:00Z",
-          "lon": 140,
-          "lat": 20.8,
+          "baseTime": "2026-10-26T21:00:00Z",
+          "lon": 140.1,
+          "lat": 21.4,
           "pressure": 920,
           "windMs": 60,
           "agency": "BABJ",
