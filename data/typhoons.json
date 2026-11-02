@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-02T08:04:40Z",
+  "updated": "2026-11-02T18:43:55Z",
   "sources": [
     "CMA",
     "NHC"
@@ -14,29 +14,29 @@
       "nameEn": "IN-FA",
       "code": "2631",
       "status": "start",
-      "grade": "TY",
-      "gradeZh": "台风",
-      "lat": 22.6,
-      "lon": 141,
-      "windMs": 33,
-      "pressure": 975,
+      "grade": "STS",
+      "gradeZh": "强热带风暴",
+      "lat": 23,
+      "lon": 140,
+      "windMs": 28,
+      "pressure": 982,
       "moveDir": "WNW",
-      "moveSpeedKmh": 10,
-      "time": "2026-11-02T06:00:00Z",
-      "issuedZh": "2026年11月02日14时00分",
+      "moveSpeedKmh": 6,
+      "time": "2026-11-02T15:00:00Z",
+      "issuedZh": "2026年11月02日23时00分",
       "radii": [
         {
           "kt": 30,
-          "ne": 320,
-          "se": 300,
-          "sw": 250,
-          "nw": 380
+          "ne": 280,
+          "se": 250,
+          "sw": 220,
+          "nw": 360
         },
         {
           "kt": 50,
-          "ne": 120,
-          "se": 120,
-          "sw": 110,
+          "ne": 100,
+          "se": 80,
+          "sw": 80,
           "nw": 120
         }
       ],
@@ -2581,16 +2581,103 @@
               "nw": 120
             }
           ]
+        },
+        {
+          "time": "2026-11-02T09:00:00Z",
+          "timeRaw": "202611020900",
+          "lon": 140.7,
+          "lat": 22.7,
+          "pressure": 982,
+          "windMs": 28,
+          "grade": "STS",
+          "gradeZh": "强热带风暴",
+          "moveDir": "WNW",
+          "moveSpeedKmh": 11,
+          "kind": "analysis",
+          "radii": [
+            {
+              "kt": 30,
+              "ne": 280,
+              "se": 250,
+              "sw": 220,
+              "nw": 360
+            },
+            {
+              "kt": 50,
+              "ne": 100,
+              "se": 80,
+              "sw": 80,
+              "nw": 120
+            }
+          ]
+        },
+        {
+          "time": "2026-11-02T12:00:00Z",
+          "timeRaw": "202611021200",
+          "lon": 140.3,
+          "lat": 22.9,
+          "pressure": 982,
+          "windMs": 28,
+          "grade": "STS",
+          "gradeZh": "强热带风暴",
+          "moveDir": "WNW",
+          "moveSpeedKmh": 9,
+          "kind": "analysis",
+          "radii": [
+            {
+              "kt": 30,
+              "ne": 280,
+              "se": 250,
+              "sw": 220,
+              "nw": 360
+            },
+            {
+              "kt": 50,
+              "ne": 100,
+              "se": 80,
+              "sw": 80,
+              "nw": 120
+            }
+          ]
+        },
+        {
+          "time": "2026-11-02T15:00:00Z",
+          "timeRaw": "202611021500",
+          "lon": 140,
+          "lat": 23,
+          "pressure": 982,
+          "windMs": 28,
+          "grade": "STS",
+          "gradeZh": "强热带风暴",
+          "moveDir": "WNW",
+          "moveSpeedKmh": 6,
+          "kind": "analysis",
+          "radii": [
+            {
+              "kt": 30,
+              "ne": 280,
+              "se": 250,
+              "sw": 220,
+              "nw": 360
+            },
+            {
+              "kt": 50,
+              "ne": 100,
+              "se": 80,
+              "sw": 80,
+              "nw": 120
+            }
+          ]
         }
       ],
       "forecast": [
         {
           "leadH": 12,
-          "baseTime": "2026-11-02T06:00:00Z",
-          "lon": 140,
-          "lat": 23.1,
-          "pressure": 980,
-          "windMs": 30,
+          "baseTime": "2026-11-02T15:00:00Z",
+          "lon": 139.3,
+          "lat": 23.2,
+          "pressure": 982,
+          "windMs": 28,
           "agency": "BABJ",
           "grade": "STS",
           "gradeZh": "强热带风暴",
@@ -2598,11 +2685,11 @@
         },
         {
           "leadH": 24,
-          "baseTime": "2026-11-02T06:00:00Z",
-          "lon": 139.4,
-          "lat": 23.5,
-          "pressure": 980,
-          "windMs": 30,
+          "baseTime": "2026-11-02T15:00:00Z",
+          "lon": 138.7,
+          "lat": 23.8,
+          "pressure": 982,
+          "windMs": 28,
           "agency": "BABJ",
           "grade": "STS",
           "gradeZh": "强热带风暴",
@@ -2610,9 +2697,9 @@
         },
         {
           "leadH": 36,
-          "baseTime": "2026-11-02T06:00:00Z",
-          "lon": 139.1,
-          "lat": 24.2,
+          "baseTime": "2026-11-02T15:00:00Z",
+          "lon": 138.4,
+          "lat": 24.6,
           "pressure": 982,
           "windMs": 28,
           "agency": "BABJ",
@@ -2622,9 +2709,9 @@
         },
         {
           "leadH": 48,
-          "baseTime": "2026-11-02T06:00:00Z",
-          "lon": 139.1,
-          "lat": 25.3,
+          "baseTime": "2026-11-02T15:00:00Z",
+          "lon": 138.6,
+          "lat": 26.1,
           "pressure": 982,
           "windMs": 28,
           "agency": "BABJ",
@@ -2634,9 +2721,9 @@
         },
         {
           "leadH": 60,
-          "baseTime": "2026-11-02T06:00:00Z",
-          "lon": 139.3,
-          "lat": 26.8,
+          "baseTime": "2026-11-02T15:00:00Z",
+          "lon": 139.9,
+          "lat": 28.3,
           "pressure": 982,
           "windMs": 28,
           "agency": "BABJ",
@@ -2646,9 +2733,9 @@
         },
         {
           "leadH": 72,
-          "baseTime": "2026-11-02T06:00:00Z",
-          "lon": 141.2,
-          "lat": 29.4,
+          "baseTime": "2026-11-02T15:00:00Z",
+          "lon": 143.9,
+          "lat": 32.1,
           "pressure": 985,
           "windMs": 25,
           "agency": "BABJ",
@@ -2658,9 +2745,9 @@
         },
         {
           "leadH": 96,
-          "baseTime": "2026-11-02T06:00:00Z",
-          "lon": 153.2,
-          "lat": 38.8,
+          "baseTime": "2026-11-02T15:00:00Z",
+          "lon": 157.7,
+          "lat": 42.4,
           "pressure": 990,
           "windMs": 23,
           "agency": "BABJ",
