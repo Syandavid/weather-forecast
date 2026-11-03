@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-03T01:29:09Z",
+  "updated": "2026-11-03T08:30:53Z",
   "sources": [
     "CMA",
     "NHC"
@@ -17,13 +17,13 @@
       "grade": "STS",
       "gradeZh": "强热带风暴",
       "lat": 23.1,
-      "lon": 139.4,
+      "lon": 139,
       "windMs": 28,
       "pressure": 982,
-      "moveDir": "NW",
-      "moveSpeedKmh": 6,
-      "time": "2026-11-03T00:00:00Z",
-      "issuedZh": "2026年11月03日08时00分",
+      "moveDir": "NNW",
+      "moveSpeedKmh": 8,
+      "time": "2026-11-03T06:00:00Z",
+      "issuedZh": "2026年11月03日14时00分",
       "radii": [
         {
           "kt": 30,
@@ -2755,14 +2755,72 @@
               "nw": 120
             }
           ]
+        },
+        {
+          "time": "2026-11-03T03:00:00Z",
+          "timeRaw": "202611030300",
+          "lon": 139.2,
+          "lat": 23.1,
+          "pressure": 982,
+          "windMs": 28,
+          "grade": "STS",
+          "gradeZh": "强热带风暴",
+          "moveDir": "NW",
+          "moveSpeedKmh": 7,
+          "kind": "analysis",
+          "radii": [
+            {
+              "kt": 30,
+              "ne": 280,
+              "se": 250,
+              "sw": 220,
+              "nw": 360
+            },
+            {
+              "kt": 50,
+              "ne": 100,
+              "se": 80,
+              "sw": 80,
+              "nw": 120
+            }
+          ]
+        },
+        {
+          "time": "2026-11-03T06:00:00Z",
+          "timeRaw": "202611030600",
+          "lon": 139,
+          "lat": 23.1,
+          "pressure": 982,
+          "windMs": 28,
+          "grade": "STS",
+          "gradeZh": "强热带风暴",
+          "moveDir": "NNW",
+          "moveSpeedKmh": 8,
+          "kind": "analysis",
+          "radii": [
+            {
+              "kt": 30,
+              "ne": 280,
+              "se": 250,
+              "sw": 220,
+              "nw": 360
+            },
+            {
+              "kt": 50,
+              "ne": 100,
+              "se": 80,
+              "sw": 80,
+              "nw": 120
+            }
+          ]
         }
       ],
       "forecast": [
         {
           "leadH": 12,
-          "baseTime": "2026-11-03T00:00:00Z",
-          "lon": 138.9,
-          "lat": 23.5,
+          "baseTime": "2026-11-03T06:00:00Z",
+          "lon": 138.5,
+          "lat": 23.8,
           "pressure": 982,
           "windMs": 28,
           "agency": "BABJ",
@@ -2772,9 +2830,9 @@
         },
         {
           "leadH": 24,
-          "baseTime": "2026-11-03T00:00:00Z",
-          "lon": 138.5,
-          "lat": 24.5,
+          "baseTime": "2026-11-03T06:00:00Z",
+          "lon": 138.3,
+          "lat": 25,
           "pressure": 982,
           "windMs": 28,
           "agency": "BABJ",
@@ -2784,9 +2842,9 @@
         },
         {
           "leadH": 36,
-          "baseTime": "2026-11-03T00:00:00Z",
-          "lon": 138.5,
-          "lat": 25.8,
+          "baseTime": "2026-11-03T06:00:00Z",
+          "lon": 138.7,
+          "lat": 26.9,
           "pressure": 982,
           "windMs": 28,
           "agency": "BABJ",
@@ -2796,9 +2854,9 @@
         },
         {
           "leadH": 48,
-          "baseTime": "2026-11-03T00:00:00Z",
-          "lon": 139.6,
-          "lat": 28.1,
+          "baseTime": "2026-11-03T06:00:00Z",
+          "lon": 140.8,
+          "lat": 29.7,
           "pressure": 982,
           "windMs": 28,
           "agency": "BABJ",
@@ -2808,9 +2866,9 @@
         },
         {
           "leadH": 60,
-          "baseTime": "2026-11-03T00:00:00Z",
-          "lon": 143.7,
-          "lat": 32,
+          "baseTime": "2026-11-03T06:00:00Z",
+          "lon": 146.3,
+          "lat": 34.4,
           "pressure": 985,
           "windMs": 25,
           "agency": "BABJ",
@@ -2820,9 +2878,9 @@
         },
         {
           "leadH": 72,
-          "baseTime": "2026-11-03T00:00:00Z",
-          "lon": 149.9,
-          "lat": 37.1,
+          "baseTime": "2026-11-03T06:00:00Z",
+          "lon": 154.5,
+          "lat": 40.9,
           "pressure": 980,
           "windMs": 28,
           "agency": "BABJ",
