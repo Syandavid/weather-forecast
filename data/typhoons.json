@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-04T18:30:55Z",
+  "updated": "2026-11-05T00:13:49Z",
   "sources": [
     "CMA",
     "NHC"
@@ -16,14 +16,14 @@
       "status": "start",
       "grade": "STS",
       "gradeZh": "强热带风暴",
-      "lat": 26.6,
-      "lon": 138.7,
-      "windMs": 30,
-      "pressure": 980,
-      "moveDir": "NNE",
-      "moveSpeedKmh": 37,
-      "time": "2026-11-04T18:00:00Z",
-      "issuedZh": "2026年11月05日02时00分",
+      "lat": 27.6,
+      "lon": 139,
+      "windMs": 28,
+      "pressure": 982,
+      "moveDir": "NE",
+      "moveSpeedKmh": 43,
+      "time": "2026-11-04T21:00:00Z",
+      "issuedZh": "2026年11月05日04时42分",
       "radii": [
         {
           "kt": 30,
@@ -3175,31 +3175,48 @@
               "nw": 100
             }
           ]
+        },
+        {
+          "time": "2026-11-04T21:00:00Z",
+          "timeRaw": "202611042100",
+          "lon": 139,
+          "lat": 27.6,
+          "pressure": 982,
+          "windMs": 28,
+          "grade": "STS",
+          "gradeZh": "强热带风暴",
+          "moveDir": "NE",
+          "moveSpeedKmh": 43,
+          "kind": "analysis",
+          "radii": [
+            {
+              "kt": 30,
+              "ne": 280,
+              "se": 250,
+              "sw": 220,
+              "nw": 360
+            },
+            {
+              "kt": 50,
+              "ne": 100,
+              "se": 80,
+              "sw": 80,
+              "nw": 100
+            }
+          ]
         }
       ],
       "forecast": [
         {
           "leadH": 12,
-          "baseTime": "2026-11-04T18:00:00Z",
-          "lon": 141.2,
-          "lat": 29.9,
+          "baseTime": "2026-11-04T21:00:00Z",
+          "lon": 142.6,
+          "lat": 31,
           "pressure": 985,
           "windMs": 25,
           "agency": "BABJ",
           "grade": "STS",
           "gradeZh": "强热带风暴",
-          "kind": "forecast"
-        },
-        {
-          "leadH": 24,
-          "baseTime": "2026-11-04T18:00:00Z",
-          "lon": 147.3,
-          "lat": 35.1,
-          "pressure": 990,
-          "windMs": 23,
-          "agency": "BABJ",
-          "grade": "TS",
-          "gradeZh": "热带风暴",
           "kind": "forecast"
         }
       ]
