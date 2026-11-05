@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-05T00:13:49Z",
+  "updated": "2026-11-05T07:12:51Z",
   "sources": [
     "CMA",
     "NHC"
@@ -16,14 +16,14 @@
       "status": "start",
       "grade": "STS",
       "gradeZh": "强热带风暴",
-      "lat": 27.6,
-      "lon": 139,
+      "lat": 28.8,
+      "lon": 140.4,
       "windMs": 28,
       "pressure": 982,
       "moveDir": "NE",
-      "moveSpeedKmh": 43,
-      "time": "2026-11-04T21:00:00Z",
-      "issuedZh": "2026年11月05日04时42分",
+      "moveSpeedKmh": 63,
+      "time": "2026-11-05T03:00:00Z",
+      "issuedZh": "2026年11月05日11时00分",
       "radii": [
         {
           "kt": 30,
@@ -3204,14 +3204,72 @@
               "nw": 100
             }
           ]
+        },
+        {
+          "time": "2026-11-05T00:00:00Z",
+          "timeRaw": "202611050000",
+          "lon": 139.6,
+          "lat": 28,
+          "pressure": 982,
+          "windMs": 28,
+          "grade": "STS",
+          "gradeZh": "强热带风暴",
+          "moveDir": "NE",
+          "moveSpeedKmh": 58,
+          "kind": "analysis",
+          "radii": [
+            {
+              "kt": 30,
+              "ne": 280,
+              "se": 250,
+              "sw": 220,
+              "nw": 360
+            },
+            {
+              "kt": 50,
+              "ne": 100,
+              "se": 80,
+              "sw": 80,
+              "nw": 100
+            }
+          ]
+        },
+        {
+          "time": "2026-11-05T03:00:00Z",
+          "timeRaw": "202611050300",
+          "lon": 140.4,
+          "lat": 28.8,
+          "pressure": 982,
+          "windMs": 28,
+          "grade": "STS",
+          "gradeZh": "强热带风暴",
+          "moveDir": "NE",
+          "moveSpeedKmh": 63,
+          "kind": "analysis",
+          "radii": [
+            {
+              "kt": 30,
+              "ne": 280,
+              "se": 250,
+              "sw": 220,
+              "nw": 360
+            },
+            {
+              "kt": 50,
+              "ne": 100,
+              "se": 80,
+              "sw": 80,
+              "nw": 100
+            }
+          ]
         }
       ],
       "forecast": [
         {
           "leadH": 12,
-          "baseTime": "2026-11-04T21:00:00Z",
-          "lon": 142.6,
-          "lat": 31,
+          "baseTime": "2026-11-05T03:00:00Z",
+          "lon": 145.9,
+          "lat": 33.7,
           "pressure": 985,
           "windMs": 25,
           "agency": "BABJ",
