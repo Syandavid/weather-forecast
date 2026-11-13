@@ -1,43 +1,9 @@
 {
-  "updated": "2026-11-12T18:31:02Z",
+  "updated": "2026-11-13T00:00:15Z",
   "sources": [
     "CMA",
     "NHC"
   ],
-  "storms": [
-    {
-      "id": "nhc-cp042026",
-      "provider": "NHC",
-      "basin": "CPAC",
-      "basinZh": "中北太平洋",
-      "nameZh": "Pena",
-      "nameEn": "Pena",
-      "code": "cp042026",
-      "status": "start",
-      "grade": "PTC",
-      "gradeZh": "潜在热带气旋",
-      "lat": 9.8,
-      "lon": -173.4,
-      "windMs": 15.4,
-      "windKt": 30.0,
-      "pressure": 1006,
-      "moveDir": 270,
-      "moveSpeedKmh": 33.3,
-      "time": "2026-11-12T15:00:00.000Z",
-      "classification": "PTC",
-      "radii": [],
-      "track": [
-        {
-          "lat": 9.8,
-          "lon": -173.4,
-          "time": "2026-11-12T15:00:00.000Z",
-          "windMs": 15.4,
-          "grade": "PTC",
-          "kind": "analysis"
-        }
-      ],
-      "forecast": []
-    }
-  ],
+  "storms": [],
   "errors": []
 }
